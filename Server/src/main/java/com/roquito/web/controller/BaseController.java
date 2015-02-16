@@ -1,21 +1,23 @@
 package com.roquito.web.controller;
 
-import com.roquito.platform.commons.RoquitoKeyGenerator;
-import com.roquito.platform.commons.RoquitoUtils;
-import com.roquito.platform.model.Application;
-import com.roquito.platform.service.ApplicationService;
-import com.roquito.platform.service.RedisService;
-import com.roquito.platform.service.UserService;
-import com.roquito.web.exception.RoquitoAuthException;
-import com.roquito.web.exception.RoquitoServerException;
+import java.io.IOException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import com.roquito.platform.commons.RoquitoKeyGenerator;
+import com.roquito.platform.commons.RoquitoUtils;
+import com.roquito.platform.messaging.persistence.MapDB;
+import com.roquito.platform.model.Application;
+import com.roquito.platform.service.ApplicationService;
+import com.roquito.platform.service.UserService;
+import com.roquito.web.exception.RoquitoAuthException;
+import com.roquito.web.exception.RoquitoServerException;
 
 /**
  * Created by puran on 2/4/15.
@@ -28,7 +30,6 @@ public class BaseController {
     private static final String APP_ID_PARAM = "app_id";
 
     protected final UserService userService = new UserService();
-    protected final RedisService redisService = new RedisService();
     protected final ApplicationService applicationService = new ApplicationService();
     protected final RoquitoKeyGenerator keyGenerator = new RoquitoKeyGenerator();
 
@@ -41,7 +42,7 @@ public class BaseController {
         boolean validRequest = validateApiRequest(httpRequest, applicationId);
         if (needsAccessToken) {
             String accessToken = httpRequest.getParameter(ACCESS_TOKEN_PARAM);
-            validRequest = redisService.isAccessTokenValid(accessToken);
+            validRequest = MapDB.getInstance().isAccessTokenValid(accessToken);
         }
         if (!validRequest) {
             log.debug("Request not authorized");

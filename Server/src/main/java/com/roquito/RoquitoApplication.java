@@ -13,9 +13,10 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 
 import com.roquito.platform.dao.MongoDB;
 import com.roquito.platform.dao.RedisDB;
+import com.roquito.platform.messaging.ConnectionHandler;
+import com.roquito.platform.messaging.persistence.MapDB;
 import com.roquito.platform.notification.PusherService;
 import com.roquito.platform.service.UserService;
-import com.roquito.websocket.RoquitoWebSocketHandler;
 
 @SpringBootApplication
 @EnableWebSocket
@@ -36,7 +37,7 @@ public class RoquitoApplication extends SpringBootServletInitializer implements 
 
     @Bean
     public WebSocketHandler roquitoWebSocketHandler() {
-	return new RoquitoWebSocketHandler(userService());
+	return new ConnectionHandler();
     }
 
     @Bean
@@ -55,6 +56,9 @@ public class RoquitoApplication extends SpringBootServletInitializer implements 
 
 	// Start pusher service
 	PusherService.getInstance().start();
+	
+	//Start MapDB
+	MapDB.getInstance().initMapDB();
 
 	app.run(args);
     }

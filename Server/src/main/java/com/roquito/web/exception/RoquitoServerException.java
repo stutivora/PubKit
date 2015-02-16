@@ -5,9 +5,9 @@ package com.roquito.web.exception;
  */
 public class RoquitoServerException extends RuntimeException {
 
-	private static final long serialVersionUID = 4805491609747396624L;
+    private static final long serialVersionUID = 4805491609747396624L;
 
-	public RoquitoServerException(String exceptionMessage) {
-        super(exceptionMessage);
+    public RoquitoServerException(String exceptionMessage) {
+	super(exceptionMessage);
     }
 }

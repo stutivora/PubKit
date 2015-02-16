@@ -20,6 +20,32 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+				<groupId>com.google.code.gson</groupId>
+				<artifactId>gson</artifactId>
+				<version>${gson.version}</version>
+			</dependency>
+			<dependency>
+   				<groupId>org.mapdb</groupId>
+   				<artifactId>mapdb</artifactId>
+   				<version>${mapdb.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.lmax</groupId>
+				<artifactId>disruptor</artifactId>
+				<version>${disruptor.version}</version>
+			</dependency>
+			<dependency>
+            	<groupId>com.googlecode.json-simple</groupId>
+            	<artifactId>json-simple</artifactId>
+            	<version>${json-simple.version}</version>
+            	<exclusions>
+                	<exclusion>
+                    	<groupId>junit</groupId>
+                    	<artifactId>junit</artifactId>
+                	</exclusion>
+            	</exclusions>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
            
@@ -40,6 +66,7 @@
         <jedis.version>2.6.2</jedis.version>
         <morphia.version>0.109</morphia.version>
         <disruptor.version>3.3.0</disruptor.version>
+        <mapdb.version>1.0.6</mapdb.version>
 	</properties>
 
 	<dependencies>
@@ -102,12 +129,18 @@
         <dependency>
 			<groupId>com.lmax</groupId>
 			<artifactId>disruptor</artifactId>
-			<version>${disruptor.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mapdb</groupId>
+			<artifactId>mapdb</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
 		</dependency>
 		<dependency>
             	<groupId>com.googlecode.json-simple</groupId>
             	<artifactId>json-simple</artifactId>
-            	<version>${json-simple.version}</version>
             	<exclusions>
                 	<exclusion>
                     	<groupId>junit</groupId>
