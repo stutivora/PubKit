@@ -39,8 +39,7 @@ public class UserController extends BaseController {
     public UserResponse create(@RequestBody UserDto user) {
 	validateApiRequest(request, false);
 
-	if (user == null || user.getEmail() == null || 
-		user.getEmail().isEmpty() || user.getPassword() == null
+	if (user == null || user.getEmail() == null || user.getEmail().isEmpty() || user.getPassword() == null
 		|| user.getPassword().isEmpty() || user.getFullName() == null || user.getFullName().isEmpty()) {
 	    log.debug("Missing required user information. Error creating new user account");
 	    return new UserResponse(null, true, "Missing required parameters");
@@ -49,10 +48,10 @@ public class UserController extends BaseController {
 	if (savedUser == null) {
 	    User dbUser = new User();
 	    dbUser.setEmail(user.getEmail());
-	    try {
-		dbUser.setPassword(RoquitoUtils.getPasswordHash(user.getPassword()));
-	    } catch (Exception es) {
-		log.error("Error hashing password", es);
+	    String passwordHash = RoquitoUtils.getPasswordHash(user.getPassword());
+	    if (passwordHash != null) {
+		dbUser.setPassword(passwordHash);
+	    } else {
 		throw new RoquitoServerException("Unknown error. Please try again later.");
 	    }
 	    String userId = userService.getNextUserId();

@@ -1,7 +1,8 @@
 package com.roquito.platform.service;
 
-import com.roquito.platform.dao.MongoDB;
 import com.roquito.platform.model.Application;
+import com.roquito.platform.persistence.MongoDB;
+
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Key;
@@ -39,7 +40,7 @@ public class ApplicationService extends BasicDAO<Application, String> {
     }
 
     public String getNextApplicationId() {
-        Long nextId = MongoDB.getInstance().generateNextId("com.thirtytwoskills.model.Application");
+        Long nextId = MongoDB.getInstance().generateNextId("com.roquito.platform.model.Application");
         return nextId.toString();
     }
 }

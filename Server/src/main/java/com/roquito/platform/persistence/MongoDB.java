@@ -1,4 +1,4 @@
-package com.roquito.platform.dao;
+package com.roquito.platform.persistence;
 
 import com.roquito.platform.model.*;
 import com.mongodb.MongoClient;

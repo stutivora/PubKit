@@ -1,7 +1,8 @@
 package com.roquito.platform.service;
 
-import com.roquito.platform.dao.MongoDB;
 import com.roquito.platform.model.User;
+import com.roquito.platform.persistence.MongoDB;
+
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Key;
@@ -39,7 +40,7 @@ public class UserService extends BasicDAO<User, String> {
     }
     
     public String getNextUserId() {
-        Long nextId = MongoDB.getInstance().generateNextId("com.thirtytwoskills.model.User");
+        Long nextId = MongoDB.getInstance().generateNextId("com.roquito.platform.model.User");
         return nextId.toString();
     }
 }

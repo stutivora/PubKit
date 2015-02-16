@@ -1,4 +1,4 @@
-package com.roquito.platform.dao;
+package com.roquito.platform.persistence;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
