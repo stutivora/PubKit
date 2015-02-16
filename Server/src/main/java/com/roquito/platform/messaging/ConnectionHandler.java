@@ -12,20 +12,22 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import com.google.gson.Gson;
-import com.lmax.disruptor.EventTranslatorOneArg;
+import com.lmax.disruptor.EventTranslatorTwoArg;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
+import com.roquito.platform.messaging.protocol.Payload;
 
 public class ConnectionHandler extends TextWebSocketHandler {
 
     private static Logger logger = LoggerFactory.getLogger(ConnectionHandler.class);
-    private static EventTranslatorOneArg<InputEvent, Payload> MESSAGE_EVENT_TRANSLATOR = null;
+    private static EventTranslatorTwoArg<PayloadEvent, Payload, WebSocketSession> INPUT_EVENT_TRANSLATOR = null;
     static {
-	MESSAGE_EVENT_TRANSLATOR = new EventTranslatorOneArg<InputEvent, Payload>() {
+	INPUT_EVENT_TRANSLATOR = new EventTranslatorTwoArg<PayloadEvent, Payload, WebSocketSession>() {
 		@Override
-		public void translateTo(InputEvent event, long sequence, Payload message) {
-		    event.setMessage(message);
+		public void translateTo(PayloadEvent event, long sequence, Payload payload, WebSocketSession session) {
+		    event.setPayload(payload);
 		    event.setSequence(sequence);
+		    event.setSession(session);
 		}
         };
     }
@@ -33,8 +35,8 @@ public class ConnectionHandler extends TextWebSocketHandler {
     /* Initialize components */
     private final Gson gson = new Gson();
     
-    private Disruptor<InputEvent> inputEventDisruptor;    
-    private RingBuffer<InputEvent> inputRingBuffer;
+    private Disruptor<PayloadEvent> inputEventDisruptor;    
+    private RingBuffer<PayloadEvent> inputRingBuffer;
     private InputEventHandler eventHandler;
    
     @Autowired
@@ -47,7 +49,7 @@ public class ConnectionHandler extends TextWebSocketHandler {
     private void startInputDisruptor() {
         Executor executor = Executors.newCachedThreadPool();
         int bufferSize = 1024 * 32;
-        inputEventDisruptor = new Disruptor<>(InputEvent.EVENT_FACTORY, bufferSize, executor);
+        inputEventDisruptor = new Disruptor<>(PayloadEvent.EVENT_FACTORY, bufferSize, executor);
         
         eventHandler = new InputEventHandler();
 	inputEventDisruptor.handleEventsWith(eventHandler);
@@ -69,7 +71,7 @@ public class ConnectionHandler extends TextWebSocketHandler {
 	Payload payload = gson.fromJson(messagePayload, Payload.class);
 	if (payload != null) {
 	    //publish to disruptor queue
-	    inputRingBuffer.publishEvent(MESSAGE_EVENT_TRANSLATOR, payload);
+	    inputRingBuffer.publishEvent(INPUT_EVENT_TRANSLATOR, payload, session);
 	} else {
 	    logger.debug("Null message received from client");
 	}

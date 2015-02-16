@@ -6,10 +6,12 @@ public final class Connection {
     private String apiKey;
     private String apiVersion;
 
-    public Connection(String clientId, String sessionId) {
+    public Connection(String clientId, String sessionId, String apiKey, String apiVersion) {
 	super();
 	this.clientId = clientId;
 	this.sessionId = sessionId;
+	this.apiKey = apiKey;
+	this.apiVersion = apiVersion;
     }
 
     public String getClientId() {

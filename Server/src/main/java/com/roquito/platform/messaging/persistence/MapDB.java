@@ -3,13 +3,16 @@ package com.roquito.platform.messaging.persistence;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.mapdb.*;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.socket.WebSocketSession;
 
 import com.roquito.platform.messaging.Connection;
 import com.roquito.web.exception.RoquitoServerException;
@@ -35,6 +38,9 @@ public final class MapDB {
 
     /* Access token store */
     private HTreeMap<String, String> tokenStore = null;
+    
+    /* Session map that olds current active session */
+    private Map<String, WebSocketSession> sessionMap = new HashMap<>();
 
     public static MapDB getInstance() {
 	return INSTANCE;
@@ -54,18 +60,42 @@ public final class MapDB {
 	tokenStore = internalDB.createHashMap("tokenStore").expireAfterWrite(2, TimeUnit.HOURS).makeOrGet();
     }
 
-    public boolean saveAccessToken(String email, String accessToken) {
+    public boolean saveAccessToken(String clientId, String accessToken) {
 	boolean success = false;
 	if (!tokenStore.containsKey(accessToken)) {
-	    tokenStore.put(accessToken, email);
+	    tokenStore.put(accessToken, clientId);
+	    tokenStore.put(clientId, accessToken);
+	    
 	    internalDB.commit();
 	    success = true;
 	}
 	return success;
     }
+    
+    public void invalidateSessionToken(String clientId) {
+	if (tokenStore.containsKey(clientId)) {
+	    String accessToken = tokenStore.get(clientId);
+	    tokenStore.remove(accessToken);
+	    tokenStore.remove(clientId);
+	    
+	    internalDB.commit();
+	}
+    }
 
     public boolean isAccessTokenValid(String accessToken) {
 	return tokenStore.containsKey(accessToken);
+    }
+    
+    public void addSession(WebSocketSession session) {
+	if (!sessionMap.containsKey(session.getId())) {
+	    sessionMap.put(session.getId(), session);
+	}
+    }
+    
+    public void removeSession(WebSocketSession session) {
+	if (sessionMap.containsKey(session.getId())) {
+	    sessionMap.remove(session.getId());
+	}
     }
 
     public void addConnection(String clientId, Connection connection) {
