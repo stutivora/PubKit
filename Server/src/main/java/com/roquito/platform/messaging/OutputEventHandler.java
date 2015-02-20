@@ -14,6 +14,7 @@ import com.roquito.platform.messaging.persistence.MapDB;
 import com.roquito.platform.messaging.protocol.ConnAck;
 import com.roquito.platform.messaging.protocol.Disconnect;
 import com.roquito.platform.messaging.protocol.Payload;
+import com.roquito.platform.messaging.protocol.SubsAck;
 
 public class OutputEventHandler implements EventHandler<PayloadEvent> {
 
@@ -34,19 +35,30 @@ public class OutputEventHandler implements EventHandler<PayloadEvent> {
 	case Payload.CONNACK:
 	    handleConnAck((ConnAck) payload, session);
 	    break;
+	case Payload.SUBSACK:
+	    handleSubsAck((SubsAck) payload, session);
 	}
     }
 
     private void handleDisconnect(Disconnect disconnect, WebSocketSession session) {
-	String disconnectData = gson.toJson(disconnect);
-	if (disconnectData != null) {
-	    TextMessage textMessage = new TextMessage(disconnectData);
-	    sendTextMessage(textMessage, session);
-	}
+	sendPayload(disconnect, session);
 	closeAndInvalidateSession(disconnect.getClientId(), session);
     }
 
-    private void handleConnAck(ConnAck payload, WebSocketSession session) {
+    private void handleConnAck(ConnAck conAck, WebSocketSession session) {
+	sendPayload(conAck, session);
+    }
+
+    private void handleSubsAck(SubsAck subsAck, WebSocketSession session) {
+	sendPayload(subsAck, session);
+    }
+
+    private void sendPayload(Payload payload, WebSocketSession session) {
+	String payloadData = gson.toJson(payload);
+	if (payloadData != null) {
+	    TextMessage textMessage = new TextMessage(payloadData);
+	    sendTextMessage(textMessage, session);
+	}
     }
 
     private void sendTextMessage(TextMessage textMessage, WebSocketSession session) {
@@ -68,8 +80,8 @@ public class OutputEventHandler implements EventHandler<PayloadEvent> {
     }
 
     private void closeAndInvalidateSession(String clientId, WebSocketSession session) {
-	logger.info("Closing and invalidating client session for {"+ clientId +"}");
-	
+	logger.info("Closing and invalidating client session for {" + clientId + "}");
+
 	dbStore.removeConnection(clientId);
 	dbStore.removeSession(session);
 	dbStore.invalidateSessionToken(clientId);

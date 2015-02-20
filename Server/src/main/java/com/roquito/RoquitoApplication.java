@@ -23,6 +23,12 @@ public class RoquitoApplication extends SpringBootServletInitializer implements 
 
     @Value("${app.environment}")
     private static String environment;
+    
+    @Value("${mapdb.filepath}")
+    private static String mapdbFilePath;
+
+    @Value("${mapdb.encryptedPassword}")
+    private static String encryptedMapdbPassword;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
@@ -50,7 +56,7 @@ public class RoquitoApplication extends SpringBootServletInitializer implements 
 	// Initialize MongoDB connection
 	MongoDB.getInstance().initMongoDBConnection(false);
 	//Start MapDB
-	MapDB.getInstance().initMapDB();
+	//MapDB.getInstance().initMapDB(mapdbFilePath, encryptedMapdbPassword);
 	// Start pusher service
 	PusherService.getInstance().start();
 	

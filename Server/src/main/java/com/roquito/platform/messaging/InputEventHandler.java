@@ -1,5 +1,6 @@
 package com.roquito.platform.messaging;
 
+import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -16,6 +17,10 @@ import com.roquito.platform.messaging.protocol.ConnAck;
 import com.roquito.platform.messaging.protocol.Connect;
 import com.roquito.platform.messaging.protocol.Disconnect;
 import com.roquito.platform.messaging.protocol.Payload;
+import com.roquito.platform.messaging.protocol.PubMessage;
+import com.roquito.platform.messaging.protocol.Publish;
+import com.roquito.platform.messaging.protocol.SubsAck;
+import com.roquito.platform.messaging.protocol.Subscribe;
 import com.roquito.platform.model.Application;
 import com.roquito.platform.service.ApplicationService;
 
@@ -56,7 +61,10 @@ public class InputEventHandler implements EventHandler<PayloadEvent> {
 	    handleConnect((Connect) payload, event.getSession());
 	    break;
 	case Payload.SUBSCRIBE:
+	    handleSubscribe((Subscribe) payload, event.getSession());
 	    break;
+	case Payload.PUBLISH:
+	    handlePublish((Publish) payload, event.getSession());
 	}
     }
 
@@ -66,7 +74,8 @@ public class InputEventHandler implements EventHandler<PayloadEvent> {
 	    return;
 	}
 	logger.info("Connecting client {" + connect.getClientId() + "}");
-	Connection newConnection = new Connection(connect.getClientId(), session.getId(), connect.getApiKey(),
+	Connection newConnection = new Connection(connect.getClientId(), session.getId(), 
+		connect.getApplicationId(),
 		connect.getApiVersion());
 
 	// set active session
@@ -80,6 +89,62 @@ public class InputEventHandler implements EventHandler<PayloadEvent> {
 	if (success) {
 	    sendPayload(new ConnAck(session.getId(), accessToken), session);
 	}
+    }
+
+    private void handleSubscribe(Subscribe subscribe, WebSocketSession session) {
+	boolean tokenValid = validateAccessToken(subscribe.getClientId(), subscribe.getSessionToken(), session);
+	if (!tokenValid) {
+	    return;
+	}
+	String topic = subscribe.getTopic();
+	Connection connection = dbStore.getConnection(subscribe.getClientId());
+	if (connection != null) {
+	    dbStore.subscribeTopic(topic, connection);
+	    SubsAck subsAck = new SubsAck(subscribe.getClientId());
+	    sendPayload(subsAck, session);
+	} else {
+	    logger.debug("Subscription failed. No connection found so closing connection");
+	    Disconnect disconnect = new Disconnect(subscribe.getClientId());
+	    disconnect.setData("Subscription failed. No connection found so closing connection");
+	    sendPayload(disconnect, session);
+	}
+    }
+
+    private void handlePublish(Publish publish, WebSocketSession session) {
+	String topic = publish.getTopic();
+	if (topic == null || "".equals(topic)) {
+	    logger.debug("Null or empty topic name. Cannot publish data");
+	    return;
+	}
+	List<Connection> subscribers = dbStore.getAllSubscribers(topic);
+	for (Connection subscriber : subscribers) {
+	    WebSocketSession subscriberSession = dbStore.getSession(subscriber.getSessionId());
+	    if (subscriberSession != null) {
+		PubMessage pubMessage = new PubMessage(subscriber.getClientId(), publish.getClientId());
+		pubMessage.setData(publish.getData());
+		pubMessage.addHeader(Payload.APP_ID, publish.getApplicationId());
+		pubMessage.setTopic(publish.getTopic());
+		
+		sendPayload(pubMessage, subscriberSession);
+	    } else {
+		logger.debug("Session not client with client id {"+ subscriber.getClientId() +"} "
+			+ "and session id {" + subscriber.getSessionId() + "}");
+
+		//send push notification if possible for inactive subscriber
+		handleInactiveSubscriber(subscriber);
+	    }
+	}
+    }
+
+    private boolean validateAccessToken(String clientId, String accessToken, WebSocketSession session) {
+	boolean tokenValid = dbStore.isAccessTokenValid(accessToken);
+	Disconnect disconnect = new Disconnect(clientId);
+	if (!tokenValid) {
+	    disconnect.setData("Access token invalid. Closing the client connection {" + clientId + "}");
+	    sendPayload(disconnect, session);
+	    return false;
+	}
+	return true;
     }
 
     private boolean validateApplication(Connect connect, WebSocketSession session) {
@@ -110,7 +175,11 @@ public class InputEventHandler implements EventHandler<PayloadEvent> {
 	}
 	return valid;
     }
-
+    
+    private void handleInactiveSubscriber(Connection subscriber) {
+	
+    }
+    
     public void sendPayload(Payload payload, WebSocketSession session) {
 	outputRingBuffer.publishEvent(PayloadEvent.EVENT_TRANSLATOR, payload, session);
     }

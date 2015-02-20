@@ -10,8 +10,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.mapdb.*;
-import org.springframework.beans.factory.annotation.Value;
+import org.mapdb.DB;
+import org.mapdb.DBMaker;
+import org.mapdb.HTreeMap;
 import org.springframework.web.socket.WebSocketSession;
 
 import com.roquito.platform.messaging.Connection;
@@ -20,12 +21,6 @@ import com.roquito.web.exception.RoquitoServerException;
 public final class MapDB {
     /* Singleton Instance */
     private final static MapDB INSTANCE = new MapDB();
-
-    @Value("${mapdb.filepath}")
-    private static String mapdbFilePath;
-
-    @Value("${mapdb.encryptedPassword}")
-    private static String encryptedMapdbPassword;
 
     /* MAP DB reference */
     private DB internalDB;
@@ -46,14 +41,14 @@ public final class MapDB {
 	return INSTANCE;
     }
 
-    public void initMapDB() {
-	if (mapdbFilePath == null || encryptedMapdbPassword == null) {
+    public void initMapDB(String mapdbFilePath, String encryptedPassword) {
+	if (mapdbFilePath == null || encryptedPassword == null) {
 	    throw new RoquitoServerException("Missing mapdb configuration.");
 	}
 	// configure and open database using builder pattern.
 	// all options are available with code auto-completion.
 	internalDB = DBMaker.newFileDB(new File(mapdbFilePath)).closeOnJvmShutdown().transactionDisable()
-		.mmapFileEnableIfSupported().encryptionEnable(encryptedMapdbPassword).make();
+		.mmapFileEnableIfSupported().encryptionEnable(encryptedPassword).make();
 
 	connectionStore = internalDB.getHashMap("connectionStore");
 	subscriptionStore = internalDB.getHashMap("subscriptionStore");
@@ -86,6 +81,10 @@ public final class MapDB {
 	return tokenStore.containsKey(accessToken);
     }
     
+    public WebSocketSession getSession(String sessionId) {
+	return sessionMap.get(sessionId);
+    }
+    
     public void addSession(WebSocketSession session) {
 	if (!sessionMap.containsKey(session.getId())) {
 	    sessionMap.put(session.getId(), session);
@@ -114,6 +113,10 @@ public final class MapDB {
 	    return true;
 	}
 	return false;
+    }
+    
+    public Connection getConnection(String clientId) {
+	return connectionStore.get(clientId);
     }
 
     public void subscribeTopic(String topic, Connection connection) {

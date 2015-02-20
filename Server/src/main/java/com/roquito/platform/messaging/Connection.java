@@ -3,14 +3,14 @@ package com.roquito.platform.messaging;
 public final class Connection {
     private String clientId;
     private String sessionId;
-    private String apiKey;
+    private String appId;
     private String apiVersion;
 
-    public Connection(String clientId, String sessionId, String apiKey, String apiVersion) {
+    public Connection(String clientId, String sessionId, String appId, String apiVersion) {
 	super();
 	this.clientId = clientId;
 	this.sessionId = sessionId;
-	this.apiKey = apiKey;
+	this.appId = appId;
 	this.apiVersion = apiVersion;
     }
 
@@ -30,12 +30,12 @@ public final class Connection {
 	this.sessionId = sessionId;
     }
 
-    public String getApiKey() {
-	return apiKey;
+    public String getAppId() {
+	return appId;
     }
 
-    public void setApiKey(String apiKey) {
-	this.apiKey = apiKey;
+    public void setAppId(String appId) {
+	this.appId = appId;
     }
 
     public String getApiVersion() {
