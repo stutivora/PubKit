@@ -20,6 +20,8 @@
  */
 package com.roquito.web.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -30,10 +32,12 @@ import java.util.Map;
  */
 @Controller
 public class IndexController extends BaseController {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(IndexController.class);
 
     @RequestMapping("/")
     public String index(Map<String, Object> model) {
-	sessionService.isAccessTokenValid("tests");
+	LOG.debug("Returning index page");
         return "index";
     }
     
