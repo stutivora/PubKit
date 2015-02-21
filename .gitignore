@@ -33,3 +33,5 @@ appengine-generated/
 out/
 elasticsearch/
 workspace/
+.store
+.store.p

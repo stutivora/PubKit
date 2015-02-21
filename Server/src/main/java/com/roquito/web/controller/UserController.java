@@ -1,7 +1,37 @@
+/* Copyright (c) 2015 32skills Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
 package com.roquito.web.controller;
 
+import java.util.Date;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.roquito.platform.commons.RoquitoUtils;
-import com.roquito.platform.messaging.persistence.MapDB;
 import com.roquito.platform.model.User;
 import com.roquito.web.dto.UserDto;
 import com.roquito.web.dto.UserLoginDto;
@@ -9,31 +39,14 @@ import com.roquito.web.exception.RoquitoServerException;
 import com.roquito.web.response.LoginResponse;
 import com.roquito.web.response.UserResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import java.util.Date;
-
 /**
- * Created by puran on 2/4/15.
+ * Created by puran
  */
 @RestController
 @RequestMapping("/users")
 public class UserController extends BaseController {
 
-    private static final Logger log = LoggerFactory.getLogger(UserController.class);
-
-    @Autowired
-    private HttpServletRequest request;
-
-    @Autowired
-    private HttpServletResponse response;
+    private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
 
     @RequestMapping(method = RequestMethod.POST)
     public UserResponse create(@RequestBody UserDto user) {
@@ -41,7 +54,7 @@ public class UserController extends BaseController {
 
 	if (user == null || user.getEmail() == null || user.getEmail().isEmpty() || user.getPassword() == null
 		|| user.getPassword().isEmpty() || user.getFullName() == null || user.getFullName().isEmpty()) {
-	    log.debug("Missing required user information. Error creating new user account");
+	    LOG.debug("Missing required user information. Error creating new user account");
 	    return new UserResponse(null, true, "Missing required parameters");
 	}
 	User savedUser = userService.findByEmail(user.getEmail());
@@ -66,11 +79,11 @@ public class UserController extends BaseController {
 		user.setUserId(userId);
 		return new UserResponse(user);
 	    } else {
-		log.debug("Error saving user data with response:" + objectId);
+		LOG.debug("Error saving user data with response:" + objectId);
 		throw new RoquitoServerException("Server error. Please try again later.");
 	    }
 	} else {
-	    log.info("User already exists. Not creating new account");
+	    LOG.info("User already exists. Not creating new account");
 	    return new UserResponse(null, true, "User already exists");
 	}
     }
@@ -89,11 +102,11 @@ public class UserController extends BaseController {
 	    boolean matches = RoquitoUtils.comparePasswords(userLoginDto.getPassword(), user.getPassword());
 	    if (matches) {
 		String accessToken = keyGenerator.getSecureSessionId();
-		boolean success = MapDB.getInstance().saveAccessToken(userLoginDto.getEmail(), accessToken);
+		boolean success = sessionService.saveAccessToken(accessToken, userLoginDto.getEmail());
 		if (success) {
 		    return new LoginResponse(user.getUserId(), accessToken);
 		} else {
-		    log.error("Error saving access token");
+		    LOG.error("Error saving access token");
 		    throw new RoquitoServerException("Unknown error. Try again later.");
 		}
 	    }

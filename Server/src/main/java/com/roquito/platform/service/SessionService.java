@@ -18,33 +18,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.roquito.platform.model;
+package com.roquito.platform.service;
 
-import org.mongodb.morphia.annotations.Embedded;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import java.util.Map;
+import com.roquito.platform.persistence.MapDB;
 
 /**
  * Created by puran
  */
-@Embedded
-public class ApplicationConfig {
-    private String type;
-    private Map<String, String> configParams;
-
-    public String getType() {
-        return type;
+@Service
+public class SessionService {
+    
+    @Autowired
+    private MapDB mapDB;
+    
+    public boolean saveAccessToken(String clientId, String accessToken) {
+	return mapDB.saveAccessToken(clientId, accessToken);
     }
-
-    public void setType(String type) {
-        this.type = type;
+    
+    public boolean isAccessTokenValid(String accessToken) {
+	return mapDB.isAccessTokenValid(accessToken);
     }
-
-    public Map<String, String> getConfigParams() {
-        return configParams;
-    }
-
-    public void setConfigParams(Map<String, String> configParams) {
-        this.configParams = configParams;
+    
+    public void invalidateSessionToken(String clientId) {
+	mapDB.invalidateSessionToken(clientId);
     }
 }

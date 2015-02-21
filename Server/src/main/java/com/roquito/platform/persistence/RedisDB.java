@@ -1,46 +1,81 @@
+/* Copyright (c) 2015 32skills Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
 package com.roquito.platform.persistence;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
+import com.roquito.RoquitoConfig;
+
 /**
- * Created by puran on 2/6/15.
+ * Created by puran
  */
-public final class RedisDB {
+@Repository
+public class RedisDB {
     private static final Logger LOG = LoggerFactory.getLogger(RedisDB.class);
     
-    private static final RedisDB redisDB = new RedisDB();
-    private static final String DEFAULT_HOST = "104.155.200.250";
-
     private JedisPool jedisPool = null;
-
-    public static RedisDB getInstance() {
-        return redisDB;
-    }
-
-    public void initRedisDBConnection() {
-        jedisPool = new JedisPool(new JedisPoolConfig(), DEFAULT_HOST);
+    
+    @Autowired
+    public RedisDB(RoquitoConfig config) {
+	LOG.info("Initializing redis db connection at host {" + config.getRedisHost() + "}");
+	jedisPool = new JedisPool(new JedisPoolConfig(), 
+		config.getRedisHost(), 
+		config.getRedisPort(), 
+		config.getRedisTimeout(),
+		config.getRedisPassword(), 
+		config.getRedisDatabase());
+	if (jedisPool != null) {
+	    LOG.info("Connected to redis db at {"+config.getRedisHost()+"}");
+	} else {
+	    LOG.error("Couldn't connect to redis db at {"+config.getRedisHost()+"}");
+	}
     }
 
     public Jedis getConnection() {
-        return jedisPool.getResource();
+	return jedisPool.getResource();
+    }
+    
+    public void closeConnection(Jedis jedis) {
+	jedisPool.returnResource(jedis);
     }
 
     public static enum Keys {
 
-        KEY_ROQUITO_USERS_COUNT("roquito-users-count");
+	KEY_ROQUITO_USERS_COUNT("roquito-users-count");
 
-        private String value;
+	private String value;
 
-        Keys(String value) {
-            this.value = value;
-        }
+	Keys(String value) {
+	    this.value = value;
+	}
 
-        public String value() {
-            return this.value;
-        }
+	public String value() {
+	    return this.value;
+	}
     }
 }

@@ -1,4 +1,38 @@
+/* Copyright (c) 2015 32skills Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
 package com.roquito.web.controller;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.roquito.platform.model.Application;
 import com.roquito.platform.model.ApplicationConfig;
@@ -9,43 +43,33 @@ import com.roquito.web.dto.ApplicationDto;
 import com.roquito.web.exception.RoquitoServerException;
 import com.roquito.web.response.ApplicationResponse;
 import com.roquito.web.response.ConfigResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.*;
 
 /**
- * Created by puran on 2/6/15.
+ * Created by puran
  */
 @RestController
 @RequestMapping("/applications")
 public class ApplicationController extends BaseController {
 
-    private static final Logger log = LoggerFactory.getLogger(ApplicationController.class);
-
-    @Autowired
-    private HttpServletRequest request;
+    private static final Logger LOG = LoggerFactory.getLogger(ApplicationController.class);
 
     @RequestMapping(method = RequestMethod.POST)
     public ApplicationResponse create(@RequestBody ApplicationDto applicationDto) {
         validateApiRequest(request, true);
 
         if (applicationDto == null || isEmpty(applicationDto.getUserId()) || isEmpty(applicationDto.getApplicationName())) {
-            log.debug("Missing application data for creating new application");
+            LOG.debug("Missing application data for creating new application");
             return new ApplicationResponse("Missing required data");
         }
 
         User owner = userService.findByUserId(applicationDto.getUserId());
         if (owner == null) {
-            log.debug("Missing owner data, required for registering application");
+            LOG.debug("Missing owner data, required for registering application");
             throw new RoquitoServerException("Owner required. Error creating new application");
         }
         Application savedApplication = applicationService.findByApplicationName(applicationDto.getApplicationName());
         if (savedApplication != null) {
-            log.debug("Cannot register application. Application with same name already exists:" + applicationDto.getApplicationName());
+            LOG.debug("Cannot register application. Application with same name already exists:" + applicationDto.getApplicationName());
             return new ApplicationResponse("Application with same name already exists");
         }
 
@@ -71,7 +95,7 @@ public class ApplicationController extends BaseController {
 
         String internalId = applicationService.saveApplication(newApplication);
         if (internalId != null) {
-            log.info("Application registered with name:" + newApplication.getApplicationName());
+            LOG.info("Application registered with name:" + newApplication.getApplicationName());
 
             applicationDto.setApplicationId(applicationId);
             applicationDto.setApplicationKey(applicationKey);
@@ -86,7 +110,7 @@ public class ApplicationController extends BaseController {
     public ConfigResponse updateAppConfig(@RequestBody AppConfigDto configDto) {
         validateApiRequest(request, true);
         if (configDto == null || isEmpty(configDto.getType())) {
-            log.debug("Missing application data for creating application config");
+            LOG.debug("Missing application data for creating application config");
             return new ConfigResponse(null, true, "Missing required data");
         }
         Application savedApplication = applicationService.findByApplicationId(configDto.getApplicationId());
@@ -133,7 +157,7 @@ public class ApplicationController extends BaseController {
             //update
             String internalId = applicationService.saveApplication(savedApplication);
             if (internalId != null) {
-                log.info("Application config updated for application:" + savedApplication.getApplicationId());
+        	LOG.info("Application config updated for application:" + savedApplication.getApplicationId());
                 return new ConfigResponse("SUCCESS", false, null);
             }
         }
