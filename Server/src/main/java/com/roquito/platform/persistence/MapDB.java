@@ -23,6 +23,8 @@ package com.roquito.platform.persistence;
 import java.io.File;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.PreDestroy;
+
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
 import org.mapdb.HTreeMap;
@@ -50,6 +52,13 @@ public class MapDB {
     @Autowired
     public MapDB(@Value("${mapdb.filepath}") String filePath, @Value("${mapdb.encryptedPassword}") String password) {
 	initMapDB(filePath, password);
+    }
+    
+    @PreDestroy
+    public void close() {
+        this.internalDB.commit();
+        this.internalDB.close();
+        LOG.debug("closed disk storage");
     }
 
     public void initMapDB(String mapdbFilePath, String encryptedMapdbPassword) {

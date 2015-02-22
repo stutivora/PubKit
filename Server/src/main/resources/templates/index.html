@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
-    <title>Roquito - Messaging platform for developers</title>
+    <title>Roquito-Application platform for mobile developers</title>
     <link rel="stylesheet" href="css/normalize.css"/>
     <link rel="stylesheet" href="css/style.css"/>
 
@@ -24,24 +24,44 @@
 </head>
 <body>
 <script type="text/x-handlebars">
-    <h2>Roquito</h2>
+	<h2>{{appName}}</h2>
 
     {{outlet}}
 
 </script>
 
 <script type="text/x-handlebars" id="index">
-    <ul>
-    {{#each item in model}}
-      <li>{{item}}</li>
-    {{/each}}
-    </ul>
-
+	<div id="container">
+		<h1>Welcome to Roquito</h1>
+		<h2>All-In-One backend for your mobile apps</h2>
+		<a class="btn btn-primary btn-lg" href="/#/signup" role="button" id="signup-header-cta">Get Started</a>
+	</div>
 </script>
 
 <script type="text/x-handlebars" id="signup">
-    <h1>Sign Up</h1>
-
+<h1>Sign Up</h1>
+<![CDATA[
+	<form>
+  		<div class="form-group">
+    		<label for="email">Email address</label>
+    		<input type="email" class="form-control" id="email" placeholder="Enter email"/>
+  		</div>
+		<div class="form-group">
+    		<label for="fullName">Full Name</label>
+    		<input type="fullName" class="form-control" id="fullName" placeholder="Enter Name"/>
+  		</div>
+		<div class="form-group">
+    		<label for="company">Company</label>
+    		<input type="password" class="form-control" id="company" placeholder="Company"/>
+  		</div>
+		<div class="form-group">
+    		<label for="password">Password</label>
+    		<input type="password" class="form-control" id="password" placeholder="Password"/>
+  		</div>
+		<button {{action 'cancel'}} class="btn btn-default">Cancel</button>
+		<button {{action 'submit'}} class="btn btn-default">Submit</button>
+	</form>
+<!-- ]]> -->
 </script>
 
 
