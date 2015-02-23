@@ -24,6 +24,20 @@
 </head>
 <body>
 <script type="text/x-handlebars">
+	<nav class="navbar">
+  		<div class="container-fluid">
+    		<div class="navbar-header">
+      			<a class="navbar-brand" href="#">
+        			Roquito
+      			</a>
+    		</div>
+			<ul class="nav navbar-nav navbar-right">
+				<li><a href="/#/documentation">Documentation</a></li>
+				<li><a href="/#/login">Login</a></li>
+				<li><a href="/#/signup">Sign Up</a></li>
+			</ul>
+  		</div>
+	</nav>
 	<h2>{{appName}}</h2>
 
     {{outlet}}
@@ -38,9 +52,27 @@
 	</div>
 </script>
 
-<script type="text/x-handlebars" id="signup">
+<script type="text/x-handlebars" id="login">
 <h1>Sign Up</h1>
 <![CDATA[
+	<form>
+  		<div class="form-group">
+    		<label for="email">Email address</label>
+    		<input type="email" class="form-control" id="email" placeholder="Enter email"/>
+  		</div>
+		<div class="form-group">
+    		<label for="password">Password</label>
+    		<input type="password" class="form-control" id="password" placeholder="Password"/>
+  		</div>
+		<button {{action 'cancel'}} class="btn btn-default">Cancel</button>
+		<button {{action 'submit'}} class="btn btn-default">Submit</button>
+	</form>
+<!-- ]]> -->
+</script>
+
+<script type="text/x-handlebars" id="signup">
+<h1>Sign Up</h1>
+<!--<![CDATA[-->
 	<form>
   		<div class="form-group">
     		<label for="email">Email address</label>

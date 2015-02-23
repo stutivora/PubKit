@@ -29,6 +29,7 @@ App.SignupController = Ember.Controller.extend({
 		},
 
 		cancel : function() {
+			this.transitionTo('index');
 		}
 	}
 });
