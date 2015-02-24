@@ -20,12 +20,47 @@ App.IndexController = Ember.Controller.extend({
 	appName : 'Roquito'
 });
 
-App.SignupRoute = Ember.Route.extend({});
+App.User = Ember.Object.extend({
+    userId : "",
+    email : "",
+    password : "",
+    confirmPassword:"",
+    fullName : "",
+    company : "",
+    profilePicUrl : "",
+    
+    save: function () {
+    	this.confirmPassword = "";
+        $.post({
+          url: "/users",
+          data: JSON.stringify( this.toArray() ),
+          success: function ( data ) {
+        	  alert(data)
+            // your data should already be rendered with latest changes
+            // however, you might want to change status from something to "saved" etc.
+          }
+        });
+    }
+});
+
+App.SignupRoute = Ember.Route.extend({
+	model: function(){
+		return App.User.create()
+	},
+	
+	setupController : function(controller, model){
+		controller.set("user", model);
+	}
+});
 
 App.SignupController = Ember.Controller.extend({
 	actions : {
 		submit : function() {
-			alert('voila');
+			var user = this.get("user");
+			alert(user)
+			if (user.password !== user.confirmPassword) {
+				
+			}
 		},
 
 		cancel : function() {
