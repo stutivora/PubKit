@@ -20,29 +20,34 @@
  */
 package com.roquito.platform.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.roquito.platform.persistence.MapDB;
+import com.roquito.platform.persistence.RedisDB;
 
 /**
  * Created by puran
  */
 @Service
 public class SessionService {
-    
+    private static final Logger LOG = LoggerFactory.getLogger(SessionService.class);
+
     @Autowired
-    private MapDB mapDB;
+    private RedisDB redisDB;
     
-    public boolean saveAccessToken(String clientId, String accessToken) {
-	return mapDB.saveAccessToken(clientId, accessToken);
+
+    public boolean saveAccessToken(String email, String accessToken) {
+        String response = redisDB.getConnection().set(accessToken, email, "NX", "EX", 3600);
+        LOG.debug("Access token set response:" + response);
+        return "OK".equalsIgnoreCase(response);
     }
-    
+
     public boolean isAccessTokenValid(String accessToken) {
-	return mapDB.isAccessTokenValid(accessToken);
-    }
-    
-    public void invalidateSessionToken(String clientId) {
-	mapDB.invalidateSessionToken(clientId);
+        if (accessToken == null) {
+            return false;
+        }
+        return redisDB.getConnection().get(accessToken) != null;
     }
 }
