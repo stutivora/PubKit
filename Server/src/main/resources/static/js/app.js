@@ -48,18 +48,25 @@ App.SignupRoute = Ember.Route.extend({
 		return App.User.create()
 	},
 	
-	setupController : function(controller, model){
+	setupController : function(controller, model) {
 		controller.set("user", model);
+		controller.set("errorMessage", "");
 	}
 });
 
 App.SignupController = Ember.Controller.extend({
 	actions : {
-		submit : function() {
+		createAccount : function() {
+			this.set('errorMessage', null);
+			
 			var user = this.get("user");
-			alert(user)
+			if (user.email === '' || user.fullName === '' || user.password === '' || user.confirmPassword === '') {
+				this.set('errorMessage', 'Missing required input');
+				return;
+			}
 			if (user.password !== user.confirmPassword) {
-				
+				this.set('errorMessage', 'Passwords doesn\'t match');
+				return;
 			}
 		},
 
