@@ -2,3 +2,56 @@
 .ember-application {
     margin: 20px;
 }
+.banner{
+	background: url(../images/banner.jpg) no-repeat center center; *
+	margin-top: 0px;
+	padding: 150px;
+	background-size: cover;
+	background-color: #fff;
+	color: #484745;
+	text-align: center;
+}
+.banner h1{
+	font-size: 60px;
+	letter-spacing: 0.4px;
+	
+}
+.banner h2{
+	font-weight: 200;
+	font-size: 24px;
+	letter-spacing: 0.8px;
+	
+}
+.banner .btn-primary{
+	background-color: #3498DB!important;
+	border: none!important;
+	background-image: none!important;
+
+}
+ .btn-primary:hover{
+	 background-color: #3498DB!important;
+	 background-image: none!important;
+ }
+.login-form{
+	margin: 0 auto;
+	padding: 80px;
+	min-height: 280px;
+	background-color: #eee;
+	width: 500px;
+	
+}
+footer{
+	background-color: #484745;
+	padding: 50px 0;
+	margin-bottom: 0px;
+	
+}
+p.copyright {
+    margin: 25px;
+	color: #fff;
+    letter-spacing: 0.8px;
+    font-size: 14px;
+    font-weight: 200;
+    
+    
+}
