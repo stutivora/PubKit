@@ -1,9 +1,5 @@
 App = Ember.Application.create();
 
-App.Router.map(function() {
-	this.route('login');
-	this.route('signup');
-});
 
 App.IndexRoute = Ember.Route.extend({
 	model : function() {
@@ -43,35 +39,5 @@ App.User = Ember.Object.extend({
     }
 });
 
-App.SignupRoute = Ember.Route.extend({
-	model: function(){
-		return App.User.create()
-	},
-	
-	setupController : function(controller, model) {
-		controller.set("user", model);
-		controller.set("errorMessage", "");
-	}
-});
 
-App.SignupController = Ember.Controller.extend({
-	actions : {
-		createAccount : function() {
-			this.set('errorMessage', null);
-			
-			var user = this.get("user");
-			if (user.email === '' || user.fullName === '' || user.password === '' || user.confirmPassword === '') {
-				this.set('errorMessage', 'Missing required input');
-				return;
-			}
-			if (user.password !== user.confirmPassword) {
-				this.set('errorMessage', 'Passwords doesn\'t match');
-				return;
-			}
-		},
 
-		cancel : function() {
-			this.transitionTo('index');
-		}
-	}
-});
