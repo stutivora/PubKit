@@ -2,20 +2,20 @@
 .ember-application {
     margin: 0px;
 }
-
 .nav {
 	background:#fff;	
 }
 .nav a {
 	font-family: 'Open Sans', sans-serif;
 	color:#444444;
-	background:#ffffff;
+	background-color:#ffffff;
 }
 
 .nav a:hover {
 	color:#3cb0fd;
-	background:#fffff;
+	background-color: #fff !important;
 }
+
 .banner{
 	margin-top: 0px;
 	padding: 150px;
@@ -28,12 +28,14 @@
 	font-size: 60px;
 	letter-spacing: 0.4px;
 	font-family: 'Open Sans Condensed', sans-serif;	
+	color:#3cb0fd;
 }
 .banner h2{
 	font-weight: 200;
 	font-size: 24px;
-	letter-spacing: 0.8px;
-	
+	letter-spacing: 0.6px;
+	color:#666666;
+	font-family: 'Open Sans', sans-serif;
 }
 
 .banner .btn-primary {
