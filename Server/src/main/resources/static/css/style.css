@@ -1,9 +1,12 @@
 /* Put your CSS here */
 .ember-application {
-    margin: 20px;
+    margin: 0px;
+}
+
+.nav {
+	background:#fff;	
 }
 .banner{
-	background: url(../images/banner.jpg) no-repeat center center; *
 	margin-top: 0px;
 	padding: 150px;
 	background-size: cover;
@@ -14,7 +17,7 @@
 .banner h1{
 	font-size: 60px;
 	letter-spacing: 0.4px;
-	
+	font-family: 'Open Sans Condensed', sans-serif;	
 }
 .banner h2{
 	font-weight: 200;
@@ -41,17 +44,18 @@
 	
 }
 footer{
+	font-family: 'PT Sans', sans-serif;
 	background-color: #484745;
-	padding: 50px 0;
-	margin-bottom: 0px;
-	
+	bottom: 0px;
+	position:absolute;
+	width:100%;
 }
+
 p.copyright {
-    margin: 25px;
+    margin: 25px auto;
+    align:center;
 	color: #fff;
     letter-spacing: 0.8px;
     font-size: 14px;
     font-weight: 200;
-    
-    
 }
