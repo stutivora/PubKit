@@ -92,7 +92,7 @@ public class MongoDB {
 
 	    datastore = morphia.createDatastore(mongoClient, config.getMongoDatabase());
 	    datastore.ensureIndexes();
-
+	    
 	    LOG.info("MongoDB connection setup successful");
 
 	} catch (UnknownHostException e) {
