@@ -6,6 +6,16 @@
 .nav {
 	background:#fff;	
 }
+.nav a {
+	font-family: 'Open Sans', sans-serif;
+	color:#444444;
+	background:#ffffff;
+}
+
+.nav a:hover {
+	color:#3cb0fd;
+	background:#fffff;
+}
 .banner{
 	margin-top: 0px;
 	padding: 150px;
@@ -25,16 +35,25 @@
 	letter-spacing: 0.8px;
 	
 }
-.banner .btn-primary{
-	background-color: #3498DB!important;
-	border: none!important;
-	background-image: none!important;
 
+.banner .btn-primary {
+  background: #3cb0fd;
+  -webkit-border-radius: 4;
+  -moz-border-radius: 4;
+  border-radius: 4px;
+  color: #ffffff;
+  font-size: 18px;
+  padding: 15px 40px 15px 40px;
+  text-decoration: none;
+  border:0px;
+  font-family: 'Open Sans', sans-serif;
 }
- .btn-primary:hover{
-	 background-color: #3498DB!important;
-	 background-image: none!important;
- }
+
+.banner .btn-primary:hover {
+  background: #3498db;
+  text-decoration: none;
+}
+
 .login-form{
 	margin: 0 auto;
 	padding: 80px;
@@ -44,7 +63,7 @@
 	
 }
 footer{
-	font-family: 'PT Sans', sans-serif;
+	font-family: 'Open Sans', sans-serif;
 	background-color: #484745;
 	bottom: 0px;
 	position:absolute;
@@ -55,7 +74,5 @@ p.copyright {
     margin: 25px auto;
     align:center;
 	color: #fff;
-    letter-spacing: 0.8px;
     font-size: 14px;
-    font-weight: 200;
 }
