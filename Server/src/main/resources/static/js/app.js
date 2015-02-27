@@ -5,7 +5,7 @@ App.IndexRoute = Ember.Route.extend({
 		return [ 'red', 'yellow', 'blue' ];
 	},
 	setupController : function(controller) {
-		controller.set('title', "Roquito-Application platform for mobile developers");
+		controller.set('title', "Roquito- Messaging platform for mobile developers");
 	}
 });
 

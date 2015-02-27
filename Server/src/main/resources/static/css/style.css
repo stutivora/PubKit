@@ -13,7 +13,7 @@ a {
 	background:#fff;	
 }
 .nav a {
-	color:#444444;
+	color:#777777;
 	background-color:#ffffff;
 }
 
@@ -78,6 +78,18 @@ a {
   color: #ffffff;
   font-size: 18px;
   padding: 10px;
+  text-decoration: none;
+  border:0px;
+}
+
+.signup-form .btn-login {
+  background: #3cb0fd;
+  -webkit-border-radius: 4;
+  -moz-border-radius: 4;
+  border-radius: 4px;
+  color: #ffffff;
+  font-size: 18px;
+  padding: 10px 20px;
   text-decoration: none;
   border:0px;
 }
