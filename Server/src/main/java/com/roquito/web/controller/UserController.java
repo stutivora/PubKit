@@ -50,7 +50,7 @@ public class UserController extends BaseController {
 
     @RequestMapping(method = RequestMethod.POST)
     public UserResponse create(@RequestBody UserDto user) {
-	//validateApiRequest(request, false);
+	validateApiRequest(request, false);
 
 	if (user == null || user.getEmail() == null || user.getEmail().isEmpty() || user.getPassword() == null
 		|| user.getPassword().isEmpty() || user.getFullName() == null || user.getFullName().isEmpty()) {
