@@ -1,89 +1,96 @@
 /* Put your CSS here */
 .ember-application {
-    margin: 0px;
+	margin: 0px;
 }
 
 /* BOOTSTRAP OVERRIDES */
 body {
-   font-family: 'Roboto Slab', serif;
-   color:#555555;
+	font-family: 'Roboto Slab', serif;
+	color: #555555;
 }
+
 a {
 	font-family: 'Arvo', serif;
 }
+
 .nav {
-	background:#fff;	
+	background: #fff;
 }
+
 .nav a {
-	color:#777777;
-	background-color:#ffffff;
+	color: #777777;
+	background-color: #ffffff;
 }
+
 .nav a:hover {
-	color:#3cb0fd;
+	color: #3cb0fd;
 	background-color: #fff !important;
 }
+
 .btn:focus {
-  outline: none;
+	outline: none;
 }
+
 .btn:active:focus {
 	outline: none;
 }
+
 .btn-primary {
-  background: #3cb0fd;
-  -webkit-border-radius: 4;
-  -moz-border-radius: 4;
-  border-radius: 4px;
-  color: #ffffff;
-  font-size: 18px;
-  padding: 15px 40px 15px 40px;
-  text-decoration: none;
-  border:0px;
+	background: #3cb0fd;
+	-webkit-border-radius: 4;
+	-moz-border-radius: 4;
+	border-radius: 4px;
+	color: #ffffff;
+	font-size: 18px;
+	padding: 15px 40px 15px 40px;
+	text-decoration: none;
+	border: 0px;
 }
 
 .btn-primary:hover {
-  background: #3498db;
-  text-decoration: none;
+	background: #3498db;
+	text-decoration: none;
 }
 
 .signup-form .btn-primary {
-  background: #3cb0fd;
-  -webkit-border-radius: 4;
-  -moz-border-radius: 4;
-  border-radius: 4px;
-  color: #ffffff;
-  font-size: 18px;
-  padding: 10px;
-  text-decoration: none;
-  border:0px;
+	background: #3cb0fd;
+	-webkit-border-radius: 4;
+	-moz-border-radius: 4;
+	border-radius: 4px;
+	color: #ffffff;
+	font-size: 18px;
+	padding: 10px;
+	text-decoration: none;
+	border: 0px;
 }
 
 .signup-form .btn-login {
-  background: #3cb0fd;
-  -webkit-border-radius: 4;
-  -moz-border-radius: 4;
-  border-radius: 4px;
-  color: #ffffff;
-  font-size: 18px;
-  padding: 10px 20px;
-  text-decoration: none;
-  border:0px;
+	background: #3cb0fd;
+	-webkit-border-radius: 4;
+	-moz-border-radius: 4;
+	border-radius: 4px;
+	color: #ffffff;
+	font-size: 18px;
+	padding: 10px 20px;
+	text-decoration: none;
+	border: 0px;
 }
 
 .btn-cancel {
-  background: #e74c3c;
-  -webkit-border-radius: 4;
-  -moz-border-radius: 4;
-  border-radius: 4px;
-  color: #ffffff;
-  font-size: 18px;
-  padding: 10px 18px;
-  text-decoration: none;
-  border:0px;
+	background: #e74c3c;
+	-webkit-border-radius: 4;
+	-moz-border-radius: 4;
+	border-radius: 4px;
+	color: #ffffff;
+	font-size: 18px;
+	padding: 10px 18px;
+	text-decoration: none;
+	border: 0px;
 }
 
 .form-control {
 	font-family: 'Roboto Slab', serif;
-	font-weight:300;
+	font-weight: 300;
 	display: block;
 	width: 100%;
 	height: 50px;
@@ -95,11 +102,13 @@ a {
 	background-image: none;
 	border: 1px solid #efefef;
 	border-radius: 4px;
-	-webkit-box-shadow: inset 0 0px 0px rgba(0,0,0,.075);
-	box-shadow: inset 0 0px 0px rgba(0,0,0,.075);
-	-webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
-	-o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
-	transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+	-webkit-box-shadow: inset 0 0px 0px rgba(0, 0, 0, .075);
+	box-shadow: inset 0 0px 0px rgba(0, 0, 0, .075);
+	-webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow
+		ease-in-out .15s;
+	-o-transition: border-color ease-in-out .15s, box-shadow ease-in-out
+		.15s;
+	transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
 }
 
 .alert-danger {
@@ -123,44 +132,55 @@ a {
 	color: #484745;
 	text-align: center;
 }
-.banner h1{
+
+.banner h1 {
 	font-size: 60px;
 	letter-spacing: 0.4px;
-	font-family: 'Open Sans Condensed', sans-serif;	
-	color:#3cb0fd;
+	font-family: 'Open Sans Condensed', sans-serif;
+	color: #3cb0fd;
 }
-.banner h2{
+
+.banner h2 {
 	font-weight: 200;
 	font-size: 24px;
 	letter-spacing: 0.6px;
-	color:#666666;
-}
-.logo {
-	color:#3cb0fd;
-	font-size:22px;
-	font-family: 'Arvo', serif;
-	font-weight:800;
-}
-.login-container {
-	margin: 20px auto;	
+	color: #666666;
 }
 
-footer{
+.logo {
+	color: #3cb0fd;
+	font-size: 22px;
+	font-family: 'Arvo', serif;
+	font-weight: 800;
+}
+.logout-text {
+	color:#3cb0fd !important;
+	font-size:17px;
+}
+a.logout-link {
+	font-size:15px;
+}
+.login-container {
+	margin: 20px auto;
+}
+
+footer {
 	background-color: #484745;
 	bottom: 0px;
-	position:absolute;
-	width:100%;
+	position: absolute;
+	width: 100%;
 }
 
 p.copyright {
 	font-family: 'Roboto Slab', serif;
-	font-weight:100;
-    margin: 25px auto;
-    letter-spacing:0.6px;
-    align:center;
+	font-weight: 100;
+	margin: 25px auto;
+	letter-spacing: 0.6px;
+	align: center;
 	color: #FFFFF0;
-    font-size: 14px;
+	font-size: 14px;
 }
+
 .copyright a {
 	color: #FFD700;
 }

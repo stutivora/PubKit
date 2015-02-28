@@ -39,6 +39,7 @@ public class RedisDB {
     private static final Logger LOG = LoggerFactory.getLogger(RedisDB.class);
     
     private JedisPool jedisPool = null;
+    private Jedis connection = null;
     
     @Autowired
     public RedisDB(RoquitoConfig config) {
@@ -61,11 +62,13 @@ public class RedisDB {
     }
     
     public Jedis getConnection() {
-        return jedisPool.getResource();
+        connection = jedisPool.getResource();
+        return connection;
     }
     
-    public void closeConnection(Jedis jedis) {
-        jedisPool.returnResource(jedis);
+    public void closeConnection() {
+        if (connection != null)
+            jedisPool.returnResource(connection);
     }
     
     public static enum Keys {

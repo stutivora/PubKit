@@ -1,5 +1,14 @@
 App = Ember.Application.create();
 
+App.ApplicationRoute = Ember.Route.extend({
+	setupController: function(controller) {
+	    controller.set('hasToken', App.Session.get('token'));
+	}
+});
+
+App.ApplicationController = Ember.Controller.extend({
+});
+
 App.AuthenticatedRoute = Ember.Route.extend({
 	beforeModel: function(transition) {
 		if (!App.Session.get('token')) {
@@ -17,11 +26,11 @@ App.AuthenticatedRoute = Ember.Route.extend({
 App.IndexRoute = Ember.Route.extend({
 	setupController : function(controller) {
 		//setup properties related to index controller!
+		controller.set("test", "puran is awesome");
 	}
 });
 
 App.IndexController = Ember.Controller.extend({
-	appName : 'Roquito'
 });
 
 App.Session = Ember.Object.extend({

@@ -10,25 +10,25 @@
 
 	<name>Roquito</name>
 	<description>Application platform for mobile developers</description>
-	
+
 	<dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring.boot.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>${spring.boot.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
 				<groupId>com.google.code.gson</groupId>
 				<artifactId>gson</artifactId>
 				<version>${gson.version}</version>
 			</dependency>
 			<dependency>
-   				<groupId>org.mapdb</groupId>
-   				<artifactId>mapdb</artifactId>
-   				<version>${mapdb.version}</version>
+				<groupId>org.mapdb</groupId>
+				<artifactId>mapdb</artifactId>
+				<version>${mapdb.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.lmax</groupId>
@@ -36,54 +36,54 @@
 				<version>${disruptor.version}</version>
 			</dependency>
 			<dependency>
-  				<groupId>org.codehaus.janino</groupId>
-  				<artifactId>janino</artifactId>
-  				<version>${janino.version}</version>
+				<groupId>org.codehaus.janino</groupId>
+				<artifactId>janino</artifactId>
+				<version>${janino.version}</version>
 			</dependency>
 			<dependency>
-            	<groupId>com.googlecode.json-simple</groupId>
-            	<artifactId>json-simple</artifactId>
-            	<version>${json-simple.version}</version>
-            	<exclusions>
-                	<exclusion>
-                    	<groupId>junit</groupId>
-                    	<artifactId>junit</artifactId>
-                	</exclusion>
-            	</exclusions>
+				<groupId>com.googlecode.json-simple</groupId>
+				<artifactId>json-simple</artifactId>
+				<version>${json-simple.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>junit</groupId>
+						<artifactId>junit</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
-         		<groupId>com.notnoop.apns</groupId>
-         		<artifactId>apns</artifactId>
-         		<version>${java-apns.version}</version>
-    		</dependency>
-    		<dependency>
-            	<groupId>org.mongodb.morphia</groupId>
-            	<artifactId>morphia</artifactId>
-            	<version>${morphia.version}</version>
-        	</dependency>
+				<groupId>com.notnoop.apns</groupId>
+				<artifactId>apns</artifactId>
+				<version>${java-apns.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mongodb.morphia</groupId>
+				<artifactId>morphia</artifactId>
+				<version>${morphia.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
-           
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<start-class>com.roquito.platform.RoquitoApplication</start-class>
 		<java.version>1.7</java.version>
 		<spring.boot.version>1.2.2.BUILD-SNAPSHOT</spring.boot.version>
 		<mongodb.version>2.12.4</mongodb.version>
-        <gson.version>2.3.1</gson.version>
-        <spring.boot.version>1.2.1.RELEASE</spring.boot.version>
-        <slf4j-api.version>1.7.8</slf4j-api.version>
-        <slf4j-simple.version>1.7.6</slf4j-simple.version>
-        <junit.version>4.11</junit.version>
-        <netty.version>4.0.24.Final</netty.version>
-        <mockito.version>1.8.4</mockito.version>
-        <json-simple.version>1.1.1</json-simple.version>
-        <jedis.version>2.6.2</jedis.version>
-        <morphia.version>0.109</morphia.version>
-        <disruptor.version>3.3.0</disruptor.version>
-        <mapdb.version>1.0.7</mapdb.version>
-        <janino.version>2.6.1</janino.version>
-        <java-apns.version>1.0.0.Beta6</java-apns.version>
+		<gson.version>2.3.1</gson.version>
+		<spring.boot.version>1.2.1.RELEASE</spring.boot.version>
+		<slf4j-api.version>1.7.8</slf4j-api.version>
+		<slf4j-simple.version>1.7.6</slf4j-simple.version>
+		<junit.version>4.11</junit.version>
+		<netty.version>4.0.24.Final</netty.version>
+		<mockito.version>1.8.4</mockito.version>
+		<json-simple.version>1.1.1</json-simple.version>
+		<jedis.version>2.6.2</jedis.version>
+		<morphia.version>0.109</morphia.version>
+		<disruptor.version>3.3.0</disruptor.version>
+		<mapdb.version>1.0.7</mapdb.version>
+		<janino.version>2.6.1</janino.version>
+		<java-apns.version>1.0.0.Beta6</java-apns.version>
 	</properties>
 
 	<dependencies>
@@ -128,17 +128,17 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-        <dependency>
-            <groupId>org.mongodb.morphia</groupId>
-            <artifactId>morphia</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>redis.clients</groupId>
-            <artifactId>jedis</artifactId>
-            <type>jar</type>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
+		<dependency>
+			<groupId>org.mongodb.morphia</groupId>
+			<artifactId>morphia</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>com.lmax</groupId>
 			<artifactId>disruptor</artifactId>
 		</dependency>
@@ -147,60 +147,58 @@
 			<artifactId>mapdb</artifactId>
 		</dependency>
 		<dependency>
-  			<groupId>org.codehaus.janino</groupId>
-  			<artifactId>janino</artifactId>
+			<groupId>org.codehaus.janino</groupId>
+			<artifactId>janino</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 		</dependency>
 		<dependency>
-            	<groupId>com.googlecode.json-simple</groupId>
-            	<artifactId>json-simple</artifactId>
-            	<exclusions>
-                	<exclusion>
-                    	<groupId>junit</groupId>
-                    	<artifactId>junit</artifactId>
-                	</exclusion>
-            	</exclusions>
+			<groupId>com.googlecode.json-simple</groupId>
+			<artifactId>json-simple</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>junit</groupId>
+					<artifactId>junit</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
-	
+
 	<build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <configuration>
-                        <source>1.7</source>
-                        <target>1.7</target>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring.boot.version}</version>
-                <configuration>
-                    <mainClass>com.roquito.RoquitoApplication</mainClass>
-                    <layout>ZIP</layout>
-                    <!-- ENABLE THIS FOR DEBUG 
-                        <jvmArguments>-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005</jvmArguments>
-                      -->
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<configuration>
+						<source>1.7</source>
+						<target>1.7</target>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>${spring.boot.version}</version>
+				<configuration>
+					<mainClass>com.roquito.RoquitoApplication</mainClass>
+					<layout>ZIP</layout>
+					<!-- ENABLE THIS FOR DEBUG <jvmArguments>-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005</jvmArguments> -->
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 
 	<repositories>
 		<repository>

@@ -98,7 +98,7 @@ public class UserController extends BaseController {
             boolean matches = RoquitoUtils.comparePasswords(userLoginDto.getPassword(), user.getPassword());
             if (matches) {
                 String accessToken = keyGenerator.getSecureSessionId();
-                boolean success = sessionService.saveAccessToken(accessToken, userLoginDto.getEmail());
+                boolean success = sessionService.saveAccessToken(userLoginDto.getEmail(), accessToken);
                 if (success) {
                     return new LoginResponse(user.getUserId(), accessToken);
                 } else {

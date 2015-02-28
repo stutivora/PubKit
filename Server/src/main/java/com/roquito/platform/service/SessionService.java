@@ -40,6 +40,8 @@ public class SessionService {
     public boolean saveAccessToken(String email, String accessToken) {
         String response = redisDB.getConnection().set(accessToken, email, "NX", "EX", 3600);
         LOG.debug("Access token set response:" + response);
+        redisDB.closeConnection();
+        
         return "OK".equalsIgnoreCase(response);
     }
     

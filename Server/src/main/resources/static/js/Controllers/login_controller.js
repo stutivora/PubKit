@@ -25,8 +25,8 @@ App.LoginController = Ember.Controller.extend({
 					if (response.error) {
 						self.set('errorMessage', response.errorMessage);
 					} else {
-						App.Session.set('token', response.token);
-						this.transitionTo("/users/" + response.userId);
+						App.Session.set('token', response.accessToken);
+						self.transitionTo('user');
 					}
 				} else {
 					self.set('errorMessage',
