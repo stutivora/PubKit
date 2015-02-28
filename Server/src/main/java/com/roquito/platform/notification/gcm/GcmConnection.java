@@ -34,9 +34,9 @@ import java.util.logging.Logger;
  * Helper class to send messages to the GCM service using an API Key.
  */
 public class GcmConnection {
-
+    
     protected static final String UTF8 = "UTF-8";
-
+    
     /**
      * Initial delay before first retry, without jitter.
      */
@@ -45,55 +45,58 @@ public class GcmConnection {
      * Maximum delay before a retry.
      */
     protected static final int MAX_BACKOFF_DELAY = 1024000;
-
+    
     protected final Random random = new Random();
     protected final Logger logger = Logger.getLogger(getClass().getName());
-
+    
     private final String key;
-
+    
     /**
      * Default constructor.
      *
-     * @param key API key obtained through the Google API Console.
+     * @param key
+     *            API key obtained through the Google API Console.
      */
     public GcmConnection(String key) {
         this.key = nonNull(key);
     }
-
+    
     /**
      * Creates a map with just one key-value pair.
      */
-    protected static final Map<String, String> newKeyValues(String key,
-                                                            String value) {
+    protected static final Map<String, String> newKeyValues(String key, String value) {
         Map<String, String> keyValues = new HashMap<String, String>(1);
         keyValues.put(nonNull(key), nonNull(value));
         return keyValues;
     }
-
+    
     /**
      * Creates a {@link StringBuilder} to be used as the body of an HTTP POST.
      *
-     * @param name  initial parameter for the POST.
-     * @param value initial value for that parameter.
+     * @param name
+     *            initial parameter for the POST.
+     * @param value
+     *            initial value for that parameter.
      * @return StringBuilder to be used an HTTP POST body.
      */
     protected static StringBuilder newBody(String name, String value) {
         return new StringBuilder(nonNull(name)).append('=').append(nonNull(value));
     }
-
+    
     /**
      * Adds a new parameter to the HTTP POST body.
      *
-     * @param body  HTTP POST body
-     * @param name  parameter's name
-     * @param value parameter's value
+     * @param body
+     *            HTTP POST body
+     * @param name
+     *            parameter's name
+     * @param value
+     *            parameter's value
      */
-    protected static void addParameter(StringBuilder body, String name,
-                                       String value) {
-        nonNull(body).append('&')
-                .append(nonNull(name)).append('=').append(nonNull(value));
+    protected static void addParameter(StringBuilder body, String name, String value) {
+        nonNull(body).append('&').append(nonNull(name)).append('=').append(nonNull(value));
     }
-
+    
     /**
      * Convenience method to convert an InputStream to a String.
      * <p/>
@@ -101,8 +104,7 @@ public class GcmConnection {
      * If the stream ends in a newline character, it will be stripped.
      */
     protected static String getString(InputStream stream) throws IOException {
-        BufferedReader reader =
-                new BufferedReader(new InputStreamReader(nonNull(stream)));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(nonNull(stream)));
         StringBuilder content = new StringBuilder();
         String newLine;
         do {
@@ -117,14 +119,14 @@ public class GcmConnection {
         }
         return content.toString();
     }
-
+    
     static <T> T nonNull(T argument) {
         if (argument == null) {
             throw new IllegalArgumentException("argument cannot be null");
         }
         return argument;
     }
-
+    
     /**
      * Sends a message to one device, retrying in case of unavailability.
      * <p/>
@@ -133,16 +135,21 @@ public class GcmConnection {
      * case of service unavailability and hence could block the calling thread
      * for many seconds.
      *
-     * @param message        message to be sent, including the device's registration id.
-     * @param registrationId device where the message will be sent.
-     * @param retries        number of retries in case of service unavailability errors.
+     * @param message
+     *            message to be sent, including the device's registration id.
+     * @param registrationId
+     *            device where the message will be sent.
+     * @param retries
+     *            number of retries in case of service unavailability errors.
      * @return result of the request (see its javadoc for more details)
-     * @throws IllegalArgumentException if registrationId is {@literal null}.
-     * @throws InvalidRequestException  if GCM didn't returned a 200 or 503 status.
-     * @throws IOException              if message could not be sent.
+     * @throws IllegalArgumentException
+     *             if registrationId is {@literal null}.
+     * @throws InvalidRequestException
+     *             if GCM didn't returned a 200 or 503 status.
+     * @throws IOException
+     *             if message could not be sent.
      */
-    public Result send(Message message, String registrationId, int retries)
-            throws IOException {
+    public Result send(Message message, String registrationId, int retries) throws IOException {
         int attempt = 0;
         Result result = null;
         int backoff = BACKOFF_INITIAL_DELAY;
@@ -150,8 +157,7 @@ public class GcmConnection {
         do {
             attempt++;
             if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Attempt #" + attempt + " to send message " +
-                        message + " to regIds " + registrationId);
+                logger.fine("Attempt #" + attempt + " to send message " + message + " to regIds " + registrationId);
             }
             result = sendNoRetry(message, registrationId);
             tryAgain = result == null && attempt <= retries;
@@ -164,23 +170,23 @@ public class GcmConnection {
             }
         } while (tryAgain);
         if (result == null) {
-            throw new IOException("Could not send message after " + attempt +
-                    " attempts");
+            throw new IOException("Could not send message after " + attempt + " attempts");
         }
         return result;
     }
-
+    
     /**
      * Sends a message without retrying in case of service unavailability. See
      * {@link #send(Message, String, int)} for more info.
      *
      * @return result of the post, or {@literal null} if the GCM service was
-     * unavailable.
-     * @throws InvalidRequestException  if GCM didn't returned a 200 or 503 status.
-     * @throws IllegalArgumentException if registrationId is {@literal null}.
+     *         unavailable.
+     * @throws InvalidRequestException
+     *             if GCM didn't returned a 200 or 503 status.
+     * @throws IllegalArgumentException
+     *             if registrationId is {@literal null}.
      */
-    public Result sendNoRetry(Message message, String registrationId)
-            throws IOException {
+    public Result sendNoRetry(Message message, String registrationId) throws IOException {
         StringBuilder body = newBody(Constants.PARAM_REGISTRATION_ID, registrationId);
         Boolean delayWhileIdle = message.isDelayWhileIdle();
         if (delayWhileIdle != null) {
@@ -211,11 +217,10 @@ public class GcmConnection {
             throw new InvalidRequestException(status);
         }
         try {
-            BufferedReader reader =
-                    new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             try {
                 String line = reader.readLine();
-
+                
                 if (line == null || line.equals("")) {
                     throw new IOException("Received empty response from GCM service.");
                 }
@@ -236,7 +241,7 @@ public class GcmConnection {
                             logger.warning("Received invalid second line from GCM: " + line);
                         }
                     }
-
+                    
                     Result result = builder.build();
                     if (logger.isLoggable(Level.FINE)) {
                         logger.fine("Message created succesfully (" + result + ")");
@@ -254,7 +259,7 @@ public class GcmConnection {
             conn.disconnect();
         }
     }
-
+    
     /**
      * Sends a message to many devices, retrying in case of unavailability.
      * <p/>
@@ -263,22 +268,26 @@ public class GcmConnection {
      * case of service unavailability and hence could block the calling thread
      * for many seconds.
      *
-     * @param message message to be sent.
-     * @param regIds  registration id of the devices that will receive
-     *                the message.
-     * @param retries number of retries in case of service unavailability errors.
+     * @param message
+     *            message to be sent.
+     * @param regIds
+     *            registration id of the devices that will receive the message.
+     * @param retries
+     *            number of retries in case of service unavailability errors.
      * @return combined result of all requests made.
-     * @throws IllegalArgumentException if registrationIds is {@literal null} or
-     *                                  empty.
-     * @throws InvalidRequestException  if GCM didn't returned a 200 or 503 status.
-     * @throws IOException              if message could not be sent.
+     * @throws IllegalArgumentException
+     *             if registrationIds is {@literal null} or empty.
+     * @throws InvalidRequestException
+     *             if GCM didn't returned a 200 or 503 status.
+     * @throws IOException
+     *             if message could not be sent.
      */
-    public MulticastResult send(Message message, List<String> regIds, int retries)
-            throws IOException {
+    public MulticastResult send(Message message, List<String> regIds, int retries) throws IOException {
         int attempt = 0;
         MulticastResult multicastResult = null;
         int backoff = BACKOFF_INITIAL_DELAY;
-        // Map of results by registration id, it will be updated after each attempt
+        // Map of results by registration id, it will be updated after each
+        // attempt
         // to send the messages
         Map<String, Result> results = new HashMap<String, Result>();
         List<String> unsentRegIds = new ArrayList<String>(regIds);
@@ -287,13 +296,11 @@ public class GcmConnection {
         do {
             attempt++;
             if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Attempt #" + attempt + " to send message " +
-                        message + " to regIds " + unsentRegIds);
+                logger.fine("Attempt #" + attempt + " to send message " + message + " to regIds " + unsentRegIds);
             }
             multicastResult = sendNoRetry(message, unsentRegIds);
             long multicastId = multicastResult.getMulticastId();
-            logger.fine("multicast_id on attempt # " + attempt + ": " +
-                    multicastId);
+            logger.fine("multicast_id on attempt # " + attempt + ": " + multicastId);
             multicastIds.add(multicastId);
             unsentRegIds = updateStatus(unsentRegIds, results, multicastResult);
             tryAgain = !unsentRegIds.isEmpty() && attempt <= retries;
@@ -319,8 +326,8 @@ public class GcmConnection {
         }
         // build a new object with the overall result
         long multicastId = multicastIds.remove(0);
-        MulticastResult.Builder builder = new MulticastResult.Builder(success,
-                failure, canonicalIds, multicastId).retryMulticastIds(multicastIds);
+        MulticastResult.Builder builder = new MulticastResult.Builder(success, failure, canonicalIds, multicastId)
+                .retryMulticastIds(multicastIds);
         // add results, in the same order as the input
         for (String regId : regIds) {
             Result result = results.get(regId);
@@ -328,23 +335,26 @@ public class GcmConnection {
         }
         return builder.build();
     }
-
+    
     /**
-     * Updates the status of the messages sent to devices and the list of devices
-     * that should be retried.
+     * Updates the status of the messages sent to devices and the list of
+     * devices that should be retried.
      *
-     * @param unsentRegIds    list of devices that are still pending an update.
-     * @param allResults      map of status that will be updated.
-     * @param multicastResult result of the last multicast sent.
+     * @param unsentRegIds
+     *            list of devices that are still pending an update.
+     * @param allResults
+     *            map of status that will be updated.
+     * @param multicastResult
+     *            result of the last multicast sent.
      * @return updated version of devices that should be retried.
      */
-    private List<String> updateStatus(List<String> unsentRegIds,
-                                      Map<String, Result> allResults, MulticastResult multicastResult) {
+    private List<String> updateStatus(List<String> unsentRegIds, Map<String, Result> allResults,
+            MulticastResult multicastResult) {
         List<Result> results = multicastResult.getResults();
         if (results.size() != unsentRegIds.size()) {
             // should never happen, unless there is a flaw in the algorithm
-            throw new RuntimeException("Internal error: sizes do not match. " +
-                    "currentResults: " + results + "; unsentRegIds: " + unsentRegIds);
+            throw new RuntimeException("Internal error: sizes do not match. " + "currentResults: " + results
+                    + "; unsentRegIds: " + unsentRegIds);
         }
         List<String> newUnsentRegIds = new ArrayList<String>();
         for (int i = 0; i < unsentRegIds.size(); i++) {
@@ -358,28 +368,28 @@ public class GcmConnection {
         }
         return newUnsentRegIds;
     }
-
+    
     /**
      * Sends a message without retrying in case of service unavailability. See
      * {@link #send(Message, List, int)} for more info.
      *
      * @return {@literal true} if the message was sent successfully,
-     * {@literal false} if it failed but could be retried.
-     * @throws IllegalArgumentException if registrationIds is {@literal null} or
-     *                                  empty.
-     * @throws InvalidRequestException  if GCM didn't returned a 200 status.
-     * @throws IOException              if message could not be sent or received.
+     *         {@literal false} if it failed but could be retried.
+     * @throws IllegalArgumentException
+     *             if registrationIds is {@literal null} or empty.
+     * @throws InvalidRequestException
+     *             if GCM didn't returned a 200 status.
+     * @throws IOException
+     *             if message could not be sent or received.
      */
-    public MulticastResult sendNoRetry(Message message,
-                                       List<String> registrationIds) throws IOException {
+    public MulticastResult sendNoRetry(Message message, List<String> registrationIds) throws IOException {
         if (nonNull(registrationIds).isEmpty()) {
             throw new IllegalArgumentException("registrationIds cannot be empty");
         }
         Map<Object, Object> jsonRequest = new HashMap<Object, Object>();
         setJsonField(jsonRequest, Constants.PARAM_TIME_TO_LIVE, message.getTimeToLive());
         setJsonField(jsonRequest, Constants.PARAM_COLLAPSE_KEY, message.getCollapseKey());
-        setJsonField(jsonRequest, Constants.PARAM_DELAY_WHILE_IDLE,
-                message.isDelayWhileIdle());
+        setJsonField(jsonRequest, Constants.PARAM_DELAY_WHILE_IDLE, message.isDelayWhileIdle());
         jsonRequest.put(Constants.JSON_REGISTRATION_IDS, registrationIds);
         Map<String, String> payload = message.getData();
         if (!payload.isEmpty()) {
@@ -387,8 +397,7 @@ public class GcmConnection {
         }
         String requestBody = JSONValue.toJSONString(jsonRequest);
         logger.finest("JSON request: " + requestBody);
-        HttpURLConnection conn =
-                post(Constants.GCM_SEND_ENDPOINT, "application/json", requestBody);
+        HttpURLConnection conn = post(Constants.GCM_SEND_ENDPOINT, "application/json", requestBody);
         int status = conn.getResponseCode();
         String responseBody;
         if (status != 200) {
@@ -406,22 +415,16 @@ public class GcmConnection {
             int failure = getNumber(jsonResponse, Constants.JSON_FAILURE).intValue();
             int canonicalIds = getNumber(jsonResponse, Constants.JSON_CANONICAL_IDS).intValue();
             long multicastId = getNumber(jsonResponse, Constants.JSON_MULTICAST_ID).longValue();
-            MulticastResult.Builder builder = new MulticastResult.Builder(success,
-                    failure, canonicalIds, multicastId);
+            MulticastResult.Builder builder = new MulticastResult.Builder(success, failure, canonicalIds, multicastId);
             @SuppressWarnings("unchecked")
-            List<Map<String, Object>> results =
-                    (List<Map<String, Object>>) jsonResponse.get(Constants.JSON_RESULTS);
+            List<Map<String, Object>> results = (List<Map<String, Object>>) jsonResponse.get(Constants.JSON_RESULTS);
             if (results != null) {
                 for (Map<String, Object> jsonResult : results) {
                     String messageId = (String) jsonResult.get(Constants.JSON_MESSAGE_ID);
-                    String canonicalRegId =
-                            (String) jsonResult.get(Constants.TOKEN_CANONICAL_REG_ID);
+                    String canonicalRegId = (String) jsonResult.get(Constants.TOKEN_CANONICAL_REG_ID);
                     String error = (String) jsonResult.get(Constants.JSON_ERROR);
-                    Result result = new Result.Builder()
-                            .messageId(messageId)
-                            .canonicalRegistrationId(canonicalRegId)
-                            .errorCode(error)
-                            .build();
+                    Result result = new Result.Builder().messageId(messageId).canonicalRegistrationId(canonicalRegId)
+                            .errorCode(error).build();
                     builder.addResult(result);
                 }
             }
@@ -433,37 +436,36 @@ public class GcmConnection {
             throw newIoException(responseBody, e);
         }
     }
-
+    
     private IOException newIoException(String responseBody, Exception e) {
-        // log exception, as IOException constructor that takes a message and cause
+        // log exception, as IOException constructor that takes a message and
+        // cause
         // is only available on Java 6
         String msg = "Error parsing JSON response (" + responseBody + ")";
         logger.log(Level.WARNING, msg, e);
         return new IOException(msg + ":" + e);
     }
-
+    
     /**
      * Sets a JSON field, but only if the value is not {@literal null}.
      */
-    private void setJsonField(Map<Object, Object> json, String field,
-                              Object value) {
+    private void setJsonField(Map<Object, Object> json, String field, Object value) {
         if (value != null) {
             json.put(field, value);
         }
     }
-
+    
     private Number getNumber(Map<?, ?> json, String field) {
         Object value = json.get(field);
         if (value == null) {
             throw new CustomParserException("Missing field: " + field);
         }
         if (!(value instanceof Number)) {
-            throw new CustomParserException("Field " + field +
-                    " does not contain a number: " + value);
+            throw new CustomParserException("Field " + field + " does not contain a number: " + value);
         }
         return (Number) value;
     }
-
+    
     private String[] split(String line) throws IOException {
         String[] split = line.split("=", 2);
         if (split.length != 2) {
@@ -471,19 +473,17 @@ public class GcmConnection {
         }
         return split;
     }
-
+    
     /**
      * Make an HTTP post to a given URL.
      *
      * @return HTTP response.
      */
-    protected HttpURLConnection post(String url, String body)
-            throws IOException {
+    protected HttpURLConnection post(String url, String body) throws IOException {
         return post(url, "application/x-www-form-urlencoded;charset=UTF-8", body);
     }
-
-    protected HttpURLConnection post(String url, String contentType, String body)
-            throws IOException {
+    
+    protected HttpURLConnection post(String url, String contentType, String body) throws IOException {
         if (url == null || body == null) {
             throw new IllegalArgumentException("arguments cannot be null");
         }
@@ -505,7 +505,7 @@ public class GcmConnection {
         out.close();
         return conn;
     }
-
+    
     /**
      * Gets an {@link HttpURLConnection} given an URL.
      */
@@ -513,7 +513,7 @@ public class GcmConnection {
         HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
         return conn;
     }
-
+    
     void sleep(long millis) {
         try {
             Thread.sleep(millis);
@@ -521,11 +521,11 @@ public class GcmConnection {
             Thread.currentThread().interrupt();
         }
     }
-
+    
     class CustomParserException extends RuntimeException {
         CustomParserException(String message) {
             super(message);
         }
     }
-
+    
 }

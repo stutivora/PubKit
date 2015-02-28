@@ -33,18 +33,18 @@ import org.springframework.context.annotation.Import;
  * Created by puran
  */
 @Configuration
-@EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class})
+@EnableAutoConfiguration(exclude = { DataSourceAutoConfiguration.class })
 @ComponentScan
-@Import({ RoquitoConfig.class})
+@Import({ RoquitoConfig.class })
 public class RoquitoApplication extends SpringBootServletInitializer {
-   
+    
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-	return application.sources(RoquitoApplication.class);
+        return application.sources(RoquitoApplication.class);
     }
-
+    
     public static void main(String[] args) {
-	SpringApplication app = new SpringApplication(RoquitoApplication.class);
-	app.run(args);
+        SpringApplication app = new SpringApplication(RoquitoApplication.class);
+        app.run(args);
     }
 }

@@ -26,7 +26,7 @@ import com.lmax.disruptor.EventFactory;
  * Created by puran
  */
 public class PushEventFactory implements EventFactory<PushEvent> {
-
+    
     @Override
     public PushEvent newInstance() {
         return new PushEvent();

@@ -42,15 +42,15 @@ public class PushEventHandler implements EventHandler<PushEvent> {
     
     private static final int NUM_RETRIES = 3;
     private ApplicationService applicationService;
-
+    
     public PushEventHandler(ApplicationService applicationService) {
         this.applicationService = applicationService;
     }
-
+    
     @Override
     public void onEvent(PushEvent event, long sequence, boolean endOfBatch) throws Exception {
         System.out.println("Processed Event: " + event + " payload:" + event.getPushNotification());
-
+        
         switch (event.getPushType()) {
             case GCM:
                 handleGCMPush(event.getPushNotification());
@@ -61,7 +61,7 @@ public class PushEventHandler implements EventHandler<PushEvent> {
                 break;
         }
     }
-
+    
     private void handleGCMPush(PushNotification pushNotification) {
         if (pushNotification == null) {
             LOG.debug("Empty or null push notification data received. Could not send notification to GCM server");
@@ -102,7 +102,7 @@ public class PushEventHandler implements EventHandler<PushEvent> {
             LOG.error("Error sending push notification to GCM server", es);
         }
     }
-
+    
     private void handleMulticastResult(MulticastResult multicastResult) {
         if (multicastResult == null) {
             LOG.error("Error sending multicast messages to GCM server. Null response received");
@@ -112,7 +112,7 @@ public class PushEventHandler implements EventHandler<PushEvent> {
             handleGCMResult(result);
         }
     }
-
+    
     private void handleGCMResult(Result result) {
         if (result == null) {
             LOG.error("Error sending message to GCM server. Null response received");
@@ -124,17 +124,17 @@ public class PushEventHandler implements EventHandler<PushEvent> {
         } else {
             String canonicalRegId = result.getCanonicalRegistrationId();
             if (canonicalRegId != null) {
-                //TODO: update server data store with new regId.
+                // TODO: update server data store with new regId.
             }
             LOG.info("GCM message sent with message id:" + result.getMessageId());
         }
     }
-
+    
     private Message constructGcmMessage(GcmNotification gcmNotification) {
         Message.Builder messageBuilder = new Message.Builder();
-
+        
         Map<String, String> pushData = gcmNotification.getData();
-
+        
         for (Map.Entry<String, String> entry : pushData.entrySet()) {
             messageBuilder.addData(entry.getKey(), entry.getValue());
         }
@@ -143,7 +143,7 @@ public class PushEventHandler implements EventHandler<PushEvent> {
         }
         messageBuilder.timeToLive(gcmNotification.getTimeToLive());
         messageBuilder.delayWhileIdle(gcmNotification.isDelayWhileIdle());
-
+        
         return messageBuilder.build();
     }
 }

@@ -45,11 +45,11 @@ import com.roquito.web.exception.RoquitoServerException;
  */
 public class BaseController {
     private static final Logger log = LoggerFactory.getLogger(BaseController.class);
-
+    
     private static final String ACCESS_TOKEN_PARAM = "access_token";
-    private static final String API_KEY_PARAM = "API_KEY";
+    private static final String API_KEY_PARAM = "api_key";
     private static final String APP_ID_PARAM = "app_id";
-
+    
     protected final RoquitoKeyGenerator keyGenerator = new RoquitoKeyGenerator();
     
     @Autowired
@@ -67,7 +67,7 @@ public class BaseController {
         String applicationId = httpServletRequest.getParameter(APP_ID_PARAM);
         return validateApiRequest(httpServletRequest, applicationId, needAccessToken);
     }
-
+    
     protected boolean validateApiRequest(HttpServletRequest httpRequest, String applicationId, boolean needsAccessToken) {
         boolean validRequest = validateApiRequest(httpRequest, applicationId);
         if (needsAccessToken) {
@@ -80,7 +80,7 @@ public class BaseController {
         }
         return validRequest;
     }
-
+    
     protected boolean validateApiRequest(HttpServletRequest httpRequest, String applicationId) {
         boolean validRequest = true;
         if (applicationId == null) {
@@ -100,12 +100,11 @@ public class BaseController {
         }
         return validRequest;
     }
-
+    
     private void throwAuthException() {
         throw new RoquitoAuthException("Request not authorized");
     }
-
-
+    
     protected void sendErrorResponse(HttpServletResponse httpServletResponse, int code, String message) {
         try {
             httpServletResponse.sendError(code, message);
@@ -113,20 +112,20 @@ public class BaseController {
             log.error("Error sending error response", e);
         }
     }
-
+    
     protected boolean hasValue(String value) {
         return RoquitoUtils.hasValue(value);
     }
-
+    
     protected boolean isEmpty(String value) {
         return !RoquitoUtils.hasValue(value);
     }
-
+    
     @ExceptionHandler(IllegalArgumentException.class)
     void handleBadRequests(HttpServletResponse response) throws IOException {
         response.sendError(HttpStatus.BAD_REQUEST.value());
     }
-
+    
     @ExceptionHandler(RoquitoServerException.class)
     void handleServerError(HttpServletResponse response) throws IOException {
         response.sendError(HttpStatus.INTERNAL_SERVER_ERROR.value());

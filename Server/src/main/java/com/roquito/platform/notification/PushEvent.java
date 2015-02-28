@@ -26,19 +26,19 @@ package com.roquito.platform.notification;
 public class PushEvent {
     private PushNotification pushNotification;
     private PushType pushType;
-
+    
     public PushType getPushType() {
         return pushType;
     }
-
+    
     public void setPushType(PushType pushType) {
         this.pushType = pushType;
     }
-
+    
     public PushNotification getPushNotification() {
         return pushNotification;
     }
-
+    
     public void setPushNotification(PushNotification pushNotification) {
         this.pushNotification = pushNotification;
     }

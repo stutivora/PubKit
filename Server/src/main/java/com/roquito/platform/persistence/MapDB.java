@@ -42,66 +42,66 @@ import com.roquito.web.exception.RoquitoServerException;
 @Repository
 public class MapDB {
     private static final Logger LOG = LoggerFactory.getLogger(MapDB.class);
-
+    
     /* MAP DB reference */
     private DB internalDB;
-
+    
     /* Access token store */
     private HTreeMap<String, String> tokenStore = null;
-
+    
     @Autowired
     public MapDB(RoquitoConfig roquitoConfig) {
-	initMapDB(roquitoConfig);
+        initMapDB(roquitoConfig);
     }
-
+    
     @PreDestroy
     public void close() {
-	this.internalDB.commit();
-	this.internalDB.close();
-	LOG.debug("closed disk storage");
+        this.internalDB.commit();
+        this.internalDB.close();
+        LOG.debug("closed disk storage");
     }
-
+    
     public void initMapDB(RoquitoConfig roquitoConfig) {
-	LOG.info("Initializing MapDB using mapdbFilePath {" + roquitoConfig.getMapdbFilePath() + "}");
-	if (roquitoConfig.getMapdbFilePath() == null || roquitoConfig.getMapdbEncryptedPassword() == null) {
-	    throw new RoquitoServerException("Missing mapdb configuration.");
-	}
-	if (roquitoConfig.isInMemory()) {
-	    internalDB = DBMaker.newMemoryDB().make();
-	} else {
-	    // configure and open database using builder pattern.
-	    // all options are available with code auto-completion.
-	    internalDB = DBMaker.newFileDB(new File(roquitoConfig.getMapdbFilePath())).closeOnJvmShutdown()
-		    .transactionDisable().mmapFileEnableIfSupported()
-		    .encryptionEnable(roquitoConfig.getMapdbEncryptedPassword()).make();
-	}
-	tokenStore = internalDB.createHashMap("tokenStore").expireAfterWrite(2, TimeUnit.HOURS).makeOrGet();
+        LOG.info("Initializing MapDB using mapdbFilePath {" + roquitoConfig.getMapdbFilePath() + "}");
+        if (roquitoConfig.getMapdbFilePath() == null || roquitoConfig.getMapdbEncryptedPassword() == null) {
+            throw new RoquitoServerException("Missing mapdb configuration.");
+        }
+        if (roquitoConfig.isInMemory()) {
+            internalDB = DBMaker.newMemoryDB().make();
+        } else {
+            // configure and open database using builder pattern.
+            // all options are available with code auto-completion.
+            internalDB = DBMaker.newFileDB(new File(roquitoConfig.getMapdbFilePath())).closeOnJvmShutdown()
+                    .transactionDisable().mmapFileEnableIfSupported()
+                    .encryptionEnable(roquitoConfig.getMapdbEncryptedPassword()).make();
+        }
+        tokenStore = internalDB.createHashMap("tokenStore").expireAfterWrite(2, TimeUnit.HOURS).makeOrGet();
     }
-
+    
     public boolean saveAccessToken(String clientId, String accessToken) {
-	boolean success = false;
-	if (!tokenStore.containsKey(accessToken)) {
-	    tokenStore.put(accessToken, clientId);
-	    tokenStore.put(clientId, accessToken);
-
-	    internalDB.commit();
-	    success = true;
-	}
-	return success;
+        boolean success = false;
+        if (!tokenStore.containsKey(accessToken)) {
+            tokenStore.put(accessToken, clientId);
+            tokenStore.put(clientId, accessToken);
+            
+            internalDB.commit();
+            success = true;
+        }
+        return success;
     }
-
+    
     public void invalidateSessionToken(String clientId) {
-	if (tokenStore.containsKey(clientId)) {
-	    String accessToken = tokenStore.get(clientId);
-	    tokenStore.remove(accessToken);
-	    tokenStore.remove(clientId);
-
-	    internalDB.commit();
-	}
+        if (tokenStore.containsKey(clientId)) {
+            String accessToken = tokenStore.get(clientId);
+            tokenStore.remove(accessToken);
+            tokenStore.remove(clientId);
+            
+            internalDB.commit();
+        }
     }
-
+    
     public boolean isAccessTokenValid(String accessToken) {
-	return tokenStore.containsKey(accessToken);
+        return tokenStore.containsKey(accessToken);
     }
-
+    
 }

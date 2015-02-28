@@ -38,25 +38,25 @@ public final class RoquitoUtils {
         java.util.regex.Matcher m = p.matcher(email);
         return m.matches();
     }
-
+    
     public static String getPasswordHash(String password) {
-	try {
-	    return PasswordHash.createHash(password);
-	} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-	    log.error("Error generating password hash", e);
-	}
-	return null;
+        try {
+            return PasswordHash.createHash(password);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            log.error("Error generating password hash", e);
+        }
+        return null;
     }
-
+    
     public static boolean comparePasswords(String password, String passwordHash) {
         try {
-	    return PasswordHash.validatePassword(password, passwordHash);
-	} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-	    log.error("Error comparing password hash", e);
-	}
+            return PasswordHash.validatePassword(password, passwordHash);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            log.error("Error comparing password hash", e);
+        }
         return false;
     }
-
+    
     public static boolean hasValue(String value) {
         return value != null && !value.isEmpty();
     }

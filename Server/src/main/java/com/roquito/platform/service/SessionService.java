@@ -33,17 +33,16 @@ import com.roquito.platform.persistence.RedisDB;
 @Service
 public class SessionService {
     private static final Logger LOG = LoggerFactory.getLogger(SessionService.class);
-
+    
     @Autowired
     private RedisDB redisDB;
     
-
     public boolean saveAccessToken(String email, String accessToken) {
         String response = redisDB.getConnection().set(accessToken, email, "NX", "EX", 3600);
         LOG.debug("Access token set response:" + response);
         return "OK".equalsIgnoreCase(response);
     }
-
+    
     public boolean isAccessTokenValid(String accessToken) {
         if (accessToken == null) {
             return false;

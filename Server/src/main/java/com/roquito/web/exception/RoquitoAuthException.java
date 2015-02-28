@@ -24,10 +24,10 @@ package com.roquito.web.exception;
  * Created by puran
  */
 public class RoquitoAuthException extends RuntimeException {
-	
-	private static final long serialVersionUID = 3518668985341033639L;
-
-	public RoquitoAuthException(String exceptionMessage) {
+    
+    private static final long serialVersionUID = 3518668985341033639L;
+    
+    public RoquitoAuthException(String exceptionMessage) {
         super(exceptionMessage);
     }
 }

@@ -34,6 +34,7 @@ import java.io.Serializable;
  * <p/>
  * <p/>
  * In a nutshell, the workflow to handle a result is:
+ * 
  * <pre>
  *   - Call {@link #getMessageId()}:
  *     - {@literal null} means error, call {@link #getErrorCodeName()}
@@ -44,38 +45,38 @@ import java.io.Serializable;
  * </pre>
  */
 public final class Result implements Serializable {
-	private static final long serialVersionUID = 6374893430030252964L;
-	private final String messageId;
+    private static final long serialVersionUID = 6374893430030252964L;
+    private final String messageId;
     private final String canonicalRegistrationId;
     private final String errorCode;
-
+    
     private Result(Builder builder) {
         canonicalRegistrationId = builder.canonicalRegistrationId;
         messageId = builder.messageId;
         errorCode = builder.errorCode;
     }
-
+    
     /**
      * Gets the message id, if any.
      */
     public String getMessageId() {
         return messageId;
     }
-
+    
     /**
      * Gets the canonical registration id, if any.
      */
     public String getCanonicalRegistrationId() {
         return canonicalRegistrationId;
     }
-
+    
     /**
      * Gets the error code, if any.
      */
     public String getErrorCodeName() {
         return errorCode;
     }
-
+    
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder("[");
@@ -83,40 +84,39 @@ public final class Result implements Serializable {
             builder.append(" messageId=").append(messageId);
         }
         if (canonicalRegistrationId != null) {
-            builder.append(" canonicalRegistrationId=")
-                    .append(canonicalRegistrationId);
+            builder.append(" canonicalRegistrationId=").append(canonicalRegistrationId);
         }
         if (errorCode != null) {
             builder.append(" errorCode=").append(errorCode);
         }
         return builder.append(" ]").toString();
     }
-
+    
     static final class Builder {
-
+        
         // optional parameters
         private String messageId;
         private String canonicalRegistrationId;
         private String errorCode;
-
+        
         public Builder canonicalRegistrationId(String value) {
             canonicalRegistrationId = value;
             return this;
         }
-
+        
         public Builder messageId(String value) {
             messageId = value;
             return this;
         }
-
+        
         public Builder errorCode(String value) {
             errorCode = value;
             return this;
         }
-
+        
         public Result build() {
             return new Result(this);
         }
     }
-
+    
 }

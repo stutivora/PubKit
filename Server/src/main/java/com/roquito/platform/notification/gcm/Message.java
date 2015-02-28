@@ -28,21 +28,31 @@ import java.util.Map;
  * {@link Builder}. Examples:
  * <p/>
  * <strong>Simplest message:</strong>
- * <pre><code>
+ * 
+ * <pre>
+ * <code>
  * Message message = new Message.Builder().build();
- * </pre></code>
+ * </pre>
+ * 
+ * </code>
  * <p/>
  * <strong>Message with optional attributes:</strong>
- * <pre><code>
+ * 
+ * <pre>
+ * <code>
  * Message message = new Message.Builder()
  *    .collapseKey(collapseKey)
  *    .timeToLive(3)
  *    .delayWhileIdle(true)
  *    .build();
- * </pre></code>
+ * </pre>
+ * 
+ * </code>
  * <p/>
  * <strong>Message with optional attributes and payload data:</strong>
- * <pre><code>
+ * 
+ * <pre>
+ * <code>
  * Message message = new Message.Builder()
  *    .collapseKey(collapseKey)
  *    .timeToLive(3)
@@ -50,50 +60,52 @@ import java.util.Map;
  *    .addData("key1", "value1")
  *    .addData("key2", "value2")
  *    .build();
- * </pre></code>
+ * </pre>
+ * 
+ * </code>
  */
 public final class Message implements Serializable {
-	private static final long serialVersionUID = 1549424221972519613L;
-	private final String collapseKey;
+    private static final long serialVersionUID = 1549424221972519613L;
+    private final String collapseKey;
     private final Boolean delayWhileIdle;
     private final Integer timeToLive;
     private final Map<String, String> data;
-
+    
     private Message(Builder builder) {
         collapseKey = builder.collapseKey;
         delayWhileIdle = builder.delayWhileIdle;
         data = Collections.unmodifiableMap(builder.data);
         timeToLive = builder.timeToLive;
     }
-
+    
     /**
      * Gets the collapse key.
      */
     public String getCollapseKey() {
         return collapseKey;
     }
-
+    
     /**
      * Gets the delayWhileIdle flag.
      */
     public Boolean isDelayWhileIdle() {
         return delayWhileIdle;
     }
-
+    
     /**
      * Gets the time to live (in seconds).
      */
     public Integer getTimeToLive() {
         return timeToLive;
     }
-
+    
     /**
      * Gets the payload data, which is immutable.
      */
     public Map<String, String> getData() {
         return data;
     }
-
+    
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder("Message(");
@@ -109,8 +121,7 @@ public final class Message implements Serializable {
         if (!data.isEmpty()) {
             builder.append("data: {");
             for (Map.Entry<String, String> entry : data.entrySet()) {
-                builder.append(entry.getKey()).append("=").append(entry.getValue())
-                        .append(",");
+                builder.append(entry.getKey()).append("=").append(entry.getValue()).append(",");
             }
             builder.delete(builder.length() - 1, builder.length());
             builder.append("}");
@@ -121,20 +132,20 @@ public final class Message implements Serializable {
         builder.append(")");
         return builder.toString();
     }
-
+    
     public static final class Builder {
-
+        
         private final Map<String, String> data;
-
+        
         // optional parameters
         private String collapseKey;
         private Boolean delayWhileIdle;
         private Integer timeToLive;
-
+        
         public Builder() {
             this.data = new LinkedHashMap<String, String>();
         }
-
+        
         /**
          * Sets the collapseKey property.
          */
@@ -142,7 +153,7 @@ public final class Message implements Serializable {
             collapseKey = value;
             return this;
         }
-
+        
         /**
          * Sets the delayWhileIdle property (default value is {@literal false}).
          */
@@ -150,7 +161,7 @@ public final class Message implements Serializable {
             delayWhileIdle = value;
             return this;
         }
-
+        
         /**
          * Sets the time to live, in seconds.
          */
@@ -158,7 +169,7 @@ public final class Message implements Serializable {
             timeToLive = value;
             return this;
         }
-
+        
         /**
          * Adds a key/value pair to the payload data.
          */
@@ -166,17 +177,17 @@ public final class Message implements Serializable {
             data.put(key, value);
             return this;
         }
-
+        
         public Builder setData(Map<String, String> data) {
             this.data.clear();
             this.data.putAll(data);
             return this;
         }
-
+        
         public Message build() {
             return new Message(this);
         }
-
+        
     }
-
+    
 }

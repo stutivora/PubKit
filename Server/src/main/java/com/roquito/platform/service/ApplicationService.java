@@ -42,56 +42,56 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class ApplicationService extends BasicDAO<Application, String> {
-
+    
     private static final Logger LOG = LoggerFactory.getLogger(ApplicationService.class);
     
     private MongoDB mongoDB;
-
+    
     @Autowired
     public ApplicationService(MongoDB mongoDB) {
-	this(mongoDB.getDataStore());
-	this.mongoDB = mongoDB;
+        this(mongoDB.getDataStore());
+        this.mongoDB = mongoDB;
     }
-
+    
     private ApplicationService(Datastore ds) {
-	super(ds);
+        super(ds);
     }
-
+    
     public Application findByApplicationId(String applicationId) {
-	return this.findOne("applicationId", applicationId);
+        return this.findOne("applicationId", applicationId);
     }
-
+    
     public Application findByApplicationName(String applicationName) {
-	return this.findOne("applicationName", applicationName);
+        return this.findOne("applicationName", applicationName);
     }
-
+    
     public String saveApplication(Application application) {
-	if (application == null) {
-	    return null;
-	}
-	Key<Application> applicationKey = this.save(application);
-	ObjectId objectId = (ObjectId) applicationKey.getId();
-
-	return objectId.toString();
+        if (application == null) {
+            return null;
+        }
+        Key<Application> applicationKey = this.save(application);
+        ObjectId objectId = (ObjectId) applicationKey.getId();
+        
+        return objectId.toString();
     }
     
     public boolean saveFile(File inputFile, String fileName) {
-	GridFS gridFs = new GridFS(mongoDB.getDataStore().getDB(), "roquito");
-	GridFSInputFile gfsFile;
-	try {
-	    gfsFile = gridFs.createFile(inputFile);
-	    gfsFile.setFilename(fileName);
-	    gfsFile.save();
-	    
-	    return true;
-	} catch (IOException e) {
-	    LOG.error("Error saving a file to GridFS", e);
-	}
-	return false;
+        GridFS gridFs = new GridFS(mongoDB.getDataStore().getDB(), "roquito");
+        GridFSInputFile gfsFile;
+        try {
+            gfsFile = gridFs.createFile(inputFile);
+            gfsFile.setFilename(fileName);
+            gfsFile.save();
+            
+            return true;
+        } catch (IOException e) {
+            LOG.error("Error saving a file to GridFS", e);
+        }
+        return false;
     }
-
+    
     public String getNextApplicationId() {
-	Long nextId = mongoDB.generateNextId("com.roquito.platform.model.Application");
-	return nextId.toString();
+        Long nextId = mongoDB.generateNextId("com.roquito.platform.model.Application");
+        return nextId.toString();
     }
 }

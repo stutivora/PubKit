@@ -36,42 +36,42 @@ import com.roquito.platform.persistence.RedisDB;
  */
 @Service
 public class UserService extends BasicDAO<User, String> {
-
+    
     private MongoDB mongoDB;
     private RedisDB redisDB;
-
+    
     @Autowired
     public UserService(MongoDB mongoDB, RedisDB redisDB) {
-	this(mongoDB.getDataStore());
-
-	this.mongoDB = mongoDB;
-	this.redisDB = redisDB;
+        this(mongoDB.getDataStore());
+        
+        this.mongoDB = mongoDB;
+        this.redisDB = redisDB;
     }
-
+    
     private UserService(Datastore ds) {
-	super(ds);
+        super(ds);
     }
-
+    
     public String saveUser(User user) {
-	if (user == null) {
-	    return null;
-	}
-	Key<User> userKey = this.save(user);
-	ObjectId userId = (ObjectId) userKey.getId();
-
-	return userId.toString();
+        if (user == null) {
+            return null;
+        }
+        Key<User> userKey = this.save(user);
+        ObjectId userId = (ObjectId) userKey.getId();
+        
+        return userId.toString();
     }
-
+    
     public User findByEmail(String email) {
-	return this.findOne("email", email);
+        return this.findOne("email", email);
     }
-
+    
     public User findByUserId(String userId) {
-	return this.findOne("userId", userId);
+        return this.findOne("userId", userId);
     }
-
+    
     public String getNextUserId() {
-	Long nextId = mongoDB.generateNextId("com.roquito.platform.model.User");
-	return nextId.toString();
+        Long nextId = mongoDB.generateNextId("com.roquito.platform.model.User");
+        return nextId.toString();
     }
 }

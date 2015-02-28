@@ -50,55 +50,55 @@ public class MongoDB {
      * MongoDB data store *
      */
     private Datastore datastore = null;
-
+    
     @Autowired
     public MongoDB(RoquitoConfig config) {
-	LOG.info("Initializing mongo db connection at host {" + config.getMongoHost() + "}");
-	initMongoDBConnection(config);
+        LOG.info("Initializing mongo db connection at host {" + config.getMongoHost() + "}");
+        initMongoDBConnection(config);
     }
-
+    
     public Datastore getDataStore() {
-	return datastore;
+        return datastore;
     }
-
+    
     public Long generateNextId(String collectionName) {
-	// find any existing counters for the type
-	Query<ObjectId> q = this.datastore.find(ObjectId.class, "_id", collectionName);
-	// create an update operation which increments the counter
-	UpdateOperations<ObjectId> update = this.datastore.createUpdateOperations(ObjectId.class).inc("counter");
-	// execute on server, if not found null is return,
-	// else the counter is incremented atomically
-	ObjectId counter = this.datastore.findAndModify(q, update);
-	if (counter == null) {
-	    // so just create one
-	    counter = new ObjectId(collectionName);
-	    this.datastore.save(counter);
-	}
-	// return new id
-	return counter.getCounter();
+        // find any existing counters for the type
+        Query<ObjectId> q = this.datastore.find(ObjectId.class, "_id", collectionName);
+        // create an update operation which increments the counter
+        UpdateOperations<ObjectId> update = this.datastore.createUpdateOperations(ObjectId.class).inc("counter");
+        // execute on server, if not found null is return,
+        // else the counter is incremented atomically
+        ObjectId counter = this.datastore.findAndModify(q, update);
+        if (counter == null) {
+            // so just create one
+            counter = new ObjectId(collectionName);
+            this.datastore.save(counter);
+        }
+        // return new id
+        return counter.getCounter();
     }
-
+    
     private void initMongoDBConnection(RoquitoConfig config) {
-	MongoClient mongoClient = null;
-	try {
-	    LOG.info("Connecting to MongoDB server");
-	    mongoClient = new MongoClient(config.getMongoHost(), config.getMongoPort());
-	    Morphia morphia = new Morphia();
-
-	    morphia.map(User.class);
-	    morphia.map(Application.class);
-	    morphia.map(ApplicationConfig.class);
-	    morphia.map(ApplicationUser.class);
-
-	    datastore = morphia.createDatastore(mongoClient, config.getMongoDatabase());
-	    datastore.ensureIndexes();
-	    
-	    LOG.info("MongoDB connection setup successful");
-
-	} catch (UnknownHostException e) {
-	    LOG.error("Error connecting to MongoDB database", e);
-	} catch (Exception e) {
-	    LOG.error("Error connecting to MongoDB database", e);
-	}
+        MongoClient mongoClient = null;
+        try {
+            LOG.info("Connecting to MongoDB server");
+            mongoClient = new MongoClient(config.getMongoHost(), config.getMongoPort());
+            Morphia morphia = new Morphia();
+            
+            morphia.map(User.class);
+            morphia.map(Application.class);
+            morphia.map(ApplicationConfig.class);
+            morphia.map(ApplicationUser.class);
+            
+            datastore = morphia.createDatastore(mongoClient, config.getMongoDatabase());
+            datastore.ensureIndexes();
+            
+            LOG.info("MongoDB connection setup successful");
+            
+        } catch (UnknownHostException e) {
+            LOG.error("Error connecting to MongoDB database", e);
+        } catch (Exception e) {
+            LOG.error("Error connecting to MongoDB database", e);
+        }
     }
 }

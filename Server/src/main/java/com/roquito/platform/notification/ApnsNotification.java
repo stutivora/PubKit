@@ -24,7 +24,7 @@ package com.roquito.platform.notification;
  * Created by puran
  */
 public class ApnsNotification implements PushNotification {
-
+    
     public String getApplicationId() {
         return null;
     }

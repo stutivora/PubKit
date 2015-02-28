@@ -32,7 +32,7 @@ import java.util.Date;
  */
 @Entity
 public class User {
-
+    
     @Id
     private ObjectId id;
     @Indexed(unique = true)
@@ -44,67 +44,67 @@ public class User {
     private String company;
     private String profilePicUrl;
     private Date createdDate;
-
+    
     public ObjectId getId() {
         return id;
     }
-
+    
     public void setId(ObjectId id) {
         this.id = id;
     }
-
+    
     public String getUserId() {
         return userId;
     }
-
+    
     public void setUserId(String userId) {
         this.userId = userId;
     }
-
+    
     public String getFullName() {
         return fullName;
     }
-
+    
     public void setFullName(String fullName) {
         this.fullName = fullName;
     }
-
+    
     public String getPassword() {
         return password;
     }
-
+    
     public String getCompany() {
         return company;
     }
-
+    
     public void setCompany(String company) {
         this.company = company;
     }
-
+    
     public void setPassword(String password) {
         this.password = password;
     }
-
+    
     public String getEmail() {
         return email;
     }
-
+    
     public void setEmail(String email) {
         this.email = email;
     }
-
+    
     public String getProfilePicUrl() {
         return profilePicUrl;
     }
-
+    
     public void setProfilePicUrl(String profilePicUrl) {
         this.profilePicUrl = profilePicUrl;
     }
-
+    
     public Date getCreatedDate() {
         return createdDate;
     }
-
+    
     public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
     }

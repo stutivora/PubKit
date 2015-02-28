@@ -37,40 +37,40 @@ import org.springframework.web.multipart.MultipartFile;
 @Controller
 public class FileUploadController extends BaseController {
     private static final Logger LOG = LoggerFactory.getLogger(FileUploadController.class);
-
+    
     @RequestMapping(value = "/upload", method = RequestMethod.GET)
     public @ResponseBody String provideUploadInfo() {
-	return "You can upload a file by posting to this same URL.";
+        return "You can upload a file by posting to this same URL.";
     }
-
+    
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
     public @ResponseBody String handleFileUpload(@RequestParam("name") String fileName,
-	    @RequestParam("file") MultipartFile multipartFile) {
-	LOG.debug("Upload request received for file size:" + multipartFile.getSize());
-	validateApiRequest(request, true);
-	
-	if (!multipartFile.isEmpty()) {
-	    try {
-		File inputFile = new File(multipartFile.getOriginalFilename());
-		multipartFile.transferTo(inputFile);
-		if (inputFile != null) {
-		    if (!".p12".endsWith(multipartFile.getOriginalFilename()) || 
-			    !".cert".endsWith(multipartFile.getOriginalFilename())) {
-			LOG.debug("Invalid file upload type received");
-			return "Invalid file type";
-		    }
-		    boolean result = applicationService.saveFile(inputFile, fileName);
-		    if (result) {
-			return "Successfully uploaded " + fileName + "!";
-		    }
-		}
-		return "Failed to upload " + fileName + ". Internal server error";
-	    } catch (Exception e) {
-		return "Failed to upload " + fileName + " => " + e.getMessage();
-	    }
-	} else {
-	    return "Failed to upload " + fileName + " because the file was empty.";
-	}
+            @RequestParam("file") MultipartFile multipartFile) {
+        LOG.debug("Upload request received for file size:" + multipartFile.getSize());
+        validateApiRequest(request, true);
+        
+        if (!multipartFile.isEmpty()) {
+            try {
+                File inputFile = new File(multipartFile.getOriginalFilename());
+                multipartFile.transferTo(inputFile);
+                if (inputFile != null) {
+                    if (!".p12".endsWith(multipartFile.getOriginalFilename())
+                            || !".cert".endsWith(multipartFile.getOriginalFilename())) {
+                        LOG.debug("Invalid file upload type received");
+                        return "Invalid file type";
+                    }
+                    boolean result = applicationService.saveFile(inputFile, fileName);
+                    if (result) {
+                        return "Successfully uploaded " + fileName + "!";
+                    }
+                }
+                return "Failed to upload " + fileName + ". Internal server error";
+            } catch (Exception e) {
+                return "Failed to upload " + fileName + " => " + e.getMessage();
+            }
+        } else {
+            return "Failed to upload " + fileName + " because the file was empty.";
+        }
     }
-
+    
 }

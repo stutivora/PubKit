@@ -44,40 +44,40 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 @RequestMapping("/push")
 public class PushController extends BaseController {
-
+    
     private static final Logger log = LoggerFactory.getLogger(PushController.class);
-
+    
     @Autowired
     private HttpServletRequest request;
-
+    
     @Autowired
     private PusherService pusherService;
-
+    
     @RequestMapping(value = "/gcm", method = RequestMethod.POST)
     public String create(@RequestBody GcmNotification gcmNotification) {
-	if (gcmNotification == null) {
-	    log.debug("Null gcm notification data received");
-	    new RoquitoServerException("Invalid request");
-	}
-	String applicationId = gcmNotification.getApplicationId();
-	validateApiRequest(request, applicationId);
-
-	pusherService.sendGcmPushNotification(gcmNotification);
-
-	return "OK";
+        if (gcmNotification == null) {
+            log.debug("Null gcm notification data received");
+            new RoquitoServerException("Invalid request");
+        }
+        String applicationId = gcmNotification.getApplicationId();
+        validateApiRequest(request, applicationId);
+        
+        pusherService.sendGcmPushNotification(gcmNotification);
+        
+        return "OK";
     }
-
+    
     @RequestMapping(value = "/apns", method = RequestMethod.POST)
     public String create(@RequestBody ApnsNotification apnsNotification) {
-	if (apnsNotification == null) {
-	    log.debug("Null apns notification data received");
-	    new RoquitoServerException("Invalid request");
-	}
-	String applicationId = apnsNotification.getApplicationId();
-	validateApiRequest(request, applicationId);
-
-	pusherService.sendApnsPushNotification(apnsNotification);
-	log.info("Added APNS notification message to the pusher queue");
-	return "OK";
+        if (apnsNotification == null) {
+            log.debug("Null apns notification data received");
+            new RoquitoServerException("Invalid request");
+        }
+        String applicationId = apnsNotification.getApplicationId();
+        validateApiRequest(request, applicationId);
+        
+        pusherService.sendApnsPushNotification(apnsNotification);
+        log.info("Added APNS notification message to the pusher queue");
+        return "OK";
     }
 }

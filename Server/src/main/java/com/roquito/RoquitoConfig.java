@@ -30,9 +30,12 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
  * Created by puran
  */
 @Configuration
-@PropertySource(value={"file:${ROQUITO_CONF_DIR}/application.properties"}, ignoreResourceNotFound = false)
+@PropertySource(value = { "file:${ROQUITO_CONF_DIR}/application.properties" }, ignoreResourceNotFound = false)
 public class RoquitoConfig {
-
+    
+    @Value("${app.environment}")
+    private String environment;
+    
     @Value("${redisdb.host}")
     private String redisHost;
     
@@ -68,49 +71,57 @@ public class RoquitoConfig {
     
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertyPlaceholderConfigurer() {
-	return new PropertySourcesPlaceholderConfigurer();
+        return new PropertySourcesPlaceholderConfigurer();
+    }
+    
+    public String getEnvironment() {
+        return environment;
+    }
+    
+    public boolean isDevEnvironment() {
+        return "dev".equalsIgnoreCase(environment);
     }
 
     public String getRedisHost() {
         return redisHost;
     }
-
+    
     public int getRedisPort() {
         return redisPort;
     }
-
+    
     public int getRedisTimeout() {
         return redisTimeout;
     }
-
+    
     public int getRedisDatabase() {
         return redisDatabase;
     }
-
+    
     public String getRedisPassword() {
         return redisPassword;
     }
-
+    
     public String getMongoHost() {
         return mongoHost;
     }
-
+    
     public int getMongoPort() {
         return mongoPort;
     }
-
+    
     public String getMongoDatabase() {
         return mongoDatabase;
     }
-
+    
     public boolean isInMemory() {
         return inMemory;
     }
-
+    
     public String getMapdbFilePath() {
         return mapdbFilePath;
     }
-
+    
     public String getMapdbEncryptedPassword() {
         return mapdbEncryptedPassword;
     }

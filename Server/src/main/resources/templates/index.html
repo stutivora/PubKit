@@ -14,8 +14,6 @@
 	
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css"/>
-    <!-- Optional theme -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css"/>
 	<link rel="stylesheet" href="css/style.css"/>
     
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -61,17 +59,15 @@
 </script>
 
 <script type="text/x-handlebars" id="index">
-	<div class="banner">
-<div class="row">
-				<div class="col-lg-12">				
-				<h1>Welcome to Roquito</h1>
-				<h2>Messaging platform for your mobile apps</h2><br><br>
-				
-				<a class="btn btn-primary btn-lg" href="/#/signup" role="button" id="signup-header-cta">Get Started</a>
-				</div>
-			</div>	
+<div class="banner">
+	<div class="row">
+		<div class="col-lg-12">				
+			<h1>Welcome to Roquito</h1>
+			<h2>Messaging platform for your mobile apps</h2><br><br>
+			<a class="btn btn-primary btn-lg" href="/#/signup" role="button" id="signup-header-cta">Get Started</a>
+		</div>
 	</div>	
-
+</div>	
 </script>
 
 <script type="text/x-handlebars" id="login">
@@ -80,16 +76,19 @@
   		<div class="col-md-4"></div>
   		<div class="col-md-4 signup-form">
 			<h2>Log In</h2>
+			{{#if errorMessage}}
+	        	<div class="alert alert-danger">{{errorMessage}}</div>
+	    	{{/if}}
 			<form>
 				<div class="form-group">
-					<input type="email" class="form-control" id="email" placeholder="Enter email"/>
+					{{input valueBinding="login.email" class="form-control" id="email" placeholder="Email"}}
 				</div>
 				<div class="form-group">
-					<input type="password" class="form-control" id="password" placeholder="Password"/>
+					{{input valueBinding="login.password" class="form-control" type="password" id="password" placeholder="Password"}}
 				</div>
 				<div class="form-group pull-right">
 					<button {{action 'cancel'}} class="btn btn-cancel">Cancel</button>
-					<button {{action 'submit'}} class="btn btn-login">Log In</button>
+					<button {{action 'login'}} class="btn btn-login">Log In</button>
 				</div>
 			</form>
 		</div>
@@ -105,7 +104,6 @@
 		<div class="col-md-2"></div>
 	</div>
 </div>
-	
 </script>
 
 <script type="text/x-handlebars" id="signup">
@@ -145,6 +143,9 @@
 </div>
 </script>
 
+<script type="text/x-handlebars" id="user">
+	<h1>Welcome User</h1>
+</script>
 
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
@@ -157,6 +158,8 @@
 <script src="js/router.js"></script>
 <script src="js/models/model.js"></script>
 <script src="js/controllers/signup_controller.js"></script>
+<script src="js/controllers/login_controller.js"></script>
 <script src="js/routes/signup_route.js"></script>
+<script src="js/routes/login_route.js"></script>
 </body>
 </html>

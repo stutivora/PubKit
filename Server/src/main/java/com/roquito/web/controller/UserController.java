@@ -24,7 +24,6 @@ import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,88 +44,85 @@ import com.roquito.web.response.UserResponse;
 @RestController
 @RequestMapping("/users")
 public class UserController extends BaseController {
-
+    
     private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
-
+    
     @RequestMapping(method = RequestMethod.POST)
     public UserResponse create(@RequestBody UserDto user) {
-	validateApiRequest(request, false);
-
-	if (user == null || user.getEmail() == null || user.getEmail().isEmpty() || user.getPassword() == null
-		|| user.getPassword().isEmpty() || user.getFullName() == null || user.getFullName().isEmpty()) {
-	    LOG.debug("Missing required user information. Error creating new user account");
-	    return new UserResponse(null, true, "Missing required parameters");
-	}
-	User savedUser = userService.findByEmail(user.getEmail());
-	if (savedUser == null) {
-	    User dbUser = new User();
-	    dbUser.setEmail(user.getEmail());
-	    String passwordHash = RoquitoUtils.getPasswordHash(user.getPassword());
-	    if (passwordHash != null) {
-		dbUser.setPassword(passwordHash);
-	    } else {
-		throw new RoquitoServerException("Unknown error. Please try again later.");
-	    }
-	    String userId = userService.getNextUserId();
-	    dbUser.setUserId(userId);
-	    dbUser.setFullName(user.getFullName());
-	    dbUser.setCompany(user.getCompany());
-	    dbUser.setProfilePicUrl(user.getProfilePicUrl());
-	    dbUser.setCreatedDate(new Date());
-
-	    String objectId = userService.saveUser(dbUser);
-	    if (objectId != null) {
-		user.setUserId(userId);
-		return new UserResponse(user);
-	    } else {
-		LOG.debug("Error saving user data with response:" + objectId);
-		throw new RoquitoServerException("Server error. Please try again later.");
-	    }
-	} else {
-	    LOG.info("User already exists. Not creating new account");
-	    return new UserResponse(null, true, "User already exists");
-	}
+        if (user == null || user.getEmail() == null || user.getEmail().isEmpty() || user.getPassword() == null
+                || user.getPassword().isEmpty() || user.getFullName() == null || user.getFullName().isEmpty()) {
+            LOG.debug("Missing required user information. Error creating new user account");
+            return new UserResponse(null, true, "Missing required parameters");
+        }
+        User savedUser = userService.findByEmail(user.getEmail());
+        if (savedUser == null) {
+            User dbUser = new User();
+            dbUser.setEmail(user.getEmail());
+            String passwordHash = RoquitoUtils.getPasswordHash(user.getPassword());
+            if (passwordHash != null) {
+                dbUser.setPassword(passwordHash);
+            } else {
+                throw new RoquitoServerException("Unknown error. Please try again later.");
+            }
+            String userId = userService.getNextUserId();
+            dbUser.setUserId(userId);
+            dbUser.setFullName(user.getFullName());
+            dbUser.setCompany(user.getCompany());
+            dbUser.setProfilePicUrl(user.getProfilePicUrl());
+            dbUser.setCreatedDate(new Date());
+            
+            String objectId = userService.saveUser(dbUser);
+            if (objectId != null) {
+                user.setUserId(userId);
+                return new UserResponse(user);
+            } else {
+                LOG.debug("Error saving user data with response:" + objectId);
+                throw new RoquitoServerException("Server error. Please try again later.");
+            }
+        } else {
+            LOG.info("User already exists. Not creating new account");
+            return new UserResponse(null, true, "User already exists");
+        }
     }
-
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    
+    @RequestMapping(value = "login", method = RequestMethod.POST)
     public LoginResponse login(@RequestBody UserLoginDto userLoginDto) {
-	validateApiRequest(request, false);
-	if (userLoginDto == null || userLoginDto.getEmail() == null || userLoginDto.getEmail().isEmpty()
-		|| userLoginDto.getPassword() == null || userLoginDto.getPassword().isEmpty()) {
-	    return new LoginResponse("Missing required input data");
-	}
-	User user = userService.findByEmail(userLoginDto.getEmail());
-	if (user == null) {
-	    return new LoginResponse("User not recognized");
-	} else {
-	    boolean matches = RoquitoUtils.comparePasswords(userLoginDto.getPassword(), user.getPassword());
-	    if (matches) {
-		String accessToken = keyGenerator.getSecureSessionId();
-		boolean success = sessionService.saveAccessToken(accessToken, userLoginDto.getEmail());
-		if (success) {
-		    return new LoginResponse(user.getUserId(), accessToken);
-		} else {
-		    LOG.error("Error saving access token");
-		    throw new RoquitoServerException("Unknown error. Try again later.");
-		}
-	    }
-	}
-	sendErrorResponse(response, HttpStatus.BAD_REQUEST.value(), "Wrong credentials");
-	return null;
+        if (userLoginDto == null || userLoginDto.getEmail() == null || userLoginDto.getEmail().isEmpty()
+                || userLoginDto.getPassword() == null || userLoginDto.getPassword().isEmpty()) {
+            return new LoginResponse("Missing required input data");
+        }
+        User user = userService.findByEmail(userLoginDto.getEmail());
+        if (user == null) {
+            return new LoginResponse("User not recognized");
+        } else {
+            boolean matches = RoquitoUtils.comparePasswords(userLoginDto.getPassword(), user.getPassword());
+            if (matches) {
+                String accessToken = keyGenerator.getSecureSessionId();
+                boolean success = sessionService.saveAccessToken(accessToken, userLoginDto.getEmail());
+                if (success) {
+                    return new LoginResponse(user.getUserId(), accessToken);
+                } else {
+                    LOG.error("Error saving access token");
+                    throw new RoquitoServerException("Unknown error. Try again later.");
+                }
+            } else {
+                return new LoginResponse("Username and password doesn't match");
+            }
+        }
     }
-
+    
     @RequestMapping(value = "{userId}", method = RequestMethod.GET)
     public UserDto getUser(@PathVariable("userId") String userId) {
-	return null;
+        return null;
     }
-
+    
     @RequestMapping(method = RequestMethod.DELETE, value = "{userId}")
     public void delete(@PathVariable String userId) {
-
+        
     }
-
+    
     @RequestMapping(method = RequestMethod.PUT, value = "{userId}")
     public UserDto update(@PathVariable String userId, @RequestBody UserDto user) {
-	return null;
+        return null;
     }
 }

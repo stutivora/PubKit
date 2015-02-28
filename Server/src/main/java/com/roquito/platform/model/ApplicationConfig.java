@@ -31,19 +31,19 @@ import java.util.Map;
 public class ApplicationConfig {
     private String type;
     private Map<String, String> configParams;
-
+    
     public String getType() {
         return type;
     }
-
+    
     public void setType(String type) {
         this.type = type;
     }
-
+    
     public Map<String, String> getConfigParams() {
         return configParams;
     }
-
+    
     public void setConfigParams(Map<String, String> configParams) {
         this.configParams = configParams;
     }

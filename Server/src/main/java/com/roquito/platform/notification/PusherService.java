@@ -55,47 +55,48 @@ public class PusherService {
     
     @Autowired
     private UserService userService;
-
+    
     @SuppressWarnings("unchecked")
     @PostConstruct
     public void start() {
-	LOG.info("Initializing push service");
-	
+        LOG.info("Initializing push service");
+        
         // Executor that will be used to construct new threads for consumers
         Executor executor = Executors.newCachedThreadPool();
-
+        
         // Specify the size of the ring buffer, must be power of 2.
         int bufferSize = 1024;
-
+        
         // The factory for the event
         PushEventFactory pushEventFactory = new PushEventFactory();
-
+        
         // Construct the Disruptor
-        pushEventDisruptor = new Disruptor<>(pushEventFactory, bufferSize, executor,
-                ProducerType.SINGLE, new BlockingWaitStrategy());
-
+        pushEventDisruptor = new Disruptor<>(pushEventFactory, bufferSize, executor, ProducerType.SINGLE,
+                new BlockingWaitStrategy());
+        
         // Connect the handler
-        EventHandlerGroup<PushEvent> handlerGroup = pushEventDisruptor.handleEventsWith(new PushEventHandler(applicationService));
+        EventHandlerGroup<PushEvent> handlerGroup = pushEventDisruptor.handleEventsWith(new PushEventHandler(
+                applicationService));
         if (handlerGroup == null) {
             
         }
         // Start the Disruptor, starts all threads running
         pushEventDisruptor.start();
-
+        
         // Get the ring buffer from the Disruptor to be used for publishing.
         RingBuffer<PushEvent> ringBuffer = pushEventDisruptor.getRingBuffer();
-
+        
         // Get the ring buffer from the Disruptor to be used for publishing.
         pushEventProducer = new PushEventProducer(ringBuffer);
-
+        
         pusherRunning = true;
         LOG.info("Push service initialized");
     }
-
+    
     public void sendGcmPushNotification(GcmNotification gcmNotification) {
         pushEventProducer.publishGcmPushNotification(gcmNotification);
     }
-
+    
     public void sendApnsPushNotification(ApnsNotification apnsNotification) {
         pushEventProducer.publishApnsPushNotification(apnsNotification);
     }
@@ -106,5 +107,5 @@ public class PusherService {
     public boolean isPusherRunning() {
         return pusherRunning;
     }
-
+    
 }

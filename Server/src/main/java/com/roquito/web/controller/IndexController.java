@@ -34,10 +34,10 @@ import java.util.Map;
 public class IndexController extends BaseController {
     
     private static final Logger LOG = LoggerFactory.getLogger(IndexController.class);
-
+    
     @RequestMapping("/")
     public String index(Map<String, Object> model) {
-	LOG.debug("Returning index page");
+        LOG.debug("Returning index page");
         return "index";
     }
     

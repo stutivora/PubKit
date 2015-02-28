@@ -12,9 +12,9 @@ import com.roquito.RoquitoApplication;
 @SpringApplicationConfiguration(classes = RoquitoApplication.class)
 @WebAppConfiguration
 public class RoquitoApplicationTests {
-
-	@Test
-	public void contextLoads() {
-	}
-
+    
+    @Test
+    public void contextLoads() {
+    }
+    
 }

@@ -42,40 +42,44 @@ public class RedisDB {
     
     @Autowired
     public RedisDB(RoquitoConfig config) {
-	LOG.info("Initializing redis db connection at host {" + config.getRedisHost() + "}");
-	jedisPool = new JedisPool(new JedisPoolConfig(), 
-		config.getRedisHost(), 
-		config.getRedisPort(), 
-		config.getRedisTimeout(),
-		config.getRedisPassword(), 
-		config.getRedisDatabase());
-	if (jedisPool != null) {
-	    LOG.info("Connected to redis db at {"+config.getRedisHost()+"}");
-	} else {
-	    LOG.error("Couldn't connect to redis db at {"+config.getRedisHost()+"}");
-	}
+        LOG.info("Initializing redis db connection at host {" + config.getRedisHost() + "}");
+        if (config.isDevEnvironment()) {
+            jedisPool = new JedisPool(new JedisPoolConfig(), config.getRedisHost());
+        } else {
+            jedisPool = new JedisPool(new JedisPoolConfig(), 
+                        config.getRedisHost(), 
+                        config.getRedisPort(), 
+                        config.getRedisTimeout(),
+                        config.getRedisPassword(), 
+                        config.getRedisDatabase());
+        }
+        if (jedisPool != null) {
+            LOG.info("Connected to redis db at {" + config.getRedisHost() + "}");
+        } else {
+            LOG.error("Couldn't connect to redis db at {" + config.getRedisHost() + "}");
+        }
     }
-
+    
     public Jedis getConnection() {
-	return jedisPool.getResource();
+        return jedisPool.getResource();
     }
     
     public void closeConnection(Jedis jedis) {
-	jedisPool.returnResource(jedis);
+        jedisPool.returnResource(jedis);
     }
-
+    
     public static enum Keys {
-
-	KEY_ROQUITO_USERS_COUNT("roquito-users-count");
-
-	private String value;
-
-	Keys(String value) {
-	    this.value = value;
-	}
-
-	public String value() {
-	    return this.value;
-	}
+        
+        KEY_ROQUITO_USERS_COUNT("roquito-users-count");
+        
+        private String value;
+        
+        Keys(String value) {
+            this.value = value;
+        }
+        
+        public String value() {
+            return this.value;
+        }
     }
 }
