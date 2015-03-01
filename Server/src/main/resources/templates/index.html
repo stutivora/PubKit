@@ -34,26 +34,7 @@
 
 <script type="text/x-handlebars">
 	<nav class="nav">
-  		<div class="container">
-    		<div class="navbar-header">
-      			<a class="navbar-brand" href="#">
-        			<p class="logo">Roquito</p>
-      			</a>
-    		</div>
-			<ul class="nav navbar-nav navbar-right">
-				{{#if hasToken}}
-					<li><a href="#" class="logout-text">Hello There,</a></li>
-				{{/if}}
-				<li>{{#link-to more}}Learn More{{/link-to}}</li>
-				<li>{{#link-to more}}Contact Us{{/link-to}}</li>
- 				{{#if hasToken}}
-  					<li>{{#link-to 'logout' class="logout-link"}}Logout{{/link-to}}</li>
-				{{else}}
-  					<li>{{#link-to 'login'}}Login{{/link-to}}</li>
-					<li>{{#link-to 'signup'}}Sign Up{{/link-to}}</li>
-				{{/if}}	
-			</ul>
-  		</div>
+  		{{render "navbar"}}
 	</nav>
 	<div>
 		<div class="container">
@@ -72,6 +53,30 @@
     </footer>
 </script>
 
+<script type="text/x-handlebars" id="navbar">
+<div class="container">
+    		<div class="navbar-header">
+      			<a class="navbar-brand" href="#">
+        			<p class="logo">Roquito</p>
+      			</a>
+    		</div>
+			{{shit}}
+			<ul class="nav navbar-nav navbar-right">
+				{{#if hasToken}}
+					<li><a href="#" class="logout-text">Hello There,</a></li>
+				{{/if}}
+				<li>{{#link-to more}}Learn More{{/link-to}}</li>
+				<li>{{#link-to more}}Contact Us{{/link-to}}</li>
+ 				{{#if hasToken}}
+  					<li>{{#link-to 'logout' class="logout-link"}}Logout{{/link-to}}</li>
+				{{else}}
+  					<li>{{#link-to 'login'}}Login{{/link-to}}</li>
+					<li>{{#link-to 'signup'}}Sign Up{{/link-to}}</li>
+				{{/if}}	
+			</ul>
+  		</div>
+</script>
+  		
 <script type="text/x-handlebars" id="index">
 <div class="banner">
 	<div class="row">
@@ -177,5 +182,6 @@
 	<script src="js/controllers/login_controller.js"></script>
 	<script src="js/routes/signup_route.js"></script>
 	<script src="js/routes/login_route.js"></script>
+	<script src="js/routes/user_route.js"></script>
 </body>
 </html>

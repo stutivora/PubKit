@@ -8,3 +8,13 @@ App.LoginRoute = Ember.Route.extend({
 		controller.set("errorMessage", "");
 	}
 });
+
+App.LogoutRoute = Ember.Route.extend({
+	beforeModel: function(){
+		App.Session.set('token', '');
+		var navController = this.controllerFor('navbar');
+		navController.send('reloadNav');
+		
+		this.transitionTo('/');
+	}
+});

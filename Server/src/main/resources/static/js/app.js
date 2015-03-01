@@ -1,44 +1,18 @@
 App = Ember.Application.create();
 
-App.ApplicationRoute = Ember.Route.extend({
-	setupController: function(controller) {
-	    controller.set('hasToken', App.Session.get('token'));
-	}
-});
-
-App.ApplicationController = Ember.Controller.extend({
-});
-
-App.AuthenticatedRoute = Ember.Route.extend({
-	beforeModel: function(transition) {
-		if (!App.Session.get('token')) {
-			this.redirectToLogin(transition);
-		}
-	},
-	redirectToLogin: function(transition) {
-		var loginController = this.controllerFor('login');
-		loginController.set('attemptedTransition', transition);
-		
-		this.transitionTo('login');
-	}
-});
-
-App.IndexRoute = Ember.Route.extend({
-	setupController : function(controller) {
-		//setup properties related to index controller!
-		controller.set("test", "puran is awesome");
-	}
-});
-
-App.IndexController = Ember.Controller.extend({
-});
 
 App.Session = Ember.Object.extend({
-	user: {},
+	userId: "",
+	userName:"",
 	token: localStorage.token,
 	tokenChanged: function() {
 		localStorage.token = this.get('token');
-	}.observes('token')
+	}.observes('token'),
+	
+	isLoggedIn : function() {
+		return (this.get('token') != undefined && this.get('token') != '' && this.get('token') != null);
+	}
+	
 }).create();
 
 App.Validator = Ember.Object.extend({
@@ -84,3 +58,30 @@ App.NetworkService = Ember.Object.extend({
 		
 	}
 }).create();
+
+App.ApplicationRoute = Ember.Route.extend({
+});
+
+App.ApplicationController = Ember.Controller.extend({
+});
+
+App.NavbarController = Ember.ArrayController.extend({
+	init: function() {
+	    this.set('hasToken', (App.Session.get('token') != '' && App.Session.get('token') != null));
+	},
+	actions: {
+		reloadNav: function(){
+			this.set('hasToken', (App.Session.get('token') != '' && App.Session.get('token') != null));
+		}
+	 }
+});
+
+App.IndexRoute = Ember.Route.extend({
+	setupController : function(controller) {
+		//setup properties related to index controller!
+		controller.set("test", "puran is awesome");
+	}
+});
+
+App.IndexController = Ember.Controller.extend({
+});
