@@ -5,6 +5,7 @@ App.Session = Ember.Object.extend({
 	userId: "",
 	userName:"",
 	token: localStorage.token,
+	
 	tokenChanged: function() {
 		localStorage.token = this.get('token');
 	}.observes('token'),
