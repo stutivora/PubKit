@@ -59,6 +59,14 @@ App.NetworkService = Ember.Object.extend({
 	}
 }).create();
 
+App.AuthRoute = Ember.Route.extend({
+	beforeModel:function() {
+		if (App.Session.isLoggedIn()) {
+			this.transitionTo('/user');
+		}
+	}
+});
+
 App.ApplicationRoute = Ember.Route.extend({
 });
 

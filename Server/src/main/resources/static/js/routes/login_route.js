@@ -1,4 +1,4 @@
-App.LoginRoute = Ember.Route.extend({
+App.LoginRoute = App.AuthRoute.extend({
 	model: function(){
 		return App.Login.create()
 	},

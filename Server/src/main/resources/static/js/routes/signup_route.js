@@ -1,4 +1,4 @@
-App.SignupRoute = Ember.Route.extend({
+App.SignupRoute = App.AuthRoute.extend({
 	beforeModel:function() {
 		if (App.Session.isLoggedIn()) {
 			this.transitionTo('/user');
