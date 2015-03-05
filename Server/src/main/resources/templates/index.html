@@ -62,12 +62,8 @@
     		</div>
 			{{shit}}
 			<ul class="nav navbar-nav navbar-right">
-				{{#if hasToken}}
-					<li><a href="#" class="logout-text">Hello There,</a></li>
-				{{/if}}
-				<li>{{#link-to more}}Learn More{{/link-to}}</li>
-				<li>{{#link-to more}}Contact Us{{/link-to}}</li>
  				{{#if hasToken}}
+					<li><a href="#" class="logout-text">Hello There,</a></li>
   					<li>{{#link-to 'logout' class="logout-link"}}Logout{{/link-to}}</li>
 				{{else}}
   					<li>{{#link-to 'login'}}Login{{/link-to}}</li>
@@ -93,7 +89,7 @@
 <div class="container login-container">
 	<div class="row">
   		<div class="col-md-4"></div>
-  		<div class="col-md-4 signup-form">
+  		<div class="col-md-4 roquito-form">
 			<h2>Log In</h2>
 			{{#if errorMessage}}
 	        	<div class="alert alert-danger">{{errorMessage}}</div>
@@ -129,7 +125,7 @@
 <div class="container">
 	<div class="row">
   		<div class="col-md-4"></div>
-  		<div class="col-md-4 signup-form">
+  		<div class="col-md-4 roquito-form">
 		   	<h2>Sign Up</h2>
 			<p class="lead">Already got an account? {{#link-to 'login'}}Login here{{/link-to}}</p>
 			{{#if errorMessage}}
@@ -162,9 +158,65 @@
 </div>
 </script>
 
-	<script type="text/x-handlebars" id="user">
-	<h1>Welcome User</h1>
+<script type="text/x-handlebars" id="user">
+	<div class="container">
+		{{outlet}}
+	</div>
 </script>
+
+<script type="text/x-handlebars" id="user/index">
+	<div class="clearfix"><br></div>
+	<div class="row">
+		<div class="col-md-8"><h2>My Applications</h2></div>
+		<div class="col-md-4 new-app-link">
+			{{#link-to 'apps.new'}}New Application{{/link-to}}
+		</div>
+	</div>
+	<div class="row">
+		{{#if applications}}
+			<ul>
+  				{{#each application in applications}}
+    				<li>APP</li>
+  				{{/each}}
+			</ul>
+    	{{else}}
+			<div class="col-xs-12 col-md-8"><br><p class="lead">You do not have any applications yet. You can create new applications and configure them.</p></div>
+  			<div class="col-xs-6 col-md-4"></div>
+		{{/if}}
+	</div>
+</script>
+
+<script type="text/x-handlebars" id="apps/new">
+	
+	<div class="row">
+  		<div class="col-md-4"></div>
+  		<div class="col-md-4 roquito-form">
+		   	<h2>New Application</h2>
+			<p>All fields are required</p>
+			<br/>
+			{{#if errorMessage}}
+	        	<div class="alert alert-danger">{{errorMessage}}</div>
+	    	{{/if}}
+			<form {{action "registerApplication" on="submit"}}>
+	  			<div class="form-group">
+					{{input valueBinding="application.applicationName" class="form-control" id="name" placeholder="Application Name"}}
+	  			</div>
+				<div class="form-group">
+					{{input valueBinding="application.applicationDescription" class="form-control" id="description" placeholder="Short Description"}}
+	  			</div>
+				<div class="form-group">
+	    			{{input valueBinding="application.websiteLink" class="form-control" id="website" placeholder="Website"}}
+	  			</div>
+				<div class="form-group pull-right">
+					<button {{action 'cancel'}} class="btn btn-cancel">Cancel</button>
+					<button {{action 'registerApplication'}} class="btn btn-primary">Register</button>
+				</div>
+			</form>		
+		</div>
+  		<div class="col-md-4"></div>
+	</div>
+</script>
+
 
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 	<script
@@ -180,6 +232,7 @@
 	<script src="js/models/model.js"></script>
 	<script src="js/controllers/signup_controller.js"></script>
 	<script src="js/controllers/login_controller.js"></script>
+	<script src="js/controllers/apps_controller.js"></script>
 	<script src="js/routes/signup_route.js"></script>
 	<script src="js/routes/login_route.js"></script>
 	<script src="js/routes/user_route.js"></script>

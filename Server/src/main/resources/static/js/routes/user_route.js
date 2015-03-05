@@ -1,4 +1,4 @@
-App.UserRoute = Ember.Route.extend({
+App.UserIndexRoute = Ember.Route.extend({
 	renderTemplate: function() {
 		this._super(this, arguments);
 	    
