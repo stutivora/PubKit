@@ -63,8 +63,8 @@
 			{{shit}}
 			<ul class="nav navbar-nav navbar-right">
  				{{#if hasToken}}
-					<li><a href="#" class="logout-text">Hello There,</a></li>
-  					<li>{{#link-to 'logout' class="logout-link"}}Logout{{/link-to}}</li>
+					<li><p class="logout-text">Hello There,</p></li>
+  					<li>{{#link-to 'logout' class="logout-link"}}Sign out{{/link-to}}</li>
 				{{else}}
   					<li>{{#link-to 'login'}}Login{{/link-to}}</li>
 					<li>{{#link-to 'signup'}}Sign Up{{/link-to}}</li>
@@ -180,7 +180,7 @@
   				{{/each}}
 			</ul>
     	{{else}}
-			<div class="col-xs-12 col-md-8"><br><p class="lead">You do not have any applications yet. You can create new applications and configure them.</p></div>
+			<div class="col-xs-12 col-md-8"><br><p class="lead info-message">You do not have any applications yet. You can create new applications and configure them.</p></div>
   			<div class="col-xs-6 col-md-4"></div>
 		{{/if}}
 	</div>
