@@ -100,7 +100,7 @@ public class UserController extends BaseController {
                 String accessToken = keyGenerator.getSecureSessionId();
                 boolean success = sessionService.saveAccessToken(userLoginDto.getEmail(), accessToken);
                 if (success) {
-                    return new LoginResponse(user.getUserId(), accessToken);
+                    return new LoginResponse(user.getUserId(), user.getFullName(), accessToken);
                 } else {
                     LOG.error("Error saving access token");
                     throw new RoquitoServerException("Unknown error. Try again later.");

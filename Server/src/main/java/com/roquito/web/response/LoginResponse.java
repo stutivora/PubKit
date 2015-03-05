@@ -25,20 +25,22 @@ package com.roquito.web.response;
  */
 public class LoginResponse {
     private String userId;
+    private String userName;
     private String accessToken;
     private boolean error;
     private String errorMessage;
     
-    public LoginResponse(String userId, String accessToken) {
-        this(userId, accessToken, false, null);
+    public LoginResponse(String userId, String userName, String accessToken) {
+        this(userId, userName, accessToken, false, null);
     }
     
     public LoginResponse(String errorMessage) {
-        this(null, null, true, errorMessage);
+        this(null, null, null, true, errorMessage);
     }
     
-    public LoginResponse(String userId, String accessToken, boolean error, String errorMessage) {
+    public LoginResponse(String userId, String userName, String accessToken, boolean error, String errorMessage) {
         this.userId = userId;
+        this.userName = userName;
         this.accessToken = accessToken;
         this.error = error;
         this.errorMessage = errorMessage;
@@ -52,6 +54,14 @@ public class LoginResponse {
         this.userId = userId;
     }
     
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
     public String getAccessToken() {
         return accessToken;
     }

@@ -11,3 +11,14 @@ App.Login = Ember.Object.extend({
     email : "",
     password:"",
 });
+
+App.Application = Ember.Object.extend({
+	applicationId : "",
+    applicationName : "",
+    applicationDescription : "",
+    userId : "",
+    applicationKey : "",
+    applicationSecret : "",
+    websiteLink : "",
+    pricingPlan : "",
+});

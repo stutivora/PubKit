@@ -1,5 +1,17 @@
 App = Ember.Application.create();
 
+App.Router.map(function() {
+	this.route('login');
+	this.route('signup');
+	this.route('logout');
+	
+	this.resource('user', function() {
+		this.route('index', { path: '/' });
+	    this.resource('apps', function() {
+	    	this.route('new');
+	    });
+	});
+});
 
 App.Session = Ember.Object.extend({
 	userId: "",
@@ -12,6 +24,18 @@ App.Session = Ember.Object.extend({
 	
 	isLoggedIn : function() {
 		return (this.get('token') != undefined && this.get('token') != '' && this.get('token') != null);
+	},
+	
+	saveUserInfo : function(loginResponse) {
+		this.set('token', loginResponse.accessToken);
+		this.set('userId', loginResponse.userId);
+		this.set('userName', loginResponse.userName);
+	},
+	
+	clearSession : function() {
+		this.set('token', '');
+		this.set('userId', '');
+		this.set('userName', '');
 	}
 	
 }).create();
@@ -59,14 +83,6 @@ App.NetworkService = Ember.Object.extend({
 		
 	}
 }).create();
-
-App.AuthRoute = Ember.Route.extend({
-	beforeModel:function() {
-		if (App.Session.isLoggedIn()) {
-			this.transitionTo('/user');
-		}
-	}
-});
 
 App.ApplicationRoute = Ember.Route.extend({
 });
