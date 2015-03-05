@@ -9,6 +9,7 @@ App.Router.map(function() {
 		this.route('index', { path: '/' });
 	    this.resource('apps', function() {
 	    	this.route('new');
+	    	this.route('view');
 	    });
 	});
 });
@@ -26,24 +27,31 @@ App.Validator = Ember.Object.extend({
 	
 	isValid : function(value) {
 		return value != undefined && value != null && value.trim() != '';
-	}
+	},
 	
+	isValidResponse : function(response) {
+		return (response !== undefined && response != {} && response !== ""
+			&& response !== "error");
+	}
 }).create();
 
 App.Session = Ember.Object.extend({
 	userId: localStorage.userId,
 	userName:localStorage.userName,
-	accessToken: localStorage.token,
+	accessToken: localStorage.accessToken,
 	
 	tokenChanged: function() {
-		localStorage.token = this.get('accessToken');
-		localStorage.userId = this.get('userId');
-		localStorage.userName = this.get('userName');
-		
+		localStorage.accessToken = this.get('accessToken');
 	}.observes('accessToken'),
+	userIdChanged: function() {
+		localStorage.userId = this.get('userId');
+	}.observes('userId'),
+	userNameChanged: function() {
+		localStorage.userName = this.get('userName');
+	}.observes('userName'),
 	
 	isLoggedIn : function() {
-		return App.Validator.isValid(this.get('accessToken'));
+		return App.Validator.isValid(this.get('accessToken')) && App.Validator.isValid(this.get('userId'));
 	},
 	
 	saveUserInfo : function(loginResponse) {
@@ -82,8 +90,14 @@ App.NetworkService = Ember.Object.extend({
 		});
 	},
 	
-	jsonGET : function(params, callback) {
-		
+	jsonGET : function(urlPath, callback) {
+		var url = urlPath;
+		if (App.Validator.isValid(App.Session.accessToken)) {
+			url = url +  "?access_token=" + App.Session.accessToken;
+		}
+		return Ember.$.getJSON(url).then(function(response) {
+			callback(response);
+		});
 	}
 }).create();
 

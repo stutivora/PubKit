@@ -22,16 +22,21 @@ package com.roquito.platform.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 import com.mongodb.gridfs.GridFS;
 import com.mongodb.gridfs.GridFSInputFile;
 import com.roquito.platform.model.Application;
+import com.roquito.platform.model.User;
 import com.roquito.platform.persistence.MongoDB;
 
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Key;
 import org.mongodb.morphia.dao.BasicDAO;
+import org.mongodb.morphia.query.Query;
+import org.mongodb.morphia.query.QueryResults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,6 +78,16 @@ public class ApplicationService extends BasicDAO<Application, String> {
         ObjectId objectId = (ObjectId) applicationKey.getId();
         
         return objectId.toString();
+    }
+    
+    public List<Application> getUserApplications(User user) {
+        Query<Application> query = mongoDB.getDataStore().createQuery(Application.class).field("owner").equal(user).order("createdDate");
+        QueryResults<Application> results = this.find(query);
+        if (results != null) {
+            return results.asList();
+        } else {
+            return Collections.emptyList();
+        }
     }
     
     public boolean saveFile(File inputFile, String fileName) {

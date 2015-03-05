@@ -47,12 +47,28 @@ App.LogoutRoute = App.LoginRequiredRoute.extend({
 });
 
 App.UserIndexRoute = App.LoginRequiredRoute.extend({
+	applications : [],
+	
 	renderTemplate: function() {
 		this._super(this, arguments);
 	    
 	    var navController = this.controllerFor('navbar');
 		navController.send('reloadNav');
 	},
+	model :function() {
+		var self = this;
+		return App.NetworkService.jsonGET("/users/"+App.Session.userId+"/applications/", function(response) {
+			if (App.Validator.isValidResponse(response)) {
+				if (response.applications) {
+					self.set('applications', response.applications);
+					return self.applications;
+				}
+			}
+		});
+	},
+	setupController : function(controller, model) {
+		controller.set('applications', this.get('applications'));
+	}
 });
 
 App.AppsNewRoute = App.LoginRequiredRoute.extend({

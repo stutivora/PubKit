@@ -133,6 +133,7 @@ a {
 
 .info-message {
 	color:#7f8c8d;
+	font-size:16px;
 }
 
 .alert-danger {
@@ -190,6 +191,39 @@ a.logout-link:hover {
 }
 .login-container {
 	margin: 20px auto;
+}
+
+.apps-list {
+	margin-top:50px;
+}
+
+.apps-list a {
+	text-decoration:none;
+}
+
+.apps-grid-list {
+	padding-left: 0;
+	list-style: none;
+}
+
+.apps-list li {
+	float: left;
+	width: 25%;
+	height: 160px;
+	padding: 10px;
+	font-size: 10px;
+	line-height: 1.4;
+	text-align: center;
+	background-color: #f9f9f9;
+	border: 1px solid #fefefe;
+    border-radius: 4px;
+}
+
+.app-info {
+	margin: auto ;
+}
+.app-info h2 {
+	color:#F97D81;
 }
 
 footer {

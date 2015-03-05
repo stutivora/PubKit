@@ -20,6 +20,8 @@
  */
 package com.roquito.web.response;
 
+import java.util.List;
+
 import com.roquito.web.dto.ApplicationDto;
 
 /**
@@ -27,6 +29,7 @@ import com.roquito.web.dto.ApplicationDto;
  */
 public class ApplicationResponse {
     private ApplicationDto application;
+    private List<ApplicationDto> applications;
     private boolean error;
     private String errorMessage;
     
@@ -44,6 +47,10 @@ public class ApplicationResponse {
         this.errorMessage = errorMessage;
     }
     
+    public ApplicationResponse(List<ApplicationDto> applications) {
+        this.applications = applications;
+    }
+    
     public ApplicationDto getApplication() {
         return application;
     }
@@ -52,6 +59,10 @@ public class ApplicationResponse {
         this.application = application;
     }
     
+    public List<ApplicationDto> getApplications() {
+        return applications;
+    }
+
     public boolean isError() {
         return error;
     }

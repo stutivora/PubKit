@@ -49,6 +49,9 @@ public class SessionService {
         if (accessToken == null) {
             return false;
         }
-        return redisDB.getConnection().get(accessToken) != null;
+        String response = redisDB.getConnection().get(accessToken);
+        redisDB.closeConnection();
+        
+        return response != null;
     }
 }

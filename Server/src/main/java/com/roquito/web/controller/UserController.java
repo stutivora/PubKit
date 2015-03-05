@@ -20,7 +20,9 @@
  */
 package com.roquito.web.controller;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,10 +33,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.roquito.platform.commons.RoquitoUtils;
+import com.roquito.platform.model.Application;
 import com.roquito.platform.model.User;
+import com.roquito.web.dto.ApplicationDto;
 import com.roquito.web.dto.UserDto;
 import com.roquito.web.dto.UserLoginDto;
 import com.roquito.web.exception.RoquitoServerException;
+import com.roquito.web.response.ApplicationResponse;
 import com.roquito.web.response.LoginResponse;
 import com.roquito.web.response.UserResponse;
 
@@ -108,6 +113,39 @@ public class UserController extends BaseController {
             } else {
                 return new LoginResponse("Username and password doesn't match");
             }
+        }
+    }
+    
+    @RequestMapping(value = "{userId}/applications", method = RequestMethod.GET)
+    public ApplicationResponse getApplications(@PathVariable("userId") String userId) {
+        validateAccessToken();
+        if (userId == null || userId.isEmpty()) {
+            return new ApplicationResponse("Missing required input");
+        }
+        
+        User user = userService.findByUserId(userId);
+        if (user == null) {
+            return new ApplicationResponse("Invalid user");
+        }
+        List<Application> applications = applicationService.getUserApplications(user);
+        if (applications != null) {
+            List<ApplicationDto> appDtos = new ArrayList<>();
+            for (Application application : applications) {
+                ApplicationDto appDto = new ApplicationDto();
+                
+                appDto.setApplicationName(application.getApplicationName());
+                appDto.setApplicationDescription(application.getApplicationDescription());
+                appDto.setApplicationId(application.getApplicationId());
+                appDto.setApplicationKey(application.getApplicationKey());
+                appDto.setApplicationSecret(application.getApplicationSecret());
+                appDto.setWebsiteLink(application.getWebsiteLink());
+                appDto.setPricingPlan(application.getPricingPlan());
+                
+                appDtos.add(appDto);
+            }
+            return new ApplicationResponse(appDtos);
+        } else {
+            return new ApplicationResponse(new ArrayList<ApplicationDto>());
         }
     }
     

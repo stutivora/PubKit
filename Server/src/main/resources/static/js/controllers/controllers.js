@@ -22,7 +22,7 @@ App.SignupController = Ember.Controller.extend({
 			var self = this;
 			//ready to POST
 			App.NetworkService.jsonPOST("/users", user, function(response, error) {
-				if (response !== undefined || response != {} || response !== "") {
+				if (App.Validator.isValidResponse(response)) {
 					if (response.error) {
 						self.set('errorMessage', response.errorMessage);
 					} else {
@@ -59,8 +59,7 @@ App.LoginController = Ember.Controller.extend({
 			var self = this;
 			// ready to LOG IN
 			App.NetworkService.jsonPOST("/users/login", login, function(response, error) {
-				if (response !== undefined && response != {} && response !== ""
-						&& response !== "error") {
+				if (App.Validator.isValidResponse(response)) {
 					if (response.error) {
 						self.set('errorMessage', response.errorMessage);
 					} else {

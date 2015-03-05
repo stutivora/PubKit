@@ -174,11 +174,23 @@
 	</div>
 	<div class="row">
 		{{#if applications}}
-			<ul>
-  				{{#each application in applications}}
-    				<li>APP</li>
-  				{{/each}}
-			</ul>
+			<div class="col-md-12">
+			<div class="apps-list">
+				<ul class="apps-grid-list">
+  					{{#each app in applications}}
+    					<li>
+							{{#link-to 'apps.view'}}
+							<div class="app-info">
+								<h2>{{app.applicationName}}</h2>
+								<h5>Application ID: {{app.applicationId}}</h5>
+								<p class="lead info-message">{{app.applicationDescription}}</p>
+							</div>
+							{{/link-to}}
+						</li>
+  					{{/each}}
+				</ul>
+			</div>
+			</div>
     	{{else}}
 			<div class="col-xs-12 col-md-8"><br><p class="lead info-message">You do not have any applications yet. You can create new applications and configure them.</p></div>
   			<div class="col-xs-6 col-md-4"></div>
@@ -217,6 +229,9 @@
 	</div>
 </script>
 
+<script type="text/x-handlebars" id="apps/view">
+	<h2>Applicatin Name</h2>
+</script>
 
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 	<script
