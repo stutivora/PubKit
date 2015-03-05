@@ -13,33 +13,6 @@ App.Router.map(function() {
 	});
 });
 
-App.Session = Ember.Object.extend({
-	userId: "",
-	userName:"",
-	token: localStorage.token,
-	
-	tokenChanged: function() {
-		localStorage.token = this.get('token');
-	}.observes('token'),
-	
-	isLoggedIn : function() {
-		return (this.get('token') != undefined && this.get('token') != '' && this.get('token') != null);
-	},
-	
-	saveUserInfo : function(loginResponse) {
-		this.set('token', loginResponse.accessToken);
-		this.set('userId', loginResponse.userId);
-		this.set('userName', loginResponse.userName);
-	},
-	
-	clearSession : function() {
-		this.set('token', '');
-		this.set('userId', '');
-		this.set('userName', '');
-	}
-	
-}).create();
-
 App.Validator = Ember.Object.extend({
 
 	validateEmail:function(email) {
@@ -52,7 +25,37 @@ App.Validator = Ember.Object.extend({
 	},
 	
 	isValid : function(value) {
-		return value !== undefined && value.trim() != '';
+		return value != undefined && value != null && value.trim() != '';
+	}
+	
+}).create();
+
+App.Session = Ember.Object.extend({
+	userId: localStorage.userId,
+	userName:localStorage.userName,
+	accessToken: localStorage.token,
+	
+	tokenChanged: function() {
+		localStorage.token = this.get('accessToken');
+		localStorage.userId = this.get('userId');
+		localStorage.userName = this.get('userName');
+		
+	}.observes('accessToken'),
+	
+	isLoggedIn : function() {
+		return App.Validator.isValid(this.get('accessToken'));
+	},
+	
+	saveUserInfo : function(loginResponse) {
+		this.set('accessToken', loginResponse.accessToken);
+		this.set('userId', loginResponse.userId);
+		this.set('userName', loginResponse.userName);
+	},
+	
+	clearSession : function() {
+		this.set('accessToken', '');
+		this.set('userId', '');
+		this.set('userName', '');
 	}
 	
 }).create();
@@ -61,7 +64,7 @@ App.NetworkService = Ember.Object.extend({
 
 	jsonPOST : function(urlPath, jsonObject, callback) {
 		var url = urlPath;
-		if (App.Validator.isValid(App.Session.token)) {
+		if (App.Validator.isValid(App.Session.accessToken)) {
 			url = url +  "?access_token=" + App.Session.accessToken;
 		}
 		Ember.$.ajax({
@@ -92,11 +95,11 @@ App.ApplicationController = Ember.Controller.extend({
 
 App.NavbarController = Ember.ArrayController.extend({
 	init: function() {
-	    this.set('hasToken', (App.Session.get('token') != '' && App.Session.get('token') != null));
+	    this.set('hasToken', App.Session.isLoggedIn());
 	},
 	actions: {
 		reloadNav: function(){
-			this.set('hasToken', (App.Session.get('token') != '' && App.Session.get('token') != null));
+			this.set('hasToken', App.Session.isLoggedIn());
 		}
 	 }
 });

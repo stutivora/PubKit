@@ -20,10 +20,6 @@
  */
 package com.roquito.web.controller;
 
-import com.roquito.platform.notification.ApnsNotification;
-import com.roquito.platform.notification.GcmNotification;
-import com.roquito.platform.notification.PusherService;
-import com.roquito.web.exception.RoquitoServerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +28,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
+import com.roquito.platform.notification.ApnsNotification;
+import com.roquito.platform.notification.GcmNotification;
+import com.roquito.platform.notification.PusherService;
+import com.roquito.web.exception.RoquitoServerException;
 
 /**
  * This is a public API for sending push notification. This API doesn't return
@@ -45,22 +44,19 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/push")
 public class PushController extends BaseController {
     
-    private static final Logger log = LoggerFactory.getLogger(PushController.class);
-    
-    @Autowired
-    private HttpServletRequest request;
-    
+    private static final Logger LOG = LoggerFactory.getLogger(PushController.class);
+
     @Autowired
     private PusherService pusherService;
     
     @RequestMapping(value = "/gcm", method = RequestMethod.POST)
     public String create(@RequestBody GcmNotification gcmNotification) {
         if (gcmNotification == null) {
-            log.debug("Null gcm notification data received");
+            LOG.debug("Null gcm notification data received");
             new RoquitoServerException("Invalid request");
         }
         String applicationId = gcmNotification.getApplicationId();
-        validateApiRequest(request, applicationId);
+        validateApiRequest(applicationId);
         
         pusherService.sendGcmPushNotification(gcmNotification);
         
@@ -70,14 +66,15 @@ public class PushController extends BaseController {
     @RequestMapping(value = "/apns", method = RequestMethod.POST)
     public String create(@RequestBody ApnsNotification apnsNotification) {
         if (apnsNotification == null) {
-            log.debug("Null apns notification data received");
+            LOG.debug("Null apns notification data received");
             new RoquitoServerException("Invalid request");
         }
         String applicationId = apnsNotification.getApplicationId();
-        validateApiRequest(request, applicationId);
+        validateApiRequest(applicationId);
         
         pusherService.sendApnsPushNotification(apnsNotification);
-        log.info("Added APNS notification message to the pusher queue");
+        LOG.info("Added APNS notification message to the pusher queue");
+        
         return "OK";
     }
 }

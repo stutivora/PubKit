@@ -55,7 +55,8 @@ public class ApplicationController extends BaseController {
     
     @RequestMapping(method = RequestMethod.POST)
     public ApplicationResponse create(@RequestBody ApplicationDto applicationDto) {
-        validateApiRequest(request, true);
+        
+        validateAccessToken();
         
         if (applicationDto == null || isEmpty(applicationDto.getUserId())
                 || isEmpty(applicationDto.getApplicationName())) {
@@ -110,7 +111,8 @@ public class ApplicationController extends BaseController {
     
     @RequestMapping(value = "/config", method = RequestMethod.POST)
     public ConfigResponse updateAppConfig(@RequestBody AppConfigDto configDto) {
-        validateApiRequest(request, true);
+        validateAccessToken();
+        
         if (configDto == null || isEmpty(configDto.getType())) {
             LOG.debug("Missing application data for creating application config");
             return new ConfigResponse(null, true, "Missing required data");
@@ -167,9 +169,10 @@ public class ApplicationController extends BaseController {
     }
     
     @RequestMapping(value = "{applicationId}", method = RequestMethod.GET)
-    public Application getUser(@PathVariable("applicationId") String applicationId) {
-        Application savedApplication = applicationService.findByApplicationId(applicationId);
+    public Application getApplication(@PathVariable("applicationId") String applicationId) {
+        validateAccessToken();
         
+        Application savedApplication = applicationService.findByApplicationId(applicationId);
         return savedApplication;
     }
 }

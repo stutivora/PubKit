@@ -26,7 +26,7 @@ App.SignupController = Ember.Controller.extend({
 					if (response.error) {
 						self.set('errorMessage', response.errorMessage);
 					} else {
-						self.transitionTo('login');
+						self.transitionToRoute('login');
 					}
 				} else {
 					self.set('errorMessage', 'Sorry, Error creating user');
@@ -35,7 +35,7 @@ App.SignupController = Ember.Controller.extend({
 		},
 
 		cancel : function() {
-			this.transitionTo('index');
+			this.transitionToRoute('index');
 		}
 	}
 });
@@ -58,10 +58,7 @@ App.LoginController = Ember.Controller.extend({
 
 			var self = this;
 			// ready to LOG IN
-			App.NetworkService.jsonPOST("/users/login", {
-				"email" : login.email,
-				"password" : login.password
-			}, function(response, error) {
+			App.NetworkService.jsonPOST("/users/login", login, function(response, error) {
 				if (response !== undefined && response != {} && response !== ""
 						&& response !== "error") {
 					if (response.error) {
@@ -69,7 +66,7 @@ App.LoginController = Ember.Controller.extend({
 					} else {
 						App.Session.saveUserInfo(response);
 						
-						self.transitionTo('user');
+						self.transitionToRoute('user');
 					}
 				} else {
 					self.set('errorMessage',
@@ -79,7 +76,7 @@ App.LoginController = Ember.Controller.extend({
 		},
 
 		cancel : function() {
-			this.transitionTo('index');
+			this.transitionToRoute('index');
 		}
 	}
 });
@@ -96,10 +93,25 @@ App.AppsNewController = Ember.Controller.extend({
 				this.set('errorMessage', 'Missing required input');
 				return;
 			}
+			newApp.userId = App.Session.userId;
+			newApp.pricingPlan = "free";
+			
+			var self = this;
+			App.NetworkService.jsonPOST("/applications", newApp, function(response, error) {
+				if (response !== undefined && response != {} && response !== "" && response !== "error") {
+					if (response.error) {
+						self.set('errorMessage', response.errorMessage);
+					} else {
+						self.transitionToRoute('user');
+					}
+				} else {
+					self.set('errorMessage', 'Oops, Something went wrong. Please try again.');
+				}
+			});
 		},
-
+		
 		cancel : function() {
-			this.transitionTo('user');
+			this.transitionToRoute('user');
 		}
 	}
 });

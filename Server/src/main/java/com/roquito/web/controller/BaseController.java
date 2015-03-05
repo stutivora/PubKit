@@ -48,7 +48,6 @@ public class BaseController {
     
     private static final String ACCESS_TOKEN_PARAM = "access_token";
     private static final String API_KEY_PARAM = "api_key";
-    private static final String APP_ID_PARAM = "app_id";
     
     protected final RoquitoKeyGenerator keyGenerator = new RoquitoKeyGenerator();
     
@@ -59,29 +58,20 @@ public class BaseController {
     @Autowired
     protected SessionService sessionService;
     @Autowired
-    protected HttpServletRequest request;
+    protected HttpServletRequest httpRequest;
     @Autowired
-    protected HttpServletResponse response;
+    protected HttpServletResponse httpResponse;
     
-    protected boolean validateApiRequest(HttpServletRequest httpServletRequest, boolean needAccessToken) {
-        String applicationId = httpServletRequest.getParameter(APP_ID_PARAM);
-        return validateApiRequest(httpServletRequest, applicationId, needAccessToken);
-    }
-    
-    protected boolean validateApiRequest(HttpServletRequest httpRequest, String applicationId, boolean needsAccessToken) {
-        boolean validRequest = validateApiRequest(httpRequest, applicationId);
-        if (needsAccessToken) {
-            String accessToken = httpRequest.getParameter(ACCESS_TOKEN_PARAM);
-            validRequest = sessionService.isAccessTokenValid(accessToken);
-        }
-        if (!validRequest) {
+    protected void validateAccessToken() {
+        String accessToken = httpRequest.getParameter(ACCESS_TOKEN_PARAM);
+        boolean tokenValid = sessionService.isAccessTokenValid(accessToken);
+        if (!tokenValid) {
             log.debug("Request not authorized");
             throwAuthException();
         }
-        return validRequest;
     }
     
-    protected boolean validateApiRequest(HttpServletRequest httpRequest, String applicationId) {
+    protected boolean validateApiRequest(String applicationId) {
         boolean validRequest = true;
         if (applicationId == null) {
             throwAuthException();
@@ -101,7 +91,7 @@ public class BaseController {
         return validRequest;
     }
     
-    private void throwAuthException() {
+    protected void throwAuthException() {
         throw new RoquitoAuthException("Request not authorized");
     }
     

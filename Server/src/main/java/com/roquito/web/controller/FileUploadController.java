@@ -47,7 +47,7 @@ public class FileUploadController extends BaseController {
     public @ResponseBody String handleFileUpload(@RequestParam("name") String fileName,
             @RequestParam("file") MultipartFile multipartFile) {
         LOG.debug("Upload request received for file size:" + multipartFile.getSize());
-        validateApiRequest(request, true);
+        validateAccessToken();
         
         if (!multipartFile.isEmpty()) {
             try {
