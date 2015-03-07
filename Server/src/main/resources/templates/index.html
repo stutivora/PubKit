@@ -280,26 +280,29 @@
 	</div>
 	<div class="row">
 		<div class="col-xs-2"></div>
-		<div class="col-md-2"><h4 class="app-key-text">Android GCM Key</h4></div>
-  		<div class="col-xs-6">{{input class="form-control pull-left app-settings-input" id="gcmKey" placeholder="GCM Key Here.."}}</div>
+		<div class="col-md-2"><h4 class="app-key-text pull-right">Android GCM Key</h4></div>
+  		<div class="col-xs-6">{{input class="form-control pull-left app-settings-input" id="gcmKey" placeholder=""}}</div>
 	</div>
 	<div class="row">
 		<h1></h1>
+	</div>
+	<div class="row">
+		<div class="col-md-8"><hr></div>
 	</div>
 	<div class="row">
 		<div class="col-md-4"><p class="lead pull-left">APNS Configuration</p></div>
 	</div>
 	<div class="row">
 		<div class="col-xs-2"></div>
-		<div class="col-md-2"><h4 class="app-key-text">Dev Certificate</h4></div>
-  		<div class="col-md-4">{{input class="form-control pull-left app-settings-input" id="devApnsCertPath" placeholder="Click here to upload"}}</div>
+		<div class="col-md-2"><h4 class="app-key-text pull-right">Dev Certificate</h4></div>
+  		<div class="col-md-6"><p class="lead file-path-text">No file uploaded</p><button {{action 'submit'}} class='btn'>Upload New</button></div>
 	</div>
 	<div class="row">
 		<h1></h1>
 	</div>
 	<div class="row">
 		<div class="col-xs-2"></div>
-		<div class="col-md-2"><h4 class="app-key-text">Dev Password</h4></div>
+		<div class="col-md-2"><h4 class="app-key-text pull-right">Dev Password</h4></div>
   		<div class="col-xs-6">{{input class="form-control pull-left app-settings-input" id="apnsDevPassword" placeholder=""}}</div>
 	</div>
 	<div class="row">
@@ -307,15 +310,15 @@
 	</div>
 	<div class="row">
 		<div class="col-xs-2"></div>
-		<div class="col-md-2"><h4 class="app-key-text">Prod Certificate</h4></div>
-  		<div class="col-md-4">{{input class="form-control pull-left app-settings-input" id="prodApnsCertPath" placeholder="Click here to upload"}}</div>
+		<div class="col-md-2"><h4 class="app-key-text pull-right">Prod Certificate</h4></div>
+  		<div class="col-md-6"><p class="lead file-path-text">No file uploaded</p><button {{action 'submit'}} class='btn'>Upload New</button></div>
 	</div>
 	<div class="row">
 		<h1></h1>
 	</div>
 	<div class="row">
 		<div class="col-xs-2"></div>
-		<div class="col-md-2"><h4 class="app-key-text">Prod Password</h4></div>
+		<div class="col-md-2"><h4 class="app-key-text pull-right">Prod Password</h4></div>
   		<div class="col-xs-6">{{input class="form-control pull-left app-settings-input" id="apnsProdPassword" placeholder=""}}</div>
 	</div>
 	<div class="row">
