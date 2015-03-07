@@ -131,16 +131,7 @@ public class UserController extends BaseController {
         if (applications != null) {
             List<ApplicationDto> appDtos = new ArrayList<>();
             for (Application application : applications) {
-                ApplicationDto appDto = new ApplicationDto();
-                
-                appDto.setApplicationName(application.getApplicationName());
-                appDto.setApplicationDescription(application.getApplicationDescription());
-                appDto.setApplicationId(application.getApplicationId());
-                appDto.setApplicationKey(application.getApplicationKey());
-                appDto.setApplicationSecret(application.getApplicationSecret());
-                appDto.setWebsiteLink(application.getWebsiteLink());
-                appDto.setPricingPlan(application.getPricingPlan());
-                
+                ApplicationDto appDto = getApplicationDto(application);
                 appDtos.add(appDto);
             }
             return new ApplicationResponse(appDtos);

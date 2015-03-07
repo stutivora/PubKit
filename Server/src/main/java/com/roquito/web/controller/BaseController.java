@@ -37,6 +37,7 @@ import com.roquito.platform.model.Application;
 import com.roquito.platform.service.ApplicationService;
 import com.roquito.platform.service.SessionService;
 import com.roquito.platform.service.UserService;
+import com.roquito.web.dto.ApplicationDto;
 import com.roquito.web.exception.RoquitoAuthException;
 import com.roquito.web.exception.RoquitoServerException;
 
@@ -109,6 +110,20 @@ public class BaseController {
     
     protected boolean isEmpty(String value) {
         return !RoquitoUtils.hasValue(value);
+    }
+    
+    protected ApplicationDto getApplicationDto(Application application) {
+        ApplicationDto appDto = new ApplicationDto();
+        
+        appDto.setApplicationName(application.getApplicationName());
+        appDto.setApplicationDescription(application.getApplicationDescription());
+        appDto.setApplicationId(application.getApplicationId());
+        appDto.setApplicationKey(application.getApplicationKey());
+        appDto.setApplicationSecret(application.getApplicationSecret());
+        appDto.setWebsiteLink(application.getWebsiteLink());
+        appDto.setPricingPlan(application.getPricingPlan());
+        
+        return appDto;
     }
     
     @ExceptionHandler(IllegalArgumentException.class)

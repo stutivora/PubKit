@@ -1,3 +1,17 @@
+App.ApplicationController = Ember.Controller.extend({
+});
+
+App.NavbarController = Ember.ArrayController.extend({
+	init: function() {
+	    this.set('hasToken', App.Session.isLoggedIn());
+	},
+	actions: {
+		reloadNav: function(){
+			this.set('hasToken', App.Session.isLoggedIn());
+		}
+	 }
+});
+
 App.SignupController = Ember.Controller.extend({
 	
 	actions : {
@@ -115,3 +129,24 @@ App.AppsNewController = Ember.Controller.extend({
 	}
 });
 
+App.UserAppController = Ember.Controller.extend({
+	updateTab : function(selectedTab) {
+		var tabs = this.get('tabs');
+		for (index = 0; index < tabs.length; ++index) {
+		    var tab = tabs[index];
+		    if (tab.name == selectedTab) {
+				tab.set('active', true);
+				tab.set('application', this.get('application'));
+			} else {
+				tab.set('active', false);
+			}
+		}
+		this.set('tabs', tabs);
+	},
+	
+	actions : {
+		tabAction: function (tabName) {
+			this.updateTab(tabName);
+		}
+	}
+});

@@ -169,10 +169,15 @@ public class ApplicationController extends BaseController {
     }
     
     @RequestMapping(value = "{applicationId}", method = RequestMethod.GET)
-    public Application getApplication(@PathVariable("applicationId") String applicationId) {
+    public ApplicationResponse getApplication(@PathVariable("applicationId") String applicationId) {
         validateAccessToken();
         
-        Application savedApplication = applicationService.findByApplicationId(applicationId);
-        return savedApplication;
+        Application application = applicationService.findByApplicationId(applicationId);
+        if (application != null) {
+            ApplicationDto appDto = getApplicationDto(application);
+            return new ApplicationResponse(appDto);
+        } else {
+            return new ApplicationResponse("Application not found");
+        }
     }
 }

@@ -9,8 +9,8 @@ App.Router.map(function() {
 		this.route('index', { path: '/' });
 	    this.resource('apps', function() {
 	    	this.route('new');
-	    	this.route('view');
 	    });
+	    this.route("app", {path: "apps/:app_id"});
 	});
 });
 
@@ -39,6 +39,7 @@ App.Session = Ember.Object.extend({
 	userId: localStorage.userId,
 	userName:localStorage.userName,
 	accessToken: localStorage.accessToken,
+	applications:[],
 	
 	tokenChanged: function() {
 		localStorage.accessToken = this.get('accessToken');
@@ -101,21 +102,11 @@ App.NetworkService = Ember.Object.extend({
 	}
 }).create();
 
-App.ApplicationRoute = Ember.Route.extend({
-});
-
-App.ApplicationController = Ember.Controller.extend({
-});
-
-App.NavbarController = Ember.ArrayController.extend({
-	init: function() {
-	    this.set('hasToken', App.Session.isLoggedIn());
-	},
-	actions: {
-		reloadNav: function(){
-			this.set('hasToken', App.Session.isLoggedIn());
-		}
-	 }
+Ember.Handlebars.registerHelper('renderTab', function(context, tab, options) {
+	contextString = options.hash.contextString
+	tab = options.data.view.getStream(tab).value()
+	
+	return Ember.Handlebars.helpers.render(tab.name, contextString, options)	
 });
 
 App.IndexRoute = Ember.Route.extend({
@@ -123,7 +114,4 @@ App.IndexRoute = Ember.Route.extend({
 		//setup properties related to index controller!
 		controller.set("test", "puran is awesome");
 	}
-});
-
-App.IndexController = Ember.Controller.extend({
 });

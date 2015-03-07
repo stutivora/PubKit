@@ -22,3 +22,9 @@ App.Application = Ember.Object.extend({
     websiteLink : "",
     pricingPlan : "",
 });
+
+App.Tab = Ember.Object.extend({
+	name : "",
+	active : false,
+	application:{}
+});

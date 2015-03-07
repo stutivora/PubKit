@@ -47,8 +47,6 @@ App.LogoutRoute = App.LoginRequiredRoute.extend({
 });
 
 App.UserIndexRoute = App.LoginRequiredRoute.extend({
-	applications : [],
-	
 	renderTemplate: function() {
 		this._super(this, arguments);
 	    
@@ -60,24 +58,70 @@ App.UserIndexRoute = App.LoginRequiredRoute.extend({
 		return App.NetworkService.jsonGET("/users/"+App.Session.userId+"/applications/", function(response) {
 			if (App.Validator.isValidResponse(response)) {
 				if (response.applications) {
-					self.set('applications', response.applications);
+					App.Session.set('applications', response.applications);
 					return self.applications;
 				}
 			}
 		});
 	},
 	setupController : function(controller, model) {
-		controller.set('applications', this.get('applications'));
+		controller.set('applications', App.Session.get('applications'));
 	}
 });
 
 App.AppsNewRoute = App.LoginRequiredRoute.extend({
 	model: function(){
-		return App.Application.create()
+		return App.Application.create();
 	},
 	
 	setupController : function(controller, model) {
 		controller.set("application", model);
 		controller.set("errorMessage", "");
+	}
+});
+
+App.UserAppRoute = Ember.Route.extend({
+	application : {},
+	model: function(params) {
+		var applicationId = params.app_id;
+		var savedApps = App.Session.applications;
+		if (savedApps != null && savedApps.length > 0) {
+			var appCount = savedApps.length;
+			for (var i = 0; i < appCount; i++) {
+			    var application = App.Session.applications[i];
+			    if (application.applicationId === applicationId) {
+			    	this.set('application', application);
+			    	return application;
+			    }
+			}
+		} else {
+			var self = this;
+			return App.NetworkService.jsonGET("/applications/"+applicationId, function(response) {
+				if (App.Validator.isValidResponse(response)) {
+					if (response.application) {
+						self.set('application', response.application);
+						return response.application;
+					}
+				}
+			});
+		}
+	},
+	
+	setupController : function(controller, model) {
+		var detailTab = App.Tab.create();
+		detailTab.name = 'Application Settings';
+		detailTab.active = true;
+		
+		var pushTab = App.Tab.create();
+		pushTab.name = 'Logs';
+		pushTab.active = false;
+		
+		var tabs = Array();
+		tabs.push(detailTab);
+		tabs.push(pushTab);
+		
+		controller.set("tabs", tabs);
+		controller.set("application", this.get('application'));
+		detailTab.set('application', this.get('application'));
 	}
 });

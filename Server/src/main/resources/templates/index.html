@@ -36,10 +36,8 @@
 	<nav class="nav">
   		{{render "navbar"}}
 	</nav>
-	<div>
-		<div class="container">
-			{{outlet}}
-		</div>
+	<div class="wrap">
+		{{outlet}}
 	</div>
 	<footer>
         <div class="container">
@@ -179,11 +177,11 @@
 				<ul class="apps-grid-list">
   					{{#each app in applications}}
     					<li>
-							{{#link-to 'apps.view'}}
+							{{#link-to 'user.app' app.applicationId}}
 							<div class="app-info">
 								<h2>{{app.applicationName}}</h2>
 								<h5>Application ID: {{app.applicationId}}</h5>
-								<p class="lead info-message">{{app.applicationDescription}}</p>
+								<p class="app-desc-text">{{app.applicationDescription}}</p>
 							</div>
 							{{/link-to}}
 						</li>
@@ -229,8 +227,105 @@
 	</div>
 </script>
 
-<script type="text/x-handlebars" id="apps/view">
-	<h2>Applicatin Name</h2>
+<script type="text/x-handlebars" id="user/app">
+	<h2>{{application.applicationName}}</h2>
+	<p class="app-desc-text">{{application.applicationDescription}}</p>
+	<p class="lead">Website - <a target="_blank" href="{{unbound application.websiteLink}}">{{application.websiteLink}}</a></p>
+	<div class="row pull-right">
+		<div class="col-md-1"></div>
+  		<div class="col-md-1"><button {{action 'cancel'}} class="btn btn-cancel">Delete Application</button></div>
+	</div>
+	<br>
+	<ul class="nav nav-tabs">
+		{{#each tab in tabs}}
+    		<li role="presentation" {{bind-attr class="tab.active:active"}}><a href="#" {{action "tabAction" tab.name}}>{{tab.name}}</a></li>
+  		{{/each}}
+	</ul>
+	<div class="tab-content">
+		{{#each tab in tabs}}
+			{{#if tab.active}}
+				<div class="container">
+  					{{renderTab "this" tab contextString="currentTab"}}	
+				</div>	
+			{{/if}}
+		{{/each}}
+	</div>
+</script>
+
+<script type="text/x-handlebars" id="Application Settings">
+	<div class="row">
+		<ul class="span2 clearfix">
+	</div>
+	<div class="row">
+  		<div class="col-xs-4"><h4 class="app-key-text">Application ID</h4></div>
+  		<div class="col-xs-6"><p class="lead">{{tab.application.applicationId}}</p></div>
+	</div>
+	<div class="row">
+  		<div class="col-xs-4"><h4 class="app-key-text">Application Key</h4></div>
+  		<div class="col-xs-6"><p class="lead">{{tab.application.applicationKey}}</p></div>
+	</div>
+	<div class="row">
+  		<div class="col-xs-4"><h4 class="app-key-text">Application Secret</h4></div>
+  		<div class="col-xs-6"><p class="lead">{{tab.application.applicationSecret}}</p></div>
+	</div>
+	<div class="row">
+  		<div class="col-xs-4"><h4 class="app-key-text">Pricing</h4></div>
+  		<div class="col-xs-6"><p class="lead">{{tab.application.pricingPlan}}</p></div>
+	</div>
+	<div class="row">
+		<div class="col-md-4 pull-left"><h3>Push Notification Settings</h3><hr></div>
+	</div>
+	<div class="row">
+		<div class="col-md-4"><p class="lead pull-left">GCM Configuration</p></div>	
+	</div>
+	<div class="row">
+		<div class="col-xs-2"></div>
+		<div class="col-md-2"><h4 class="app-key-text">Android GCM Key</h4></div>
+  		<div class="col-xs-6">{{input class="form-control pull-left app-settings-input" id="gcmKey" placeholder="GCM Key Here.."}}</div>
+	</div>
+	<div class="row">
+		<h1></h1>
+	</div>
+	<div class="row">
+		<div class="col-md-4"><p class="lead pull-left">APNS Configuration</p></div>
+	</div>
+	<div class="row">
+		<div class="col-xs-2"></div>
+		<div class="col-md-2"><h4 class="app-key-text">Dev Certificate</h4></div>
+  		<div class="col-md-4">{{input class="form-control pull-left app-settings-input" id="devApnsCertPath" placeholder="Click here to upload"}}</div>
+	</div>
+	<div class="row">
+		<h1></h1>
+	</div>
+	<div class="row">
+		<div class="col-xs-2"></div>
+		<div class="col-md-2"><h4 class="app-key-text">Dev Password</h4></div>
+  		<div class="col-xs-6">{{input class="form-control pull-left app-settings-input" id="apnsDevPassword" placeholder=""}}</div>
+	</div>
+	<div class="row">
+		<h1></h1>
+	</div>
+	<div class="row">
+		<div class="col-xs-2"></div>
+		<div class="col-md-2"><h4 class="app-key-text">Prod Certificate</h4></div>
+  		<div class="col-md-4">{{input class="form-control pull-left app-settings-input" id="prodApnsCertPath" placeholder="Click here to upload"}}</div>
+	</div>
+	<div class="row">
+		<h1></h1>
+	</div>
+	<div class="row">
+		<div class="col-xs-2"></div>
+		<div class="col-md-2"><h4 class="app-key-text">Prod Password</h4></div>
+  		<div class="col-xs-6">{{input class="form-control pull-left app-settings-input" id="apnsProdPassword" placeholder=""}}</div>
+	</div>
+	<div class="row">
+		<button {{action 'login'}} class="btn btn-primary pull-right">Update Settings</button>
+	</div>
+	<br><br>
+</script>
+
+<script type="text/x-handlebars" id="Logs">
+  Second Tab content
 </script>
 
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->

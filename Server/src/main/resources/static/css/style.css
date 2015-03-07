@@ -4,13 +4,23 @@
 }
 
 /* BOOTSTRAP OVERRIDES */
-body {
+html body {
+	width:100%; height:100%;
 	font-family: 'Roboto Slab', serif;
-	color: #555555;
+	color: #777777;
+}
+
+.wrap { 
+	min-height:680px;   
 }
 
 a {
 	font-family: 'Arvo', serif;
+}
+
+p {
+	font-family: 'Roboto Slab', serif;
+	font-weight:300;
 }
 
 .nav {
@@ -19,7 +29,6 @@ a {
 
 .nav a {
 	color: #777777;
-	background-color: #ffffff;
 }
 
 .nav a:hover {
@@ -87,7 +96,9 @@ a {
 	text-decoration: none;
 	border: 0px;
 }
-
+.btn-cancel:hover {
+	color:#EEEEEE;
+}
 .form-control {
 	font-family: 'Roboto Slab', serif;
 	font-weight: 300;
@@ -139,6 +150,10 @@ a {
 .alert-danger {
 	color: #a94442;
 	background-color: #f2dede;
+}
+
+.tab-content h4 {
+	color:#7f8c8d;
 }
 
 .alert {
@@ -217,6 +232,7 @@ a.logout-link:hover {
 	background-color: #f9f9f9;
 	border: 1px solid #fefefe;
     border-radius: 4px;
+    margin-right:5px;
 }
 
 .app-info {
@@ -225,12 +241,28 @@ a.logout-link:hover {
 .app-info h2 {
 	color:#F97D81;
 }
+.app-desc-text {
+	color:#666666;
+	font-size:15px;
+	font-weight:normal;
+}
 
-footer {
+.app-settings-input {
+	width:360px;
+}
+
+h4.app-key-text {
+	color:#666666;
+	font-weight:normal;
+	font-size:16px;
+}
+
+footer{
+	width:100%;
+	height: 60px; 
 	background-color: #484745;
-	bottom: 0px;
-	position: absolute;
-	width: 100%;
+	text-align: center;
+	margin:0px auto;
 }
 
 p.copyright {
