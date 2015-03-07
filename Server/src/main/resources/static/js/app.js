@@ -92,11 +92,16 @@ App.NetworkService = Ember.Object.extend({
 	},
 	
 	jsonGET : function(urlPath, callback) {
+		var self = this;
 		var url = urlPath;
 		if (App.Validator.isValid(App.Session.accessToken)) {
 			url = url +  "?access_token=" + App.Session.accessToken;
 		}
-		return Ember.$.getJSON(url).then(function(response) {
+		return Ember.$.getJSON(url)
+		.then(undefined, function(error) {
+			callback(error);
+        })
+		.then(function(response) {
 			callback(response);
 		});
 	}

@@ -11,6 +11,12 @@ App.LoginRequiredRoute = Ember.Route.extend({
 		if (!App.Session.isLoggedIn()) {
 			this.transitionTo('/login');
 		}
+	},
+	handleError : function(error) {
+		if (error.status == 511 && error.statusText == 'Network Authentication Required') {
+			App.Session.clearSession();
+			this.transitionTo('login');
+		}
 	}
 });
 
@@ -62,6 +68,7 @@ App.UserIndexRoute = App.LoginRequiredRoute.extend({
 					return self.applications;
 				}
 			}
+			self.handleError(response);
 		});
 	},
 	setupController : function(controller, model) {
@@ -80,7 +87,7 @@ App.AppsNewRoute = App.LoginRequiredRoute.extend({
 	}
 });
 
-App.UserAppRoute = Ember.Route.extend({
+App.UserAppRoute = App.LoginRequiredRoute.extend({
 	application : {},
 	model: function(params) {
 		var applicationId = params.app_id;
@@ -103,6 +110,7 @@ App.UserAppRoute = Ember.Route.extend({
 						return response.application;
 					}
 				}
+				self.handleError(response);
 			});
 		}
 	},

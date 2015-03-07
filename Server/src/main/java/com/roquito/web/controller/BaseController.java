@@ -135,4 +135,9 @@ public class BaseController {
     void handleServerError(HttpServletResponse response) throws IOException {
         response.sendError(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
+    
+    @ExceptionHandler(RoquitoAuthException.class)
+    void handleAuthError(HttpServletResponse response) throws IOException {
+        response.sendError(HttpStatus.NETWORK_AUTHENTICATION_REQUIRED.value());
+    }
 }
