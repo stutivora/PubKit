@@ -266,10 +266,14 @@ h4.app-key-text {
 hr {
     border: 0;
     height: 1px;
-    background-image: -webkit-linear-gradient(left, rgba(0,0,0,0), rgba(52,152,219, 0.75), rgba(0,0,0,0));
-    background-image:    -moz-linear-gradient(left, rgba(0,0,0,0), rgba(52,152,219, 0.75), rgba(0,0,0,0));
-    background-image:     -ms-linear-gradient(left, rgba(0,0,0,0), rgba(52,152,219, 0.75), rgba(0,0,0,0));
-    background-image:      -o-linear-gradient(left, rgba(0,0,0,0), rgba(52,152,219, 0.75), rgba(0,0,0,0));
+    background-image: -webkit-linear-gradient(left, rgba(0,0,0,0), rgba(236,240,241, 0.75), rgba(0,0,0,0));
+    background-image:    -moz-linear-gradient(left, rgba(0,0,0,0), rgba(236,240,241, 0.75), rgba(0,0,0,0));
+    background-image:     -ms-linear-gradient(left, rgba(0,0,0,0), rgba(236,240,241,, 0.75), rgba(0,0,0,0));
+    background-image:      -o-linear-gradient(left, rgba(0,0,0,0), rgba(236,240,241, 0.75), rgba(0,0,0,0));
+}
+
+li.active a {
+	color: #3cb0fd !important;
 }
 footer{
 	width:100%;

@@ -120,13 +120,19 @@ App.UserAppRoute = App.LoginRequiredRoute.extend({
 		detailTab.name = 'Application Settings';
 		detailTab.active = true;
 		
+		var logsTab = App.Tab.create();
+		logsTab.name = 'Logs';
+		logsTab.active = false;
+		
 		var pushTab = App.Tab.create();
-		pushTab.name = 'Logs';
+		pushTab.name = 'Push';
 		pushTab.active = false;
 		
 		var tabs = Array();
 		tabs.push(detailTab);
 		tabs.push(pushTab);
+		tabs.push(logsTab);
+		
 		
 		controller.set("tabs", tabs);
 		controller.set("application", this.get('application'));
