@@ -111,7 +111,7 @@ App.AppsNewController = Ember.Controller.extend({
 			
 			var self = this;
 			App.NetworkService.jsonPOST("/applications", newApp, function(response, error) {
-				if (response !== undefined && response != {} && response !== "" && response !== "error") {
+				if (App.Validator.isValidResponse(response)) {
 					if (response.error) {
 						self.set('errorMessage', response.errorMessage);
 					} else {
@@ -130,23 +130,56 @@ App.AppsNewController = Ember.Controller.extend({
 });
 
 App.UserAppController = Ember.Controller.extend({
+
 	updateTab : function(selectedTab) {
-		var tabs = this.get('tabs');
+		var userApp = this.get('userApp');
+		var tabs = userApp.tabs;
 		for (index = 0; index < tabs.length; ++index) {
 		    var tab = tabs[index];
 		    if (tab.name == selectedTab) {
 				tab.set('active', true);
-				tab.set('application', this.get('application'));
 			} else {
 				tab.set('active', false);
 			}
 		}
-		this.set('tabs', tabs);
+		userApp.set('tabs', tabs);
+	},
+	
+	updateApnsDevCertFile : function(certFile) {
+		var userApp = this.get('userApp');
+		var application = userApp.get('application');
+		application.set('apnsDevCertFile', "Puran_Singh_SARKI");
+		userApp.set('application', application);
+		
+		this.set('userApp', userApp);
 	},
 	
 	actions : {
 		tabAction: function (tabName) {
 			this.updateTab(tabName);
+		},
+		
+		updateAppConfig : function() {
+			if (apnsDevCertFile.files[0] == undefined || apnsDevCertFile.files[0] == null) {
+				return;
+			}
+			var uploadData = new FormData();
+			uploadData.append("file", apnsDevCertFile.files[0]);
+			uploadData.append("applicationId", this.userApp.application.applicationId);
+			uploadData.append("fileType", "img");
+			
+//			App.NetworkService.uploadFileData("/upload_cert", uploadData, function(response) {
+//				if (App.Validator.isValidResponse(response)) {
+//					if (response.error) {
+//						self.set('apnsDevCertUploadError', response.errorMessage);
+//					} else {
+//						self.transitionToRoute('user');
+//					}
+//				}
+//			});
 		}
 	}
 });
+
+
+

@@ -20,6 +20,8 @@
  */
 package com.roquito.web.dto;
 
+import java.util.Map;
+
 /**
  * Created by puran
  */
@@ -32,7 +34,8 @@ public class ApplicationDto {
     private String applicationSecret;
     private String websiteLink;
     private String pricingPlan;
-    
+    private Map<String, String> configParams;
+
     public String getApplicationId() {
         return applicationId;
     }
@@ -95,5 +98,13 @@ public class ApplicationDto {
     
     public void setPricingPlan(String pricingPlan) {
         this.pricingPlan = pricingPlan;
+    }
+
+    public Map<String, String> getConfigParams() {
+        return configParams;
+    }
+
+    public void setConfigParams(Map<String, String> configParams) {
+        this.configParams = configParams;
     }
 }

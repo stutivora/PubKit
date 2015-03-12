@@ -98,25 +98,41 @@ App.NetworkService = Ember.Object.extend({
 			url = url +  "?access_token=" + App.Session.accessToken;
 		}
 		return Ember.$.getJSON(url)
-		.then(undefined, function(error) {
-			callback(error);
-        })
-		.then(function(response) {
-			callback(response);
-		});
+		.then(undefined, callback)
+		.then(callback);
+	},
+	
+	uploadFileData : function(urlPath, uploadData, callback) {
+		var url = urlPath;
+		if (App.Validator.isValid(App.Session.accessToken)) {
+			url = url +  "?access_token=" + App.Session.accessToken;
+		}
+		Ember.$.ajax({
+			url: url,
+			data: uploadData,
+			dataType: 'json',
+			processData: false,
+			contentType: false,
+			type: 'POST',
+			success: function(response){
+				callback(response)
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {
+		        callback(null);
+		    }
+	  });
 	}
 }).create();
 
 Ember.Handlebars.registerHelper('renderTab', function(context, tab, options) {
-	contextString = options.hash.contextString
-	tab = options.data.view.getStream(tab).value()
+	tab = options.data.view.getStream(tab).value();
+	tab.userApp = this.get('userApp');
+	tab.appConfig = this.get('appConfig');
 	
-	return Ember.Handlebars.helpers.render(tab.name, contextString, options)	
+	return Ember.Handlebars.helpers.render(tab.name, options);	
 });
 
 App.IndexRoute = Ember.Route.extend({
 	setupController : function(controller) {
-		//setup properties related to index controller!
-		controller.set("test", "puran is awesome");
 	}
 });

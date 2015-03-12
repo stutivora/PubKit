@@ -23,8 +23,15 @@ App.Application = Ember.Object.extend({
     pricingPlan : "",
 });
 
+App.ApplicationConfig = Ember.Object.extend({
+	androidGcmKey: "",
+    devApnsCertFile : "",
+    prodApnsCertFile : "",
+    devApnsCertPassword : "",
+    prodApnsCertPassword : ""
+});
+
 App.Tab = Ember.Object.extend({
 	name : "",
-	active : false,
-	application:{}
+	active : false
 });

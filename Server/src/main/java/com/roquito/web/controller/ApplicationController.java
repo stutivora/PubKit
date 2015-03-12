@@ -112,60 +112,61 @@ public class ApplicationController extends BaseController {
     @RequestMapping(value = "/config", method = RequestMethod.POST)
     public ConfigResponse updateAppConfig(@RequestBody AppConfigDto configDto) {
         validateAccessToken();
+        return null;
         
-        if (configDto == null || isEmpty(configDto.getType())) {
-            LOG.debug("Missing application data for creating application config");
-            return new ConfigResponse(null, true, "Missing required data");
-        }
-        Application savedApplication = applicationService.findByApplicationId(configDto.getApplicationId());
-        if (savedApplication == null) {
-            throw new RoquitoServerException("Wrong application identifier");
-        }
-        
-        if (!DataConstants.TYPE_ANDROID.equals(configDto.getType())
-                && !DataConstants.TYPE_IOS.equals(configDto.getType())) {
-            return new ConfigResponse(null, true, "Wrong type defined");
-        }
-        
-        Map<String, String> params = new HashMap<>();
-        
-        if (DataConstants.TYPE_ANDROID.equals(configDto.getType())) {
-            params.put(DataConstants.ANDROID_GCM_KEY, configDto.getAndroidGCMKey());
-        } else if (DataConstants.TYPE_IOS.equals(configDto.getType())) {
-            params.put(DataConstants.DEV_APNS_CERT_FILE_PATH, configDto.getApnsDevCertFilePath());
-            params.put(DataConstants.DEV_APNS_CERT_PASSWORD, configDto.getApnsDevCertPassword());
-            params.put(DataConstants.PROD_APNS_CERT_FILE_PATH, configDto.getApnsProdCertFilePath());
-            params.put(DataConstants.PROD_APNS_CERT_PASSWORD, configDto.getApnsDevCertPassword());
-        }
-        
-        List<ApplicationConfig> appConfigs = savedApplication.getApplicationConfigs();
-        ApplicationConfig applicationConfig = null;
-        if (appConfigs == null) {
-            appConfigs = new ArrayList<>();
-            applicationConfig = new ApplicationConfig();
-            applicationConfig.setType(configDto.getType());
-            
-            appConfigs.add(applicationConfig);
-        } else {
-            for (ApplicationConfig config : appConfigs) {
-                if (config.getType().equals(configDto.getType())) {
-                    applicationConfig = config;
-                    break;
-                }
-            }
-        }
-        if (applicationConfig != null) {
-            applicationConfig.setConfigParams(params);
-            
-            savedApplication.setApplicationConfigs(appConfigs);
-            // update
-            String internalId = applicationService.saveApplication(savedApplication);
-            if (internalId != null) {
-                LOG.info("Application config updated for application:" + savedApplication.getApplicationId());
-                return new ConfigResponse("SUCCESS", false, null);
-            }
-        }
-        throw new RoquitoServerException("Error updating application config. Try again later.");
+//        if (configDto == null || isEmpty(configDto.getType())) {
+//            LOG.debug("Missing application data for creating application config");
+//            return new ConfigResponse(null, true, "Missing required data");
+//        }
+//        Application savedApplication = applicationService.findByApplicationId(configDto.getApplicationId());
+//        if (savedApplication == null) {
+//            throw new RoquitoServerException("Wrong application identifier");
+//        }
+//        
+//        if (!DataConstants.TYPE_ANDROID.equals(configDto.getType())
+//                && !DataConstants.TYPE_IOS.equals(configDto.getType())) {
+//            return new ConfigResponse(null, true, "Wrong type defined");
+//        }
+//        
+//        Map<String, String> params = new HashMap<>();
+//        
+//        if (DataConstants.TYPE_ANDROID.equals(configDto.getType())) {
+//            params.put(DataConstants.ANDROID_GCM_KEY, configDto.getAndroidGCMKey());
+//        } else if (DataConstants.TYPE_IOS.equals(configDto.getType())) {
+//            params.put(DataConstants.DEV_APNS_CERT_FILE, configDto.getApnsDevCertFilePath());
+//            params.put(DataConstants.DEV_APNS_CERT_PASSWORD, configDto.getApnsDevCertPassword());
+//            params.put(DataConstants.PROD_APNS_CERT_FILE, configDto.getApnsProdCertFilePath());
+//            params.put(DataConstants.PROD_APNS_CERT_PASSWORD, configDto.getApnsDevCertPassword());
+//        }
+//        
+//        List<ApplicationConfig> appConfigs = savedApplication.getApplicationConfigs();
+//        ApplicationConfig applicationConfig = null;
+//        if (appConfigs == null) {
+//            appConfigs = new ArrayList<>();
+//            applicationConfig = new ApplicationConfig();
+//            applicationConfig.setType(configDto.getType());
+//            
+//            appConfigs.add(applicationConfig);
+//        } else {
+//            for (ApplicationConfig config : appConfigs) {
+//                if (config.getType().equals(configDto.getType())) {
+//                    applicationConfig = config;
+//                    break;
+//                }
+//            }
+//        }
+//        if (applicationConfig != null) {
+//            applicationConfig.setConfigParams(params);
+//            
+//            savedApplication.setApplicationConfigs(appConfigs);
+//            // update
+//            String internalId = applicationService.saveApplication(savedApplication);
+//            if (internalId != null) {
+//                LOG.info("Application config updated for application:" + savedApplication.getApplicationId());
+//                return new ConfigResponse("SUCCESS", false, null);
+//            }
+//        }
+//        throw new RoquitoServerException("Error updating application config. Try again later.");
     }
     
     @RequestMapping(value = "{applicationId}", method = RequestMethod.GET)

@@ -37,3 +37,4 @@ workspace/
 .store.p
 *.log
 application.properties
+logs/

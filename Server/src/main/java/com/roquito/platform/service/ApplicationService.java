@@ -20,16 +20,8 @@
  */
 package com.roquito.platform.service;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-
-import com.mongodb.gridfs.GridFS;
-import com.mongodb.gridfs.GridFSInputFile;
-import com.roquito.platform.model.Application;
-import com.roquito.platform.model.User;
-import com.roquito.platform.persistence.MongoDB;
 
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.Datastore;
@@ -41,6 +33,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.mongodb.gridfs.GridFS;
+import com.mongodb.gridfs.GridFSInputFile;
+import com.roquito.platform.model.Application;
+import com.roquito.platform.model.User;
+import com.roquito.platform.persistence.MongoDB;
 
 /**
  * Created by puran
@@ -90,19 +88,14 @@ public class ApplicationService extends BasicDAO<Application, String> {
         }
     }
     
-    public boolean saveFile(File inputFile, String fileName) {
+    public String saveFile(byte[] fileData, String fileName) {
         GridFS gridFs = new GridFS(mongoDB.getDataStore().getDB(), "roquito");
-        GridFSInputFile gfsFile;
-        try {
-            gfsFile = gridFs.createFile(inputFile);
-            gfsFile.setFilename(fileName);
-            gfsFile.save();
-            
-            return true;
-        } catch (IOException e) {
-            LOG.error("Error saving a file to GridFS", e);
-        }
-        return false;
+        GridFSInputFile gfsFile = gridFs.createFile(fileData);
+        
+        gfsFile.setFilename(fileName);
+        gfsFile.save();
+        
+        return gfsFile.getId().toString();
     }
     
     public String getNextApplicationId() {

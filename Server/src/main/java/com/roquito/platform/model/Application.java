@@ -20,11 +20,16 @@
  */
 package com.roquito.platform.model;
 
-import org.bson.types.ObjectId;
-import org.mongodb.morphia.annotations.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import org.bson.types.ObjectId;
+import org.mongodb.morphia.annotations.Embedded;
+import org.mongodb.morphia.annotations.Entity;
+import org.mongodb.morphia.annotations.Id;
+import org.mongodb.morphia.annotations.Indexed;
+import org.mongodb.morphia.annotations.Reference;
 
 /**
  * Created by puran
@@ -44,12 +49,12 @@ public class Application {
     private String applicationDescription;
     private String websiteLink;
     private String pricingPlan;
+    private Map<String, String> configParams;
+    
     @Reference
     private User owner;
     @Embedded
     private List<ApplicationUser> applicationUsers;
-    @Embedded
-    private List<ApplicationConfig> applicationConfigs;
     private Date createdDate;
     
     public ObjectId getId() {
@@ -124,20 +129,20 @@ public class Application {
         this.pricingPlan = pricingPlan;
     }
     
+    public Map<String, String> getConfigParams() {
+        return configParams;
+    }
+
+    public void setConfigParams(Map<String, String> configParams) {
+        this.configParams = configParams;
+    }
+
     public List<ApplicationUser> getApplicationUsers() {
         return applicationUsers;
     }
     
     public void setApplicationUsers(List<ApplicationUser> applicationUsers) {
         this.applicationUsers = applicationUsers;
-    }
-    
-    public List<ApplicationConfig> getApplicationConfigs() {
-        return applicationConfigs;
-    }
-    
-    public void setApplicationConfigs(List<ApplicationConfig> applicationConfigs) {
-        this.applicationConfigs = applicationConfigs;
     }
     
     public Date getCreatedDate() {
@@ -149,14 +154,9 @@ public class Application {
     }
     
     public String getAndroidGCMKey() {
-        List<ApplicationConfig> appConfigs = this.getApplicationConfigs();
-        for (ApplicationConfig appConfig : appConfigs) {
-            if (DataConstants.TYPE_ANDROID.equals(appConfig.getType())) {
-                Map<String, String> params = appConfig.getConfigParams();
-                if (params != null) {
-                    return params.get(DataConstants.ANDROID_GCM_KEY);
-                }
-            }
+        Map<String, String> params = this.getConfigParams();
+        if (params != null) {
+            return params.get(DataConstants.ANDROID_GCM_KEY);
         }
         return null;
     }

@@ -7,15 +7,13 @@
 html body {
 	width:100%; height:100%;
 	font-family: 'Roboto Slab', serif;
-	color: #777777;
+	color: #666666;
 }
 
 .wrap { 
 	min-height:680px;   
-}
-
-a {
-	font-family: 'Arvo', serif;
+	width:1140px;
+	margin:auto;
 }
 
 p {
@@ -189,7 +187,7 @@ p {
 
 .logo {
 	color: #3cb0fd;
-	font-size: 22px;
+	font-size: 24px;
 	font-family: 'Arvo', serif;
 	font-weight: 800;
 }
@@ -248,8 +246,27 @@ a.logout-link:hover {
 }
 
 .app-settings-input {
-	width:360px;
+	width:340px;
+	margin-top: -4px;
 }
+.custom-file-upload {
+      background: #ddd;
+      border: 1px solid #aaa;
+	  border-top: 1px solid #ccc;
+	  border-left: 1px solid #ccc;
+	  -moz-border-radius: 3px;
+	  -webkit-border-radius: 3px;
+	  border-radius: 3px;
+	  color: #444;
+	  display: inline-block;
+	  font-size: 11px;
+	  font-weight: bold;
+	  text-decoration: none;
+	  text-shadow: 0 1px rgba(255, 255, 255, .75);
+	  cursor: pointer;
+	  margin-bottom: 20px;
+	  line-height: normal;
+	  padding: 8px 10px; }
 
 h4.app-key-text {
 	color:#666666;
@@ -259,8 +276,13 @@ h4.app-key-text {
 
 .file-path-text {
 	font-style:italic;
-	font-size:16px;
+	font-size:15px;
 	color:#444444;
+}
+
+ul.attachments {
+	list-style:none;
+	padding-left: 1px;
 }
 
 hr {

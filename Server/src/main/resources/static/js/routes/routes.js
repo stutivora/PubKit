@@ -87,9 +87,31 @@ App.AppsNewRoute = App.LoginRequiredRoute.extend({
 	}
 });
 
-App.UserAppRoute = App.LoginRequiredRoute.extend({
-	application : {},
+App.UserAppRoute = App.LoginRequiredRoute.extend({	
+	allTabs : function() {
+		var tabs = Array();
+		tabs.addObject(App.Tab.create({
+			name:'Settings',
+			active:true
+		}));
+		tabs.addObject(App.Tab.create({
+			name:'Push',
+			active:false
+		}));
+		tabs.addObject(App.Tab.create({
+			name:'Logs',
+			active:false
+		}));
+		
+		return tabs;
+	},
+	
 	model: function(params) {
+		var userApp = Ember.Object.extend({
+			tabs: this.allTabs(),
+			application: {}
+		}).create();
+		
 		var applicationId = params.app_id;
 		var savedApps = App.Session.applications;
 		if (savedApps != null && savedApps.length > 0) {
@@ -97,8 +119,8 @@ App.UserAppRoute = App.LoginRequiredRoute.extend({
 			for (var i = 0; i < appCount; i++) {
 			    var application = App.Session.applications[i];
 			    if (application.applicationId === applicationId) {
-			    	this.set('application', application);
-			    	return application;
+			    	userApp.set('application', application);
+			    	return userApp;
 			    }
 			}
 		} else {
@@ -106,8 +128,8 @@ App.UserAppRoute = App.LoginRequiredRoute.extend({
 			return App.NetworkService.jsonGET("/applications/"+applicationId, function(response) {
 				if (App.Validator.isValidResponse(response)) {
 					if (response.application) {
-						self.set('application', response.application);
-						return response.application;
+						userApp.set('application', response.application);
+						return userApp;
 					}
 				}
 				self.handleError(response);
@@ -116,26 +138,18 @@ App.UserAppRoute = App.LoginRequiredRoute.extend({
 	},
 	
 	setupController : function(controller, model) {
-		var detailTab = App.Tab.create();
-		detailTab.name = 'Application Settings';
-		detailTab.active = true;
+		var appConfig = App.ApplicationConfig.create({
+			androidGcmKey:"333333"
+		});
 		
-		var logsTab = App.Tab.create();
-		logsTab.name = 'Logs';
-		logsTab.active = false;
-		
-		var pushTab = App.Tab.create();
-		pushTab.name = 'Push';
-		pushTab.active = false;
-		
-		var tabs = Array();
-		tabs.push(detailTab);
-		tabs.push(pushTab);
-		tabs.push(logsTab);
-		
-		
-		controller.set("tabs", tabs);
-		controller.set("application", this.get('application'));
-		detailTab.set('application', this.get('application'));
+		controller.set('userApp', model);
+		controller.set('appConfig', appConfig)
+	},
+	
+	actions: {
+		invalidateModel: function() {
+			Ember.Logger.log('Route is now refreshing...');
+			this.refresh();
+		}
 	}
 });

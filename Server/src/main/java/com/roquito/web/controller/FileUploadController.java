@@ -20,8 +20,6 @@
  */
 package com.roquito.web.controller;
 
-import java.io.File;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -31,6 +29,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.roquito.web.response.UploadResponse;
+
 /**
  * Created by puran
  */
@@ -38,38 +38,45 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileUploadController extends BaseController {
     private static final Logger LOG = LoggerFactory.getLogger(FileUploadController.class);
     
-    @RequestMapping(value = "/upload", method = RequestMethod.GET)
+    private static final String TYPE_CERT = "cert";
+    
+    @RequestMapping(value = "/upload_cert", method = RequestMethod.GET)
     public @ResponseBody String provideUploadInfo() {
         return "You can upload a file by posting to this same URL.";
     }
     
-    @RequestMapping(value = "/upload", method = RequestMethod.POST)
-    public @ResponseBody String handleFileUpload(@RequestParam("name") String fileName,
-            @RequestParam("file") MultipartFile multipartFile) {
+    @RequestMapping(value = "/upload_cert", method = RequestMethod.POST)
+    public @ResponseBody UploadResponse handleFileUpload(@RequestParam("applicationId") String applicationId,
+            @RequestParam("fileType") String fileType, @RequestParam("file") MultipartFile multipartFile) {
+        
         LOG.debug("Upload request received for file size:" + multipartFile.getSize());
         validateAccessToken();
         
-        if (!multipartFile.isEmpty()) {
+        if (multipartFile != null && !multipartFile.isEmpty()) {
+            String fileName = multipartFile.getOriginalFilename();
             try {
-                File inputFile = new File(multipartFile.getOriginalFilename());
-                multipartFile.transferTo(inputFile);
-                if (inputFile != null) {
+                if (TYPE_CERT.equalsIgnoreCase(fileType)) {
                     if (!".p12".endsWith(multipartFile.getOriginalFilename())
                             || !".cert".endsWith(multipartFile.getOriginalFilename())) {
                         LOG.debug("Invalid file upload type received");
-                        return "Invalid file type";
-                    }
-                    boolean result = applicationService.saveFile(inputFile, fileName);
-                    if (result) {
-                        return "Successfully uploaded " + fileName + "!";
+                        
+                        return new UploadResponse("Invalid file type");
                     }
                 }
-                return "Failed to upload " + fileName + ". Internal server error";
+                byte[] fileData = multipartFile.getBytes();
+                String uploadId = applicationService.saveFile(fileData, fileName);
+                if (uploadId != null) {
+                    return new UploadResponse(uploadId, false, null);
+                }
+                
+                return new UploadResponse("Failed to upload " + fileName);
             } catch (Exception e) {
-                return "Failed to upload " + fileName + " => " + e.getMessage();
+                LOG.error("Error uploading file", e);
+                return new UploadResponse("Failed to upload " + fileName);
             }
         } else {
-            return "Failed to upload " + fileName + " because the file was empty.";
+            LOG.error("Error uploading file");
+            return new UploadResponse("Failed to upload");
         }
     }
     
