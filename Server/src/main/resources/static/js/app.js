@@ -132,6 +132,18 @@ Ember.Handlebars.registerHelper('renderTab', function(context, tab, options) {
 	return Ember.Handlebars.helpers.render(tab.name, options);	
 });
 
+var ApplicationRoute = Ember.Route.extend({
+	  actions: {
+	    loading: function() {
+	      var _app = this.controllerFor('application');
+	      _app.get('loading').trigger(true);
+	      this.router.one('didTransition', function() {
+	        _app.get('loading').trigger(false);
+	      });
+	    }
+	  }
+	});
+
 App.IndexRoute = Ember.Route.extend({
 	setupController : function(controller) {
 	}

@@ -93,6 +93,8 @@ public class ApplicationController extends BaseController {
         newApplication.setPricingPlan(applicationDto.getPricingPlan());
         
         newApplication.setOwner(owner);
+        //Create with empty config
+        newApplication.setConfigParams(new HashMap<String, String>());
         
         newApplication.setCreatedDate(new Date());
         

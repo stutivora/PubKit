@@ -13,27 +13,45 @@ App.NavbarController = Ember.ArrayController.extend({
 });
 
 App.SignupController = Ember.Controller.extend({
-	
+	inProgress : false,
+    buttonText : "Create Account",
+    
 	actions : {
 		createAccount : function() {
 			this.set('errorMessage', null);
 			
 			var user = this.get("user");
+
+			var validationError = false;
 			var validator = App.Validator;
+			var errorMessage = '';
+			
 			if (validator.isEmpty(user.email) || validator.isEmpty(user.fullName) || 
 					validator.isEmpty(user.password) || validator.isEmpty(user.confirmPassword)) {
-				this.set('errorMessage', 'Missing required input');
-				return;
+				errorMessage = 'Missing required input';
+				validationError = true;
 			}
-			if (user.password !== user.confirmPassword) {
-				this.set('errorMessage', 'Passwords doesn\'t match');
-				return;
+			if (!validationError && user.password !== user.confirmPassword) {
+				errorMessage = 'Passwords doesn\'t match';
+				validationError = true;
 			}
-			if (!App.Validator.validateEmail(user.email)) {
-				this.set('errorMessage', 'Invalid Email');
-				return;
+			if (!validationError && !App.Validator.validateEmail(user.email)) {
+				errorMessage = 'Invalid Email';
+				validationError = true;
 			}
+			
 			var self = this;
+			if (validationError) {
+				this.set('errorMessage', errorMessage);
+				
+				//hack to do the refresh after this event loop!
+				Ember.run.later(function(){
+	                self.set('inProgress', false);
+	            }, 1);
+				
+				return;
+			}
+			
 			//ready to POST
 			App.NetworkService.jsonPOST("/users", user, function(response, error) {
 				if (App.Validator.isValidResponse(response)) {
@@ -45,6 +63,9 @@ App.SignupController = Ember.Controller.extend({
 				} else {
 					self.set('errorMessage', 'Sorry, Error creating user');
 				}
+				Ember.run.later(function(){
+	                self.set('inProgress', false);
+	            }, 1);
 			});
 		},
 
@@ -55,22 +76,36 @@ App.SignupController = Ember.Controller.extend({
 });
 
 App.LoginController = Ember.Controller.extend({
+	inProgress : false,
+    buttonText : "Log In",
+    
 	actions : {
 		login : function() {
 			this.set('errorMessage', null);
 
 			var login = this.get("login");
+			
+			var validationError = false;
+			var errorMessage = '';
 			if (App.Validator.isEmpty(login.email)
 					|| App.Validator.isEmpty(login.password)) {
-				this.set('errorMessage', 'Both email and password required');
-				return;
+				errorMessage ='Both email and password required';
+				validationError = true;
 			}
-			if (!App.Validator.validateEmail(login.email)) {
-				this.set('errorMessage', 'Invalid Email');
-				return;
+			if (!validationError && !App.Validator.validateEmail(login.email)) {
+				errorMessage = 'Invalid Email';
+				validationError = true;
 			}
-
+			
 			var self = this;
+			if (validationError) {
+				Ember.run.later(function(){
+	                self.set('inProgress', false);
+	            }, 1);
+				
+				return;
+			}
+			
 			// ready to LOG IN
 			App.NetworkService.jsonPOST("/users/login", login, function(response, error) {
 				if (App.Validator.isValidResponse(response)) {
@@ -82,9 +117,11 @@ App.LoginController = Ember.Controller.extend({
 						self.transitionToRoute('user');
 					}
 				} else {
-					self.set('errorMessage',
-							'Oops, Something went wrong. Please try again.');
+					self.set('errorMessage', 'Oops, Something went wrong. Please try again.');
 				}
+				Ember.run.later(function(){
+	                self.set('inProgress', false);
+	            }, 1);
 			});
 		},
 
@@ -95,6 +132,9 @@ App.LoginController = Ember.Controller.extend({
 });
 
 App.AppsNewController = Ember.Controller.extend({
+	inProgress : false,
+    buttonText : "Register",
+    
 	actions : {
 		registerApplication : function() {
 			this.set('errorMessage', null);
@@ -104,6 +144,10 @@ App.AppsNewController = Ember.Controller.extend({
 					|| App.Validator.isEmpty(newApp.applicationDescription) 
 					|| App.Validator.isEmpty(newApp.websiteLink)) {
 				this.set('errorMessage', 'Missing required input');
+				Ember.run.later(function(){
+	                self.set('inProgress', false);
+	            }, 1);
+				
 				return;
 			}
 			newApp.userId = App.Session.userId;
@@ -120,6 +164,9 @@ App.AppsNewController = Ember.Controller.extend({
 				} else {
 					self.set('errorMessage', 'Oops, Something went wrong. Please try again.');
 				}
+				Ember.run.later(function(){
+	                self.set('inProgress', false);
+	            }, 1);
 			});
 		},
 		
