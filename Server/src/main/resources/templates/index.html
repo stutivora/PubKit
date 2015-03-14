@@ -27,7 +27,8 @@
 <body style="margin: 0px; padding: 0px">
 
 <script type="text/x-handlebars">
-	<nav class="nav">
+	<div id="successAlert" class="hidden alert alert-success success-text" role="alert">Save Success</div>
+	<nav class="top-nav nav">
   		{{render "navbar"}}
 	</nav>
 	<div class="wrap">
@@ -57,17 +58,17 @@
 </script>
 
 <script type="text/x-handlebars" id="navbar">
-<div class="container">
+<div class="nav-container">
     		<div class="navbar-header">
       			<a class="navbar-brand" href="#">
-        			<p class="logo">Roquito</p>
+        			<p class="logo">mKit.IO</p>
       			</a>
     		</div>
 			{{shit}}
 			<ul class="nav navbar-nav navbar-right">
  				{{#if hasToken}}
 					<li><p class="logout-text">Hello There,</p></li>
-  					<li>{{#link-to 'logout' class="logout-link"}}Sign out{{/link-to}}</li>
+  					<li>{{#link-to 'logout' class="logout-link"}}Sign Out{{/link-to}}</li>
 				{{else}}
   					<li>{{#link-to 'login'}}Login{{/link-to}}</li>
 					<li>{{#link-to 'signup'}}Sign Up{{/link-to}}</li>
@@ -287,7 +288,7 @@
 	<div class="row">
 		<div class="col-xs-2"></div>
 		<div class="col-md-2"><h4 class="app-key-text pull-right">Android GCM Key</h4></div>
-  		<div class="col-xs-6">{{input valueBinding="tab.appConfig.androidGcmKey" class="form-control pull-left app-settings-input" id="androidGcmKey" value=tab.appConfig.androidGcmKey}}</div>
+  		<div class="col-xs-6">{{input valueBinding="tab.appConfig.androidGCMKey" class="form-control pull-left app-settings-input" id="androidGCMKey" value=tab.appConfig.androidGCMKey}}</div>
 	</div>
 	<div class="row">
 		<h1></h1>
@@ -302,12 +303,13 @@
 		<div class="col-xs-2"></div>
 		<div class="col-md-2"><h4 class="app-key-text pull-right">Dev Certificate</h4></div>
 		<div class="col-md-6">
-			{{#if tab.appConfig.devApnsCertFile}}
-				<p class="lead file-path-text">{{tab.appConfig.devApnsCertFile}}</p>
+			{{#if tab.appConfig.apnsDevCertFileName}}
+				<p class="file-path-text"><a href="#">{{tab.appConfig.apnsDevCertFileName}}</a></p>
 			{{else}}
 				<p class="file-path-text">Certificate Not Uploaded</p>
 			{{/if}}
-			<input name="apnsDevCertFile" id="apnsDevCertFile" type="file" /><br/>
+			{{file-picker inputId="apnsDevCertFile" outputName="apnsDevCertFileName"}}
+			<br>
 		</div>
 	<div class="row">
 		<h1></h1>
@@ -315,7 +317,7 @@
 	<div class="row">
 		<div class="col-xs-2"></div>
 		<div class="col-md-2"><h4 class="app-key-text pull-right">Dev Password</h4></div>
-  		<div class="col-xs-6">{{input valueBinding="tab.appConfig.devApnsCertPassword" class="form-control pull-left app-settings-input" id="apnsDevPassword" placeholder=""}}</div>
+  		<div class="col-xs-6">{{input valueBinding="tab.appConfig.apnsDevCertPassword" class="form-control pull-left app-settings-input" id="apnsDevPassword" placeholder=""}}</div>
 	</div>
 	<div class="row">
 		<h1></h1>
@@ -328,12 +330,12 @@
 		<div class="col-xs-2"></div>
 		<div class="col-md-2"><h4 class="app-key-text pull-right">Prod Certificate</h4></div>
 		<div class="col-md-6">
-			{{#if tab.appConfig.prodApnsCertFile}}
-				<p class="file-path-text">{{tab.appConfig.prodApnsCertFile}}</p>
+			{{#if tab.appConfig.apnsProdCertFileName}}
+				<p class="file-path-text"><a href="#">{{tab.appConfig.apnsProdCertFileName}}</a></p>
 			{{else}}
 				<p class="file-path-text">Certificate Not Uploaded</p>
 			{{/if}}
-			<input name="apnsProdCertFile" id="apnsProdCertFile" type="file" /><br/>
+			{{file-picker inputId="apnsProdCertFile" outputName="apnsProdCertFileName"}}
 		</div>
 	</div>
 	<div class="row">
@@ -342,10 +344,16 @@
 	<div class="row">
 		<div class="col-xs-2"></div>
 		<div class="col-md-2"><h4 class="app-key-text pull-right">Prod Password</h4></div>
-  		<div class="col-xs-6">{{input valueBinding="tab.appConfig.prodApnsCertPassword" class="form-control pull-left app-settings-input" id="apnsProdPassword" placeholder=""}}</div>
+  		<div class="col-xs-6">{{input valueBinding="tab.appConfig.apnsProdCertPassword" class="form-control pull-left app-settings-input" id="apnsProdPassword" placeholder=""}}</div>
 	</div>
 	<div class="row">
-		<button {{action 'updateAppConfig'}} class="btn btn-primary pull-right">Update Settings</button>
+		<h1></h1>
+	</div>
+	<div class="row">
+		<div class="col-md-6"></div>
+		<div class="col-md-6">
+			{{spin-button inProgress = tab.updateInProgress buttonText=tab.updateButtonText action='updateAppConfig' class='update-settings-btn pull-right'}}
+		</div>
 	</div>
 	<br><br>
 </script>
@@ -363,6 +371,15 @@
             {{buttonText}}
         {{/if}}
     </button>
+</script>
+
+<script type='text/x-handlebars' id='components/file-picker'>
+    <div class="file-upload-override-button btn-success btn left">
+		Upload New Certificate
+		<input type="file" class="file-upload-button" id="{{unbound inputId}}" name="{{unbound inputId}}"/>
+	</div>
+	<div class="file-upload-filename left" id="{{unbound outputName}}"></div>
+	<div class="both"></div>
 </script>
 
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->

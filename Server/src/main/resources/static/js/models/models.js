@@ -24,11 +24,14 @@ App.Application = Ember.Object.extend({
 });
 
 App.ApplicationConfig = Ember.Object.extend({
-	androidGcmKey: "",
-    devApnsCertFile : "",
-    prodApnsCertFile : "",
-    devApnsCertPassword : "",
-    prodApnsCertPassword : ""
+	applicationId:"",
+	androidGCMKey: "",
+    apnsDevCertFileId : "",
+    apnsDevCertFileName : "",
+    apnsDevCertPassword : "",
+    apnsProdCertFileId : "",
+    apnsProdCertFileName : "",
+    apnsProdCertPassword : ""
 });
 
 App.Tab = Ember.Object.extend({

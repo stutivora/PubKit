@@ -21,8 +21,13 @@ p {
 	font-weight:300;
 }
 
-.nav {
-	background: #fff;
+.nav-container {
+	margin:0px 14px;
+	background-color:#ecf0f1;
+}
+
+.top-nav {
+	background: #fefefe;
 }
 
 .nav a {
@@ -49,7 +54,7 @@ p {
 	border-radius: 4px;
 	color: #ffffff;
 	font-size: 18px;
-	padding: 15px 40px 15px 40px;
+	padding: 12px 30px 12px 30px;
 	text-decoration: none;
 	border: 0px;
 }
@@ -268,17 +273,24 @@ a.logout-link:hover {
 	  padding: 8px 10px; }
 
 h4.app-key-text {
-	color:#666666;
-	font-weight:normal;
-	font-size:16px;
+	color: #555555;
+	font-weight: 300;
+	font-size: 16px;
 }
 
 .file-path-text {
 	font-weight:300;
 	font-style:italic;
-	font-size:15px;
 	font-family: 'Arvo', serif;
-	color:#999999;
+}
+
+.success-text {
+	text-align:center;
+	font-size:24px;
+}
+
+.hidden {
+	display:none;
 }
 
 ul.attachments {
@@ -383,4 +395,43 @@ p.copyright {
     transform: scaleY(1.0);
     -webkit-transform: scaleY(1.0);
   }
+}
+
+.update-settings-btn {
+	padding: 10px 30px 10px 30px;
+}
+
+.left {
+	float: left;
+}
+.both {
+	clear: both;
+}
+.file-upload-container {
+	width:500px;
+	padding:4px;
+}
+.file-upload-override-button {
+	margin:0px;
+	position: relative;
+	overflow: hidden;
+	cursor: pointer;
+	font-size:15px;
+}
+.file-upload-override-button:active {
+	position:relative; top:1px;
+}
+.file-upload-button {
+	position: absolute;
+	height: 50px;
+	top: -10px;
+	left: -10px;
+	cursor: pointer;
+	opacity: 0;
+	filter:alpha(opacity=0);
+}
+
+.file-upload-filename {
+	height: auto;
+	padding: 8px;
 }

@@ -25,8 +25,12 @@ package com.roquito.platform.model;
  */
 public final class DataConstants {
     public static final String ANDROID_GCM_KEY = "androidGCMKey";
-    public static final String DEV_APNS_CERT_FILE = "devApnsCertFile";
-    public static final String PROD_APNS_CERT_FILE = "prodApnsCertFile";
-    public static final String DEV_APNS_CERT_PASSWORD = "devApnsCertPassword";
-    public static final String PROD_APNS_CERT_PASSWORD = "prodApnsCertPassword";
+    
+    public static final String APNS_DEV_CERT_FILE_ID = "apnsDevCertFileId";
+    public static final String APNS_DEV_CERT_FILE_NAME = "apnsDevCertFileName";
+    public static final String APNS_DEV_CERT_PASSWORD = "apnsDevCertPassword";
+    
+    public static final String APNS_PROD_CERT_FILE_ID = "apnsProdCertFileId";
+    public static final String APNS_PROD_CERT_FILE_NAME = "apnsProdCertFileName";
+    public static final String APNS_PROD_CERT_PASSWORD = "apnsProdCertPassword";
 }

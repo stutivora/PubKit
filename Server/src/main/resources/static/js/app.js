@@ -126,8 +126,12 @@ App.NetworkService = Ember.Object.extend({
 
 Ember.Handlebars.registerHelper('renderTab', function(context, tab, options) {
 	tab = options.data.view.getStream(tab).value();
+	
 	tab.userApp = this.get('userApp');
 	tab.appConfig = this.get('appConfig');
+	
+	tab.updateButtonText = 'Update Settings';
+	tab.updateInProgress = false;
 	
 	return Ember.Handlebars.helpers.render(tab.name, options);	
 });

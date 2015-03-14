@@ -74,6 +74,7 @@ public class ApplicationService extends BasicDAO<Application, String> {
         }
         Key<Application> applicationKey = this.save(application);
         ObjectId objectId = (ObjectId) applicationKey.getId();
+        LOG.info("Saved new application");
         
         return objectId.toString();
     }
@@ -94,6 +95,7 @@ public class ApplicationService extends BasicDAO<Application, String> {
         
         gfsFile.setFilename(fileName);
         gfsFile.save();
+        LOG.info("Saved new file :"+fileName);
         
         return gfsFile.getId().toString();
     }

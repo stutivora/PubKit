@@ -112,16 +112,20 @@ public class BaseController {
         return !RoquitoUtils.hasValue(value);
     }
     
-    protected ApplicationDto getApplicationDto(Application application) {
+    protected ApplicationDto getApplicationDto(Application application, boolean includeDetail) {
         ApplicationDto appDto = new ApplicationDto();
         
+        appDto.setApplicationId(application.getApplicationId());
         appDto.setApplicationName(application.getApplicationName());
         appDto.setApplicationDescription(application.getApplicationDescription());
-        appDto.setApplicationId(application.getApplicationId());
-        appDto.setApplicationKey(application.getApplicationKey());
-        appDto.setApplicationSecret(application.getApplicationSecret());
-        appDto.setWebsiteLink(application.getWebsiteLink());
-        appDto.setPricingPlan(application.getPricingPlan());
+        
+        if (includeDetail) {
+            appDto.setApplicationKey(application.getApplicationKey());
+            appDto.setApplicationSecret(application.getApplicationSecret());
+            appDto.setWebsiteLink(application.getWebsiteLink());
+            appDto.setPricingPlan(application.getPricingPlan());
+            appDto.setConfigParams(application.getConfigParams());
+        }
         
         return appDto;
     }

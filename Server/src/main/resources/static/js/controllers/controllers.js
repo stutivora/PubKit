@@ -177,7 +177,9 @@ App.AppsNewController = Ember.Controller.extend({
 });
 
 App.UserAppController = Ember.Controller.extend({
-
+	updateInProgress : false,
+	updateButtonText: 'Update Settings',
+	
 	updateTab : function(selectedTab) {
 		var userApp = this.get('userApp');
 		var tabs = userApp.tabs;
@@ -188,17 +190,55 @@ App.UserAppController = Ember.Controller.extend({
 			} else {
 				tab.set('active', false);
 			}
+		    tab.set('updateButtonText', 'Update Settings');
+			tab.set('updateInProgress', false);
 		}
 		userApp.set('tabs', tabs);
 	},
 	
-	updateApnsDevCertFile : function(certFile) {
-		var userApp = this.get('userApp');
-		var application = userApp.get('application');
-		application.set('apnsDevCertFile', "Puran_Singh_SARKI");
-		userApp.set('application', application);
-		
-		this.set('userApp', userApp);
+	uploadCert : function(fileObject) {
+		var self = this;
+		return new Promise(function(resolve, reject) {
+			if (fileObject == undefined || fileObject.files[0] == undefined || fileObject.files[0] == null ||
+					apnsDevCertFile.files[0] == '') {
+				resolve('');
+				return;
+			}
+			var uploadData = new FormData();
+
+			uploadData.append("file", fileObject.files[0]);
+			uploadData.append("applicationId", self.userApp.application.applicationId);
+			uploadData.append("fileType", "img");
+			
+			App.NetworkService.uploadFileData("/upload_cert", uploadData, function(response) {
+				if (App.Validator.isValidResponse(response)) {
+					if (response.error) {
+						reject('error');
+					} else {
+						resolve(response.uploadId);
+					}
+				}
+			});
+		});
+	},
+	
+	handleUpdateConfigError : function() {
+		alert('error saving');
+	},
+	
+	saveAppConfig : function(updatedConfig) {
+		var self = this;
+		App.NetworkService.jsonPOST("/applications/config", updatedConfig, function(response, error) {
+			if (App.Validator.isValidResponse(response)) {
+				if (response.error) {
+					self.set('errorMessage', response.errorMessage);
+				} else {
+					self.updateTab('Settings');
+				}
+			} else {
+				self.set('errorMessage', 'Oops, Something went wrong. Please try again.');
+			}
+		});
 	},
 	
 	actions : {
@@ -207,23 +247,29 @@ App.UserAppController = Ember.Controller.extend({
 		},
 		
 		updateAppConfig : function() {
-			if (apnsDevCertFile.files[0] == undefined || apnsDevCertFile.files[0] == null) {
-				return;
-			}
-			var uploadData = new FormData();
-			uploadData.append("file", apnsDevCertFile.files[0]);
-			uploadData.append("applicationId", this.userApp.application.applicationId);
-			uploadData.append("fileType", "img");
+			var updatedConfig = this.get('appConfig');
 			
-//			App.NetworkService.uploadFileData("/upload_cert", uploadData, function(response) {
-//				if (App.Validator.isValidResponse(response)) {
-//					if (response.error) {
-//						self.set('apnsDevCertUploadError', response.errorMessage);
-//					} else {
-//						self.transitionToRoute('user');
-//					}
-//				}
-//			});
+			var self = this;
+			var devFileUploadResult = this.uploadCert(apnsDevCertFile);
+			devFileUploadResult.then(function(devCertFileId) {
+				if (devCertFileId != '' && devCertFileId != 'error') {
+					updatedConfig.apnsDevCertFileId = devCertFileId;
+					updatedConfig.set('apnsDevCertFileName', apnsDevCertFile.files[0].name);
+				} 
+				var prodFileUploadResult = self.uploadCert(apnsProdCertFile);
+				prodFileUploadResult.then(function(prodCertFileId) {
+					if (prodCertFileId != '') {
+						updatedConfig.apnsProdCertFileId = prodCertFileId;
+						updatedConfig.set('apnsProdCertFileName', apnsProdCertFile.files[0].name);
+					}
+					//now trigger save config!!
+					self.saveAppConfig(updatedConfig);
+				}, function(reason) {
+					self.handleUpdateConfigError();
+				});
+			}, function(reason) {
+				self.handleUpdateConfigError();
+			});
 		}
 	}
 });

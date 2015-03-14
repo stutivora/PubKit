@@ -131,7 +131,7 @@ public class UserController extends BaseController {
         if (applications != null) {
             List<ApplicationDto> appDtos = new ArrayList<>();
             for (Application application : applications) {
-                ApplicationDto appDto = getApplicationDto(application);
+                ApplicationDto appDto = getApplicationDto(application, false);
                 appDtos.add(appDto);
             }
             return new ApplicationResponse(appDtos);

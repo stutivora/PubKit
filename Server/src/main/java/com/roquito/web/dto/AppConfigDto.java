@@ -25,11 +25,12 @@ package com.roquito.web.dto;
  */
 public class AppConfigDto {
     private String applicationId;
-    private String type;
     private String androidGCMKey;
-    private String apnsDevCertFilePath;
+    private String apnsDevCertFileId;
+    private String apnsDevCertFileName;
     private String apnsDevCertPassword;
-    private String apnsProdCertFilePath;
+    private String apnsProdCertFileId;
+    private String apnsProdCertFileName;
     private String apnsProdCertPassword;
     
     public String getApplicationId() {
@@ -40,14 +41,6 @@ public class AppConfigDto {
         this.applicationId = applicationId;
     }
     
-    public String getType() {
-        return type;
-    }
-    
-    public void setType(String type) {
-        this.type = type;
-    }
-    
     public String getAndroidGCMKey() {
         return androidGCMKey;
     }
@@ -55,36 +48,53 @@ public class AppConfigDto {
     public void setAndroidGCMKey(String androidGCMKey) {
         this.androidGCMKey = androidGCMKey;
     }
-    
-    public String getApnsDevCertFilePath() {
-        return apnsDevCertFilePath;
+
+    public String getApnsDevCertFileId() {
+        return apnsDevCertFileId;
     }
-    
-    public void setApnsDevCertFilePath(String apnsDevCertFilePath) {
-        this.apnsDevCertFilePath = apnsDevCertFilePath;
+
+    public void setApnsDevCertFileId(String apnsDevCertFileId) {
+        this.apnsDevCertFileId = apnsDevCertFileId;
     }
-    
+
+    public String getApnsDevCertFileName() {
+        return apnsDevCertFileName;
+    }
+
+    public void setApnsDevCertFileName(String apnsDevCertFileName) {
+        this.apnsDevCertFileName = apnsDevCertFileName;
+    }
+
     public String getApnsDevCertPassword() {
         return apnsDevCertPassword;
     }
-    
+
     public void setApnsDevCertPassword(String apnsDevCertPassword) {
         this.apnsDevCertPassword = apnsDevCertPassword;
     }
-    
-    public String getApnsProdCertFilePath() {
-        return apnsProdCertFilePath;
+
+    public String getApnsProdCertFileId() {
+        return apnsProdCertFileId;
     }
-    
-    public void setApnsProdCertFilePath(String apnsProdCertFilePath) {
-        this.apnsProdCertFilePath = apnsProdCertFilePath;
+
+    public void setApnsProdCertFileId(String apnsProdCertFileId) {
+        this.apnsProdCertFileId = apnsProdCertFileId;
     }
-    
+
+    public String getApnsProdCertFileName() {
+        return apnsProdCertFileName;
+    }
+
+    public void setApnsProdCertFileName(String apnsProdCertFileName) {
+        this.apnsProdCertFileName = apnsProdCertFileName;
+    }
+
     public String getApnsProdCertPassword() {
         return apnsProdCertPassword;
     }
-    
+
     public void setApnsProdCertPassword(String apnsProdCertPassword) {
         this.apnsProdCertPassword = apnsProdCertPassword;
     }
+    
 }

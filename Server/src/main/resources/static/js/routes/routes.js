@@ -113,36 +113,26 @@ App.UserAppRoute = App.LoginRequiredRoute.extend({
 		}).create();
 		
 		var applicationId = params.app_id;
-		var savedApps = App.Session.applications;
-		if (savedApps != null && savedApps.length > 0) {
-			var appCount = savedApps.length;
-			for (var i = 0; i < appCount; i++) {
-			    var application = App.Session.applications[i];
-			    if (application.applicationId === applicationId) {
-			    	userApp.set('application', application);
-			    	return userApp;
-			    }
-			}
-		} else {
-			var self = this;
-			return App.NetworkService.jsonGET("/applications/"+applicationId, function(response) {
-				if (App.Validator.isValidResponse(response)) {
-					if (response.application) {
-						userApp.set('application', response.application);
-						return userApp;
-					}
+		var self = this;
+		return App.NetworkService.jsonGET("/applications/"+applicationId, function(response) {
+			if (App.Validator.isValidResponse(response)) {
+				if (response.application) {
+					userApp.set('application', response.application);
+					return userApp;
 				}
-				self.handleError(response);
-			});
-		}
+			}
+			self.handleError(response);
+		});
 	},
 	
 	setupController : function(controller, model) {
 		var appConfig = App.ApplicationConfig.create({
-			androidGcmKey:"333333"
 		});
-		
 		controller.set('userApp', model);
+		if (model.application.configParams != undefined && model.application.configParams != null) {
+			appConfig = model.application.configParams;
+		}
+		appConfig.applicationId = model.application.applicationId;
 		controller.set('appConfig', appConfig)
 	},
 	
