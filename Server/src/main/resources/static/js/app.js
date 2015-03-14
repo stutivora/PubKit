@@ -124,18 +124,6 @@ App.NetworkService = Ember.Object.extend({
 	}
 }).create();
 
-Ember.Handlebars.registerHelper('renderTab', function(context, tab, options) {
-	tab = options.data.view.getStream(tab).value();
-	
-	tab.userApp = this.get('userApp');
-	tab.appConfig = this.get('appConfig');
-	
-	tab.updateButtonText = 'Update Settings';
-	tab.updateInProgress = false;
-	
-	return Ember.Handlebars.helpers.render(tab.name, options);	
-});
-
 var ApplicationRoute = Ember.Route.extend({
 	  actions: {
 	    loading: function() {
@@ -151,4 +139,35 @@ var ApplicationRoute = Ember.Route.extend({
 App.IndexRoute = Ember.Route.extend({
 	setupController : function(controller) {
 	}
+});
+
+Ember.Handlebars.registerHelper('renderSettingsTab', function(context, tab, options) {
+	tab = options.data.view.getStream(tab).value();
+	
+	tab.userApp = this.get('userApp');
+	tab.appConfig = this.get('appConfig');
+	
+	tab.updateButtonText = 'Update Settings';
+	tab.updateInProgress = false;
+	
+	return Ember.Handlebars.helpers.render(tab.name, options);	
+});
+
+Ember.Handlebars.registerHelper('renderPushTab', function(context, tab, options) {
+	tab = options.data.view.getStream(tab).value();
+	
+	tab.userApp = this.get('userApp');
+
+	tab.pushButtonText = 'Send Push';
+	tab.pushInProgress = false;
+	
+	return Ember.Handlebars.helpers.render(tab.name, options);	
+});
+
+Handlebars.registerHelper('equals', function(context, tab, options) {
+	tab = options.data.view.getStream(tab).value();
+	if(tab.name === context) {
+		 return options.fn(this);
+	  }
+	  return options.inverse(this);
 });

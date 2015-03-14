@@ -179,19 +179,23 @@ App.AppsNewController = Ember.Controller.extend({
 App.UserAppController = Ember.Controller.extend({
 	updateInProgress : false,
 	updateButtonText: 'Update Settings',
-	
 	updateTab : function(selectedTab) {
 		var userApp = this.get('userApp');
 		var tabs = userApp.tabs;
 		for (index = 0; index < tabs.length; ++index) {
 		    var tab = tabs[index];
+		    var tabId = '#'+tab.name;
 		    if (tab.name == selectedTab) {
 				tab.set('active', true);
+				Ember.$(tabId).removeClass('hidden');
 			} else {
 				tab.set('active', false);
+				Ember.$(tabId).addClass('hidden');
 			}
-		    tab.set('updateButtonText', 'Update Settings');
-			tab.set('updateInProgress', false);
+		    if (selectedTab == 'Settings') {
+		    	tab.set('updateButtonText', 'Update Settings');
+				tab.set('updateInProgress', false);
+		    }
 		}
 		userApp.set('tabs', tabs);
 	},
@@ -234,6 +238,10 @@ App.UserAppController = Ember.Controller.extend({
 					self.set('errorMessage', response.errorMessage);
 				} else {
 					self.updateTab('Settings');
+					Ember.$("#successAlert").removeClass('hidden');
+					Ember.run.later(function(){
+						Ember.$("#successAlert").addClass('hidden');
+		            }, 2000);
 				}
 			} else {
 				self.set('errorMessage', 'Oops, Something went wrong. Please try again.');
