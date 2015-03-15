@@ -96,7 +96,10 @@ App.LoginController = Ember.Controller.extend({
 				errorMessage = 'Invalid Email';
 				validationError = true;
 			}
-			
+			var self = this;
+			if (validationError) {
+				this.set('errorMessage', errorMessage);
+				}
 			var self = this;
 			if (validationError) {
 				Ember.run.later(function(){
