@@ -20,32 +20,32 @@
  */
 package com.roquito.web.response;
 
-import com.roquito.web.dto.UserDto;
+import com.roquito.web.request.UserRequest;
 
 /**
  * Created by puran
  */
 public class UserResponse {
-    private UserDto userDto;
+    private UserRequest userRequest;
     private boolean error;
     private String errorMessage;
     
-    public UserResponse(UserDto userDto) {
-        this(userDto, false, null);
+    public UserResponse(UserRequest userRequest) {
+        this(userRequest, false, null);
     }
     
-    public UserResponse(UserDto userDto, boolean error, String errorMessage) {
-        this.userDto = userDto;
+    public UserResponse(UserRequest userRequest, boolean error, String errorMessage) {
+        this.userRequest = userRequest;
         this.error = error;
         this.errorMessage = errorMessage;
     }
     
-    public UserDto getUserDto() {
-        return userDto;
+    public UserRequest getUserDto() {
+        return userRequest;
     }
     
-    public void setUserDto(UserDto userDto) {
-        this.userDto = userDto;
+    public void setUserDto(UserRequest userRequest) {
+        this.userRequest = userRequest;
     }
     
     public boolean isError() {

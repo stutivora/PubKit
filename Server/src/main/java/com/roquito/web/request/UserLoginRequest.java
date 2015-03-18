@@ -18,14 +18,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.roquito.platform.notification;
+package com.roquito.web.request;
 
 /**
  * Created by puran
  */
-public class ApnsNotification implements PushNotification {
+public class UserLoginRequest {
+    private String email;
+    private String password;
     
-    public String getApplicationId() {
-        return null;
+    public String getPassword() {
+        return password;
+    }
+    
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    
+    public String getEmail() {
+        return email;
+    }
+    
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

@@ -5,7 +5,7 @@
 
 	<groupId>com.roquito</groupId>
 	<artifactId>roquito</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0</version>
 	<packaging>jar</packaging>
 
 	<name>Roquito</name>
@@ -155,6 +155,10 @@
 			<artifactId>gson</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.notnoop.apns</groupId>
+			<artifactId>apns</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
 			<artifactId>json-simple</artifactId>
 			<exclusions>
@@ -197,6 +201,27 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+            <artifactId>maven-resources-plugin</artifactId>
+	            <executions>
+	                <execution>
+	                    <id>copy-resources</id>
+	                    <phase>validate</phase>
+	                    <goals>
+	                        <goal>copy-resources</goal>
+	                    </goals>
+	                    <configuration>
+	                        <outputDirectory>${basedir}/target/</outputDirectory>
+	                        <resources>
+	                            <resource>
+	                                <directory>docker</directory>
+	                                <filtering>true</filtering>
+	                            </resource>
+	                        </resources>
+	                    </configuration>
+	                </execution>
+	            </executions>
+        	</plugin>
 		</plugins>
 	</build>
 

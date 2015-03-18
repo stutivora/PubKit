@@ -160,4 +160,28 @@ public class Application {
         }
         return null;
     }
+    
+    public String getApnsCertPassword(boolean isProduction) {
+        Map<String, String> params = this.getConfigParams();
+        if (params != null) {
+            if (isProduction) {
+                return params.get(DataConstants.APNS_PROD_CERT_PASSWORD);
+            } else {
+                return params.get(DataConstants.APNS_DEV_CERT_PASSWORD);
+            }
+        }
+        return null;
+    }
+    
+    public String getApnsCertFileId(boolean isProduction) {
+        Map<String, String> params = this.getConfigParams();
+        if (params != null) {
+            if (isProduction) {
+                return params.get(DataConstants.APNS_PROD_CERT_FILE_ID);
+            } else {
+                return params.get(DataConstants.APNS_DEV_CERT_FILE_ID);
+            }
+        }
+        return null;
+    }
 }

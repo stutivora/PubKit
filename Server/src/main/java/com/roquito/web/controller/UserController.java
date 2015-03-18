@@ -35,10 +35,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.roquito.platform.commons.RoquitoUtils;
 import com.roquito.platform.model.Application;
 import com.roquito.platform.model.User;
-import com.roquito.web.dto.ApplicationDto;
-import com.roquito.web.dto.UserDto;
-import com.roquito.web.dto.UserLoginDto;
 import com.roquito.web.exception.RoquitoServerException;
+import com.roquito.web.request.ApplicationRequest;
+import com.roquito.web.request.UserRequest;
+import com.roquito.web.request.UserLoginRequest;
 import com.roquito.web.response.ApplicationResponse;
 import com.roquito.web.response.LoginResponse;
 import com.roquito.web.response.UserResponse;
@@ -53,7 +53,7 @@ public class UserController extends BaseController {
     private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
     
     @RequestMapping(method = RequestMethod.POST)
-    public UserResponse create(@RequestBody UserDto user) {
+    public UserResponse create(@RequestBody UserRequest user) {
         if (user == null || user.getEmail() == null || user.getEmail().isEmpty() || user.getPassword() == null
                 || user.getPassword().isEmpty() || user.getFullName() == null || user.getFullName().isEmpty()) {
             LOG.debug("Missing required user information. Error creating new user account");
@@ -91,19 +91,19 @@ public class UserController extends BaseController {
     }
     
     @RequestMapping(value = "login", method = RequestMethod.POST)
-    public LoginResponse login(@RequestBody UserLoginDto userLoginDto) {
-        if (userLoginDto == null || userLoginDto.getEmail() == null || userLoginDto.getEmail().isEmpty()
-                || userLoginDto.getPassword() == null || userLoginDto.getPassword().isEmpty()) {
+    public LoginResponse login(@RequestBody UserLoginRequest userLoginRequest) {
+        if (userLoginRequest == null || userLoginRequest.getEmail() == null || userLoginRequest.getEmail().isEmpty()
+                || userLoginRequest.getPassword() == null || userLoginRequest.getPassword().isEmpty()) {
             return new LoginResponse("Missing required input data");
         }
-        User user = userService.findByEmail(userLoginDto.getEmail());
+        User user = userService.findByEmail(userLoginRequest.getEmail());
         if (user == null) {
             return new LoginResponse("User not recognized");
         } else {
-            boolean matches = RoquitoUtils.comparePasswords(userLoginDto.getPassword(), user.getPassword());
+            boolean matches = RoquitoUtils.comparePasswords(userLoginRequest.getPassword(), user.getPassword());
             if (matches) {
                 String accessToken = keyGenerator.getSecureSessionId();
-                boolean success = sessionService.saveAccessToken(userLoginDto.getEmail(), accessToken);
+                boolean success = sessionService.saveAccessToken(userLoginRequest.getEmail(), accessToken);
                 if (success) {
                     return new LoginResponse(user.getUserId(), user.getFullName(), accessToken);
                 } else {
@@ -129,19 +129,19 @@ public class UserController extends BaseController {
         }
         List<Application> applications = applicationService.getUserApplications(user);
         if (applications != null) {
-            List<ApplicationDto> appDtos = new ArrayList<>();
+            List<ApplicationRequest> appDtos = new ArrayList<>();
             for (Application application : applications) {
-                ApplicationDto appDto = getApplicationDto(application, false);
+                ApplicationRequest appDto = getApplicationDto(application, false);
                 appDtos.add(appDto);
             }
             return new ApplicationResponse(appDtos);
         } else {
-            return new ApplicationResponse(new ArrayList<ApplicationDto>());
+            return new ApplicationResponse(new ArrayList<ApplicationRequest>());
         }
     }
     
     @RequestMapping(value = "{userId}", method = RequestMethod.GET)
-    public UserDto getUser(@PathVariable("userId") String userId) {
+    public UserRequest getUser(@PathVariable("userId") String userId) {
         return null;
     }
     
@@ -151,7 +151,7 @@ public class UserController extends BaseController {
     }
     
     @RequestMapping(method = RequestMethod.PUT, value = "{userId}")
-    public UserDto update(@PathVariable String userId, @RequestBody UserDto user) {
+    public UserRequest update(@PathVariable String userId, @RequestBody UserRequest user) {
         return null;
     }
 }
