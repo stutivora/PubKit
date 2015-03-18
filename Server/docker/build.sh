@@ -1,6 +1,6 @@
 #! /bin/bash -e
 
-rm -fr build
+rm -rf build
 mkdir build
 cp ../target/roquito-1.0.jar build
 
