@@ -33,4 +33,7 @@ public final class DataConstants {
     public static final String APNS_PROD_CERT_FILE_ID = "apnsProdCertFileId";
     public static final String APNS_PROD_CERT_FILE_NAME = "apnsProdCertFileName";
     public static final String APNS_PROD_CERT_PASSWORD = "apnsProdCertPassword";
+    
+    public static final String DEVICE_TYPE_IOS = "iOS";
+    public static final String DEVICE_TYPE_ANDROID = "android";
 }

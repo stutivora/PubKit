@@ -18,7 +18,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.roquito.platform.notification;
+package com.roquito.platform.service;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -35,23 +35,30 @@ import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.EventHandlerGroup;
 import com.lmax.disruptor.dsl.ProducerType;
-import com.roquito.platform.service.ApplicationService;
-import com.roquito.platform.service.UserService;
+import com.roquito.platform.notification.ApnsPushNotification;
+import com.roquito.platform.notification.GcmPushNotification;
+import com.roquito.platform.notification.PushEvent;
+import com.roquito.platform.notification.PushEventFactory;
+import com.roquito.platform.notification.PushEventHandler;
+import com.roquito.platform.notification.PushEventProducer;
 
 /**
  * Created by puran
  */
 @Service
-public class PusherService {
+public class QueueService {
     
-    private static final Logger LOG = LoggerFactory.getLogger(PusherService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(QueueService.class);
     
     private Disruptor<PushEvent> pushEventDisruptor;
+    
     private PushEventProducer pushEventProducer;
-    private boolean pusherRunning;
     
     @Autowired
     private ApplicationService applicationService;
+    
+    @Autowired
+    private AppDeviceService appDeviceService;
     
     @Autowired
     private UserService userService;
@@ -76,7 +83,7 @@ public class PusherService {
         
         // Connect the handler
         EventHandlerGroup<PushEvent> handlerGroup = pushEventDisruptor.handleEventsWith(new PushEventHandler(
-                applicationService));
+                applicationService, appDeviceService));
         if (handlerGroup == null) {
             
         }
@@ -88,24 +95,16 @@ public class PusherService {
         
         // Get the ring buffer from the Disruptor to be used for publishing.
         pushEventProducer = new PushEventProducer(ringBuffer);
-        
-        pusherRunning = true;
+       
         LOG.info("Push service initialized");
     }
     
-    public void sendGcmPushNotification(GcmNotification gcmNotification) {
+    public void sendGcmPushNotification(GcmPushNotification gcmNotification) {
         pushEventProducer.publishGcmPushNotification(gcmNotification);
     }
     
-    public void sendApnsPushNotification(ApnsNotification apnsNotification) {
+    public void sendApnsPushNotification(ApnsPushNotification apnsNotification) {
         pushEventProducer.publishApnsPushNotification(apnsNotification);
     }
-    
-    /**
-     * @return the pusherRunning
-     */
-    public boolean isPusherRunning() {
-        return pusherRunning;
-    }
-    
+  
 }

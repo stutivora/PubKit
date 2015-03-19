@@ -28,9 +28,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.roquito.platform.notification.ApnsNotification;
-import com.roquito.platform.notification.GcmNotification;
-import com.roquito.platform.notification.PusherService;
+import com.roquito.platform.model.AppDevice;
+import com.roquito.platform.model.DataConstants;
+import com.roquito.platform.notification.ApnsPushNotification;
+import com.roquito.platform.notification.GcmPushNotification;
+import com.roquito.platform.service.AppDeviceService;
+import com.roquito.platform.service.QueueService;
 import com.roquito.web.exception.RoquitoServerException;
 
 /**
@@ -47,10 +50,13 @@ public class PushController extends BaseController {
     private static final Logger LOG = LoggerFactory.getLogger(PushController.class);
 
     @Autowired
-    private PusherService pusherService;
+    private QueueService pusherService;
+    
+    @Autowired
+    private AppDeviceService appDeviceService;
     
     @RequestMapping(value = "/gcm", method = RequestMethod.POST)
-    public String create(@RequestBody GcmNotification gcmNotification) {
+    public String create(@RequestBody GcmPushNotification gcmNotification) {
         if (gcmNotification == null) {
             LOG.debug("Null gcm notification data received");
             new RoquitoServerException("Invalid request");
@@ -64,7 +70,7 @@ public class PushController extends BaseController {
     }
     
     @RequestMapping(value = "/apns", method = RequestMethod.POST)
-    public String create(@RequestBody ApnsNotification apnsNotification) {
+    public String create(@RequestBody ApnsPushNotification apnsNotification) {
         if (apnsNotification == null) {
             LOG.debug("Null apns notification data received");
             new RoquitoServerException("Invalid request");
@@ -76,5 +82,29 @@ public class PushController extends BaseController {
         LOG.info("Added APNS notification message to the pusher queue");
         
         return "OK";
+    }
+    
+    @RequestMapping(value = "/register", method = RequestMethod.POST)
+    public String registerDevice(@RequestBody AppDevice appDevice) {
+        if (appDevice == null || isEmpty(appDevice.getDeviceType()) || isEmpty(appDevice.getApplicationId())) {
+            LOG.debug("Null or invalid data received");
+            new RoquitoServerException("Invalid request");
+        }
+        if (DataConstants.DEVICE_TYPE_IOS.equals(appDevice.getDeviceType()) && isEmpty(appDevice.getDeviceToken())) {
+            LOG.debug("invalid device token received");
+            new RoquitoServerException("Invalid request");
+        }
+        if (DataConstants.DEVICE_TYPE_ANDROID.equals(appDevice.getDeviceType()) && isEmpty(appDevice.getRegistrationId())) {
+            LOG.debug("invalid registration id received");
+            new RoquitoServerException("Invalid request");
+        }
+        
+        String applicationId = appDevice.getApplicationId();
+        validateApiRequest(applicationId);
+        
+        String appDeviceId = appDeviceService.saveAppDevice(appDevice);
+        LOG.info("Registered device for push notification");
+        
+        return appDeviceId;
     }
 }

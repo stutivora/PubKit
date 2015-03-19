@@ -18,14 +18,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.roquito.web.dto;
+package com.roquito.web.request;
 
 import java.util.Map;
 
 /**
  * Created by puran
  */
-public class ApplicationDto {
+public class ApplicationRequest {
     private String applicationId;
     private String applicationName;
     private String applicationDescription;

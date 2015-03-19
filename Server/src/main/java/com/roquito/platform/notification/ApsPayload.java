@@ -18,28 +18,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.roquito.web.dto;
+package com.roquito.platform.notification;
 
 /**
+ * APS payload format defined by - 
+ * https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/ApplePushService.html
+ * 
+ * SIMPLE PAYLOAD -
+ * {
+ *    "aps" : { 
+ *              "alert" : "Message received from Bob", 
+ *              "badge" : 3,
+ *              "sound" : “chime.aiff" 
+ *           },
+ *    "acme1" : [ "bang",  "whiz" ],
+ *    "acme2" : "bar",
+ *  }
+ * 
  * Created by puran
  */
-public class UserLoginDto {
-    private String email;
-    private String password;
+public class ApsPayload {
     
-    public String getPassword() {
-        return password;
-    }
-    
-    public void setPassword(String password) {
-        this.password = password;
-    }
-    
-    public String getEmail() {
-        return email;
-    }
-    
-    public void setEmail(String email) {
-        this.email = email;
-    }
 }

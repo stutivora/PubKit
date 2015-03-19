@@ -27,7 +27,7 @@ import java.util.Map;
  * Created by puran
  */
 
-public class GcmNotification implements PushNotification {
+public class GcmPushNotification implements PushNotification {
     private String applicationId;
     private String applicationVersion;
     private List<String> registrationIds;
