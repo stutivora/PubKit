@@ -9,7 +9,7 @@ FROM dockerfile/java:oracle-java7
 
 MAINTAINER narup Puran Singh <puran@32skills.com>
 
-ADD roquito-1.0.jar /opt/roquito/
+ADD build/roquito-1.0.jar /opt/roquito/
 EXPOSE 8080
 WORKDIR /opt/roquito/
 
