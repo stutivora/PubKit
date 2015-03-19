@@ -20,6 +20,7 @@
  */
 package com.roquito.platform.service;
 
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 
@@ -35,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.mongodb.gridfs.GridFS;
+import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSInputFile;
 import com.roquito.platform.model.Application;
 import com.roquito.platform.model.User;
@@ -80,7 +82,8 @@ public class ApplicationService extends BasicDAO<Application, String> {
     }
     
     public List<Application> getUserApplications(User user) {
-        Query<Application> query = mongoDB.getDataStore().createQuery(Application.class).field("owner").equal(user).order("createdDate");
+        Query<Application> query = mongoDB.getDataStore().createQuery(Application.class).field("owner").equal(user)
+                .order("createdDate");
         QueryResults<Application> results = this.find(query);
         if (results != null) {
             return results.asList();
@@ -88,16 +91,23 @@ public class ApplicationService extends BasicDAO<Application, String> {
             return Collections.emptyList();
         }
     }
-    
+        
     public String saveFile(byte[] fileData, String fileName) {
         GridFS gridFs = new GridFS(mongoDB.getDataStore().getDB(), "roquito");
         GridFSInputFile gfsFile = gridFs.createFile(fileData);
         
         gfsFile.setFilename(fileName);
         gfsFile.save();
-        LOG.info("Saved new file :"+fileName);
+        LOG.info("Saved new file :" + fileName);
         
         return gfsFile.getId().toString();
+    }
+    
+    public InputStream getFileAsStream(String fileId) {
+        GridFS gridFs = new GridFS(mongoDB.getDataStore().getDB(), "roquito");
+        GridFSDBFile savedFile = gridFs.find(new ObjectId(fileId));
+        
+        return savedFile.getInputStream();
     }
     
     public String getNextApplicationId() {

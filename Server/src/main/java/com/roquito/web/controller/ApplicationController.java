@@ -35,9 +35,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.roquito.platform.model.Application;
 import com.roquito.platform.model.DataConstants;
 import com.roquito.platform.model.User;
-import com.roquito.web.dto.AppConfigDto;
-import com.roquito.web.dto.ApplicationDto;
 import com.roquito.web.exception.RoquitoServerException;
+import com.roquito.web.request.AppConfigRequest;
+import com.roquito.web.request.ApplicationRequest;
 import com.roquito.web.response.ApplicationResponse;
 import com.roquito.web.response.ConfigResponse;
 
@@ -51,30 +51,30 @@ public class ApplicationController extends BaseController {
     private static final Logger LOG = LoggerFactory.getLogger(ApplicationController.class);
     
     @RequestMapping(method = RequestMethod.POST)
-    public ApplicationResponse create(@RequestBody ApplicationDto applicationDto) {
+    public ApplicationResponse create(@RequestBody ApplicationRequest applicationRequest) {
         
         validateAccessToken();
         
-        if (applicationDto == null || isEmpty(applicationDto.getUserId())
-                || isEmpty(applicationDto.getApplicationName())) {
+        if (applicationRequest == null || isEmpty(applicationRequest.getUserId())
+                || isEmpty(applicationRequest.getApplicationName())) {
             LOG.debug("Missing application data for creating new application");
             return new ApplicationResponse("Missing required data");
         }
         
-        User owner = userService.findByUserId(applicationDto.getUserId());
+        User owner = userService.findByUserId(applicationRequest.getUserId());
         if (owner == null) {
             LOG.debug("Missing owner data, required for registering application");
             throw new RoquitoServerException("Owner required. Error creating new application");
         }
-        Application savedApplication = applicationService.findByApplicationName(applicationDto.getApplicationName());
+        Application savedApplication = applicationService.findByApplicationName(applicationRequest.getApplicationName());
         if (savedApplication != null) {
             LOG.debug("Cannot register application. Application with same name already exists:"
-                    + applicationDto.getApplicationName());
+                    + applicationRequest.getApplicationName());
             return new ApplicationResponse("Application with same name already exists");
         }
         
         Application newApplication = new Application();
-        newApplication.setApplicationName(applicationDto.getApplicationName());
+        newApplication.setApplicationName(applicationRequest.getApplicationName());
         
         String applicationId = applicationService.getNextApplicationId();
         newApplication.setApplicationId(applicationId);
@@ -85,9 +85,9 @@ public class ApplicationController extends BaseController {
         String applicationSecret = keyGenerator.getSecureSessionId();
         newApplication.setApplicationSecret(applicationSecret);
         
-        newApplication.setApplicationDescription(applicationDto.getApplicationDescription());
-        newApplication.setWebsiteLink(applicationDto.getWebsiteLink());
-        newApplication.setPricingPlan(applicationDto.getPricingPlan());
+        newApplication.setApplicationDescription(applicationRequest.getApplicationDescription());
+        newApplication.setWebsiteLink(applicationRequest.getWebsiteLink());
+        newApplication.setPricingPlan(applicationRequest.getPricingPlan());
         
         newApplication.setOwner(owner);
         //Create with empty config
@@ -99,17 +99,17 @@ public class ApplicationController extends BaseController {
         if (internalId != null) {
             LOG.info("Application registered with name:" + newApplication.getApplicationName());
             
-            applicationDto.setApplicationId(applicationId);
-            applicationDto.setApplicationKey(applicationKey);
-            applicationDto.setApplicationSecret(applicationSecret);
+            applicationRequest.setApplicationId(applicationId);
+            applicationRequest.setApplicationKey(applicationKey);
+            applicationRequest.setApplicationSecret(applicationSecret);
             
-            return new ApplicationResponse(applicationDto);
+            return new ApplicationResponse(applicationRequest);
         }
         throw new RoquitoServerException("Error creating new application. Try again later.");
     }
     
     @RequestMapping(value = "/config", method = RequestMethod.POST)
-    public ConfigResponse updateAppConfig(@RequestBody AppConfigDto configDto) {
+    public ConfigResponse updateAppConfig(@RequestBody AppConfigRequest configDto) {
         validateAccessToken();
         
         if (configDto == null) {
@@ -151,7 +151,7 @@ public class ApplicationController extends BaseController {
         
         Application application = applicationService.findByApplicationId(applicationId);
         if (application != null) {
-            ApplicationDto appDto = getApplicationDto(application, true);
+            ApplicationRequest appDto = getApplicationDto(application, true);
             return new ApplicationResponse(appDto);
         } else {
             return new ApplicationResponse("Application not found");

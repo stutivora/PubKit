@@ -36,17 +36,17 @@ public class PushEventProducer {
     
     private static final EventTranslatorTwoArg<PushEvent, PushNotification, PushType> PUSH_EVENT_TRANSLATOR = new EventTranslatorTwoArg<PushEvent, PushNotification, PushType>() {
         @Override
-        public void translateTo(PushEvent event, long sequence, PushNotification gcmNotification, PushType pushType) {
-            event.setPushNotification(gcmNotification);
+        public void translateTo(PushEvent event, long sequence, PushNotification pushNotification, PushType pushType) {
+            event.setPushNotification(pushNotification);
             event.setPushType(pushType);
         }
     };
     
-    public void publishGcmPushNotification(GcmNotification gcmNotification) {
+    public void publishGcmPushNotification(GcmPushNotification gcmNotification) {
         ringBuffer.publishEvent(PUSH_EVENT_TRANSLATOR, gcmNotification, PushType.GCM);
     }
     
-    public void publishApnsPushNotification(ApnsNotification apnsNotification) {
+    public void publishApnsPushNotification(ApnsPushNotification apnsNotification) {
         ringBuffer.publishEvent(PUSH_EVENT_TRANSLATOR, apnsNotification, PushType.APNS);
     }
 }

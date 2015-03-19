@@ -18,12 +18,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.roquito.web.dto;
+package com.roquito.web.request;
 
 /**
  * Created by puran
  */
-public class UserDto {
+public class UserRequest {
     private String userId;
     private String email;
     private String password;

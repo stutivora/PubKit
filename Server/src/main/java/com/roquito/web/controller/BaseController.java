@@ -37,9 +37,9 @@ import com.roquito.platform.model.Application;
 import com.roquito.platform.service.ApplicationService;
 import com.roquito.platform.service.SessionService;
 import com.roquito.platform.service.UserService;
-import com.roquito.web.dto.ApplicationDto;
 import com.roquito.web.exception.RoquitoAuthException;
 import com.roquito.web.exception.RoquitoServerException;
+import com.roquito.web.request.ApplicationRequest;
 
 /**
  * Created by puran
@@ -112,8 +112,8 @@ public class BaseController {
         return !RoquitoUtils.hasValue(value);
     }
     
-    protected ApplicationDto getApplicationDto(Application application, boolean includeDetail) {
-        ApplicationDto appDto = new ApplicationDto();
+    protected ApplicationRequest getApplicationDto(Application application, boolean includeDetail) {
+        ApplicationRequest appDto = new ApplicationRequest();
         
         appDto.setApplicationId(application.getApplicationId());
         appDto.setApplicationName(application.getApplicationName());

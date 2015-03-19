@@ -28,7 +28,7 @@
 	</appender>
 
 	<!-- Redis log appender for easier processing with logstash -->
-	<if condition='isDefined("REDIS_HOST") && isDefined("REDIS_PORT")'>
+	<if condition='isDefined("REDIS_HOST") &amp;&amp; isDefined("REDIS_PORT")'>
 		<then>
 			<appender name="LOGSTASH" class="com.cwbase.logback.RedisAppender">
 				<host>${REDIS_HOST}</host>

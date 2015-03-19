@@ -22,18 +22,18 @@ package com.roquito.web.response;
 
 import java.util.List;
 
-import com.roquito.web.dto.ApplicationDto;
+import com.roquito.web.request.ApplicationRequest;
 
 /**
  * Created by puran
  */
 public class ApplicationResponse {
-    private ApplicationDto application;
-    private List<ApplicationDto> applications;
+    private ApplicationRequest application;
+    private List<ApplicationRequest> applications;
     private boolean error;
     private String errorMessage;
     
-    public ApplicationResponse(ApplicationDto application) {
+    public ApplicationResponse(ApplicationRequest application) {
         this(application, false, null);
     }
     
@@ -41,25 +41,25 @@ public class ApplicationResponse {
         this(null, true, errorMessage);
     }
     
-    public ApplicationResponse(ApplicationDto application, boolean error, String errorMessage) {
+    public ApplicationResponse(ApplicationRequest application, boolean error, String errorMessage) {
         this.application = application;
         this.error = error;
         this.errorMessage = errorMessage;
     }
     
-    public ApplicationResponse(List<ApplicationDto> applications) {
+    public ApplicationResponse(List<ApplicationRequest> applications) {
         this.applications = applications;
     }
     
-    public ApplicationDto getApplication() {
+    public ApplicationRequest getApplication() {
         return application;
     }
     
-    public void setApplication(ApplicationDto application) {
+    public void setApplication(ApplicationRequest application) {
         this.application = application;
     }
     
-    public List<ApplicationDto> getApplications() {
+    public List<ApplicationRequest> getApplications() {
         return applications;
     }
 
