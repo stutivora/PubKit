@@ -3,7 +3,7 @@
           xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
     <id>application</id>
     <formats>
-        <format>dir</format>
+        <format>zip</format>
     </formats>
     <baseDirectory>${project.basedir}</baseDirectory>
     <includeBaseDirectory>false</includeBaseDirectory>
@@ -25,8 +25,7 @@
             <directory>${project.basedir}/docker</directory>
             <outputDirectory>docker</outputDirectory>
             <includes>
-                <include>*.sh</include>
-                <include>Dockerfile</include>
+                <include>docker</include>
             </includes>
         </fileSet>
         <fileSet>
@@ -35,7 +34,7 @@
             <filtered>true</filtered>
             <fileMode>0755</fileMode>
             <includes>
-                <include>*.sh</include>
+                <include>start_server.sh</include>
             </includes>
         </fileSet>
         <fileSet>
