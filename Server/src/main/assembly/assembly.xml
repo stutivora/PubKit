@@ -22,10 +22,11 @@
             </includes>
         </fileSet>
         <fileSet>
-            <directory>${project.basedir}/docker</directory>
+            <directory>${project.basedir}/src/main/assembly/docker</directory>
             <outputDirectory>docker</outputDirectory>
             <includes>
-                <include>docker</include>
+                <include>docker_run.sh</include>
+                <include>Dockerfile</include>
             </includes>
         </fileSet>
         <fileSet>
