@@ -15,7 +15,7 @@
     <fileSets>
         <fileSet>
             <directory>${project.basedir}/src/main/resources</directory>
-            <outputDirectory>config</outputDirectory>
+            <outputDirectory>/</outputDirectory>
             <includes>
                 <include>application.properties</include>
                 <include>logback.xml</include>
@@ -23,7 +23,7 @@
         </fileSet>
         <fileSet>
             <directory>${project.basedir}/src/main/assembly/docker</directory>
-            <outputDirectory>docker</outputDirectory>
+            <outputDirectory>/</outputDirectory>
             <includes>
                 <include>docker_run.sh</include>
                 <include>Dockerfile</include>
@@ -40,7 +40,7 @@
         </fileSet>
         <fileSet>
             <directory>${project.build.directory}</directory>
-            <outputDirectory>/lib</outputDirectory>
+            <outputDirectory>/</outputDirectory>
             <includes>
                 <include>*.jar</include>
             </includes>

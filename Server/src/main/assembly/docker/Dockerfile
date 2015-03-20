@@ -9,12 +9,9 @@ FROM dockerfile/java:oracle-java7
 
 MAINTAINER narup Puran Singh <puran@32skills.com>
 
-WORKDIR /opt/roquito/
-
-ADD lib/roquito-1.0.jar /opt/roquito/
+ADD roquito-1.0.jar /data/roquito-1.0.jar
 
 EXPOSE 8080
 
-
 # Start Roquito App
-CMD java -jar lib/roquito-1.0.jar --spring.config.location=config/application.properties $*
+CMD java -jar roquito-1.0.jar --spring.config.location=application.properties $*
