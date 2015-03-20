@@ -60,15 +60,6 @@ public class RoquitoConfig {
     @Value("${mongodb.database}")
     private String mongoDatabase;
     
-    @Value("${mapdb.inMemory}")
-    private boolean inMemory;
-    
-    @Value("${mapdb.filepath}")
-    private String mapdbFilePath;
-    
-    @Value("${mapdb.encryptedPassword}")
-    private String mapdbEncryptedPassword;
-    
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertyPlaceholderConfigurer() {
         return new PropertySourcesPlaceholderConfigurer();
@@ -113,17 +104,4 @@ public class RoquitoConfig {
     public String getMongoDatabase() {
         return mongoDatabase;
     }
-    
-    public boolean isInMemory() {
-        return inMemory;
-    }
-    
-    public String getMapdbFilePath() {
-        return mapdbFilePath;
-    }
-    
-    public String getMapdbEncryptedPassword() {
-        return mapdbEncryptedPassword;
-    }
-    
 }
