@@ -22,13 +22,15 @@ package com.roquito;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.stereotype.Component;
 
 /**
  * Created by puran
  */
-@Component
+@Configuration
+@PropertySource(value = {"classpath:application.properties", "file:${ROQUITO_HOME}/config/application.properties" }, ignoreResourceNotFound = false)
 public class RoquitoConfig {
     
     @Value("${app.environment}")

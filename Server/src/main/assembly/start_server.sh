@@ -17,6 +17,6 @@ echo "Starting Roquito server at"
 echo $DIR
 echo "....."
 
-java -jar ${project.artifactId}-${project.version}.jar --spring.config.location=$ROQUITO_HOME/config/ $*
+java -jar ${project.artifactId}-${project.version}.jar $*
 
 echo "Roquito Server Started...."
