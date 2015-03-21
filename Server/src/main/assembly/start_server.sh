@@ -8,7 +8,12 @@ echo " | | | | | | . \ | |  | |  "
 echo " |_| |_| |_|_|\_\___| |_|  "   
 echo "							 "
 
-: ${ROQUITO_HOME:?"ROQUITO_HOME env variable not set"}         
+if [ "$ROQUITO_HOME" = "" ]
+then
+   echo "ROQUITO_HOME not set. Please set the ROQUITO_HOME value to your roquito directory."
+else
+   echo "ROQUITO_HOME:".$ROQUITO_HOME
+fi         
                     
 DIR=$(cd `dirname $0` && pwd)
 cd $DIR
