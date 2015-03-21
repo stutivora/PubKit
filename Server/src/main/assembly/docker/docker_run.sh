@@ -8,8 +8,6 @@ echo " | | | | | | . \ | |  | |  "
 echo " |_| |_| |_|_|\_\___| |_|  "   
 echo "							 "
 
-: ${ROQUITO_HOME:?"ROQUITO_HOME env variable not set"}
-
 export JAVA_HOME=$(/usr/libexec/java_home -v 1.7)
 
 DIR=$(cd `dirname $0` && pwd)

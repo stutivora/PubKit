@@ -14,4 +14,4 @@ ADD ${project.artifactId}-${project.version}.jar /data/${project.artifactId}-${p
 EXPOSE 8080
 
 # Start Roquito App
-CMD java -jar ${project.artifactId}-${project.version}.jar $*
+CMD java -jar ${project.artifactId}-${project.version}.jar --spring.config.location=config $*
