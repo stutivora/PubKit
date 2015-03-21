@@ -24,5 +24,5 @@ echo $DIR
 docker build -t roquito .
 
 echo "Running docker build for image Roquito"
-docker run -d -p 8080:8080 roquito
+docker run -d -p 8080:8080 -e SPRING_CONFIG_LOCATION=$ROQUITO_HOME/config/application.properties roquito
 echo "Running Roquito"

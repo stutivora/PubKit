@@ -27,7 +27,6 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 /**
  * Created by puran
@@ -35,7 +34,6 @@ import org.springframework.context.annotation.Import;
 @Configuration
 @EnableAutoConfiguration(exclude = { DataSourceAutoConfiguration.class })
 @ComponentScan
-@Import({ RoquitoConfig.class })
 public class RoquitoApplication extends SpringBootServletInitializer {
     
     @Override
