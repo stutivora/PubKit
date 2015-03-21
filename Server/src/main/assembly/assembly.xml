@@ -14,8 +14,8 @@
     </files>
     <fileSets>
         <fileSet>
-            <directory>${project.basedir}/src/main/resources</directory>
-            <outputDirectory>/</outputDirectory>
+            <directory>${project.basedir}/config</directory>
+            <outputDirectory>config</outputDirectory>
             <includes>
                 <include>application.properties</include>
                 <include>logback.xml</include>
@@ -24,6 +24,8 @@
         <fileSet>
             <directory>${project.basedir}/src/main/assembly/docker</directory>
             <outputDirectory>/</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>0755</fileMode>
             <includes>
                 <include>docker_run.sh</include>
                 <include>Dockerfile</include>

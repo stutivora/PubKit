@@ -30,7 +30,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
  * Created by puran
  */
 @Configuration
-@PropertySource(value = "classpath:application.properties")
+@PropertySource(value = { "file:${ROQUITO_HOME}/config/application.properties" }, ignoreResourceNotFound = false)
 public class RoquitoConfig {
     
     @Value("${app.environment}")

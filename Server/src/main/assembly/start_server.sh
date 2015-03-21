@@ -6,9 +6,17 @@ echo "  _ __ ___ | |/ /_ _|_   _|"
 echo " |\'_\` _ \|\' / | |  | |  "   
 echo " | | | | | | . \ | |  | |  "
 echo " |_| |_| |_|_|\_\___| |_|  "   
-echo "							 "                             
-DIR=`dirname $0`
-cd $DIR
-java -jar lib/${project.artifactId}-${project.version}.jar --spring.config.location=config/application.properties $*
+echo "							 "
 
-echo "mKit Server Started...."
+: ${ROQUITO_HOME:?"ROQUITO_HOME env variable not set"}         
+                    
+DIR=$(cd `dirname $0` && pwd)
+cd $DIR
+
+echo "Starting Roquito server at"
+echo $DIR
+echo "....."
+
+java -jar ${project.artifactId}-${project.version}.jar $*
+
+echo "Roquito Server Started...."
