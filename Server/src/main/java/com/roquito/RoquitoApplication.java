@@ -40,7 +40,7 @@ public class RoquitoApplication extends SpringBootServletInitializer {
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
         return application.sources(RoquitoApplication.class);
     }
-    
+
     public static void main(String[] args) {
         SpringApplication app = new SpringApplication(RoquitoApplication.class);
         app.run(args);

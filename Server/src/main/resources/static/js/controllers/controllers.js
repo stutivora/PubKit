@@ -215,7 +215,7 @@ App.UserAppController = Ember.Controller.extend({
 
 			uploadData.append("file", fileObject.files[0]);
 			uploadData.append("applicationId", self.userApp.application.applicationId);
-			uploadData.append("fileType", "img");
+			uploadData.append("fileType", "cert");
 			
 			App.NetworkService.uploadFileData("/upload_cert", uploadData, function(response) {
 				if (App.Validator.isValidResponse(response)) {
@@ -281,6 +281,14 @@ App.UserAppController = Ember.Controller.extend({
 			}, function(reason) {
 				self.handleUpdateConfigError();
 			});
+		},
+		
+		moreKeyValueFields: function() {			
+		    $("#apnsForm").append('<div class="row">'+
+						'<div class="col-xs-2"></div>'+
+						'<div class="col-md-2"><h4 class="app-key-text pull-right">Key1</h4></div>'+
+  						'<div class="col-xs-6"><input id="key1" class="ember-view ember-text-field form-control pull-left app-settings-input" placeholder="" type="text"></div>'+
+					'</div>');
 		}
 	}
 });

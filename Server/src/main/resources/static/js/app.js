@@ -160,6 +160,7 @@ Ember.Handlebars.registerHelper('renderPushTab', function(context, tab, options)
 
 	tab.pushButtonText = 'Send Push';
 	tab.pushInProgress = false;
+	tab.apnsPayload='{"aps":{"alert":{"body":"Acme message received from Johnny Appleseed","action-loc-key":"VIEW","actions":[{"id":"delete","title":"Delete"},{"id":"reply-to","loc-key":"REPLYTO","loc-args":["Jane"]}]},"badge":3,"sound":"chime.aiff"},"acme-account":"jane.appleseed@apple.com","acme-message":"message123456"}';
 	
 	return Ember.Handlebars.helpers.render(tab.name, options);	
 });

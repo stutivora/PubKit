@@ -47,4 +47,5 @@ public class AppDeviceService extends BasicDAO<AppDevice, String> {
         } else {
             return null;
         }
-    }}
+    }
+}

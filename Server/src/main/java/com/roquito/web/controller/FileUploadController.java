@@ -64,7 +64,7 @@ public class FileUploadController extends BaseController {
                     }
                 }
                 byte[] fileData = multipartFile.getBytes();
-                String uploadId = applicationService.saveFile(fileData, fileName);
+                String uploadId = applicationService.saveFile(fileData, fileName, multipartFile.getContentType());
                 if (uploadId != null) {
                     return new UploadResponse(uploadId, false, null);
                 }

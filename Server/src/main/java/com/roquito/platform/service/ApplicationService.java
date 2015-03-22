@@ -92,12 +92,14 @@ public class ApplicationService extends BasicDAO<Application, String> {
         }
     }
         
-    public String saveFile(byte[] fileData, String fileName) {
+    public String saveFile(byte[] fileData, String fileName, String contentType) {
         GridFS gridFs = new GridFS(mongoDB.getDataStore().getDB(), "roquito");
         GridFSInputFile gfsFile = gridFs.createFile(fileData);
         
         gfsFile.setFilename(fileName);
+        gfsFile.setContentType(contentType);
         gfsFile.save();
+        
         LOG.info("Saved new file :" + fileName);
         
         return gfsFile.getId().toString();
@@ -108,6 +110,11 @@ public class ApplicationService extends BasicDAO<Application, String> {
         GridFSDBFile savedFile = gridFs.find(new ObjectId(fileId));
         
         return savedFile.getInputStream();
+    }
+    
+    public GridFSDBFile getFile(String fileId) {
+        GridFS gridFs = new GridFS(mongoDB.getDataStore().getDB(), "roquito");
+        return gridFs.find(new ObjectId(fileId));
     }
     
     public String getNextApplicationId() {
