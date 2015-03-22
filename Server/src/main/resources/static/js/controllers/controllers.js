@@ -182,6 +182,8 @@ App.AppsNewController = Ember.Controller.extend({
 App.UserAppController = Ember.Controller.extend({
 	updateInProgress : false,
 	updateButtonText: 'Update Settings',
+	keyValueCount : 1,
+	
 	updateTab : function(selectedTab) {
 		var userApp = this.get('userApp');
 		var tabs = userApp.tabs;
@@ -283,11 +285,27 @@ App.UserAppController = Ember.Controller.extend({
 			});
 		},
 		
-		moreKeyValueFields: function() {			
-		    $("#apnsForm").append('<div class="row">'+
+		moreKeyValueFields: function() {
+			this.keyValueCount = this.keyValueCount + 1;
+			var key = 'key'+this.keyValueCount;
+			var value = 'value'+this.keyValueCount;
+			
+		    $("#apnsForm").append(
+		    		'<div class="row">'+
+						'<h1></h1>'+
+					'</div>'+
+		    		'<div class="row">'+
 						'<div class="col-xs-2"></div>'+
-						'<div class="col-md-2"><h4 class="app-key-text pull-right">Key1</h4></div>'+
-  						'<div class="col-xs-6"><input id="key1" class="ember-view ember-text-field form-control pull-left app-settings-input" placeholder="" type="text"></div>'+
+						'<div class="col-md-2"><h4 class="app-key-text pull-right">Key '+this.keyValueCount+' </h4></div>'+
+  						'<div class="col-xs-6"><input id="'+key+'" class="ember-view ember-text-field form-control pull-left app-settings-input" placeholder="" type="text"></div>'+
+					'</div>'+
+  					'<div class="row">'+
+  					  '<h1></h1>'+
+  					'</div>'+
+  					'<div class="row">'+
+  						'<div class="col-xs-2"></div>'+
+  						'<div class="col-md-2"><h4 class="app-key-text pull-right">Value '+this.keyValueCount+'</h4></div>'+
+						'<div class="col-xs-4"><input id="'+value+'" class="ember-view ember-text-field form-control pull-left app-settings-input" placeholder="" type="text"></div>'+
 					'</div>');
 		}
 	}

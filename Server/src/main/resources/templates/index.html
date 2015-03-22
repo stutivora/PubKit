@@ -7,13 +7,13 @@
 
 <title>mKit.IO - Messaging platform for mobile developers</title>
 <link rel="stylesheet" href="css/normalize.css" />
-<link href='http://fonts.googleapis.com/css?family=Arvo' rel='stylesheet' type='text/css'>
-<link href='http://fonts.googleapis.com/css?family=Roboto+Slab:400,300,100,700' rel='stylesheet' type='text/css'>	
+<link href='https://fonts.googleapis.com/css?family=Arvo' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,300,100,700' rel='stylesheet' type='text/css'>	
 <link rel="icon" type="image/png" href="images/favicon.ico">
 
 <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" />
-<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="css/style.css" />
 
 <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -29,9 +29,7 @@
 <script type="text/x-handlebars">
 	<div id="successAlert" class="hidden alert alert-success success-text" role="alert">Save Success</div>
 	<nav class="top-nav nav">
-	 <div class="container">
-  		{{render "navbar"}}
-	 </div>
+		{{render "navbar"}}
 	</nav>
 	
 		{{outlet}}
@@ -438,14 +436,24 @@
 						<div class="col-md-2"><h4 class="app-key-text pull-right">Message</h4></div>
   						<div class="col-xs-6">{{textarea class="form-control pull-left app-settings-input" id="message" placeholder=""}}</div>
 					</div>
-					<div class="row">
-						<h1></h1>
-					</div>
-					<div class="row">
-						<div class="col-xs-4"></div>
-						<div class="col-xs-4"><button {{action 'moreKeyValueFields'}}>Add custom key/value <i class="fa fa-plus"></i></button></div>
-					</div>
       			</div>
+				<div class="row">
+					<div class="col-xs-4"></div>
+					<div class="col-xs-4"><button class="btn" {{action 'moreKeyValueFields'}}>Add custom key/value <i class="fa fa-plus"></i></button></div>
+				</div>
+				<div class="row">
+					<h1></h1>
+				</div>
+				<div class="row">
+					<div class="col-md-4"></div>
+					<div class="col-md-6"></div>
+					<div class="col-md-2">
+						{{spin-button inProgress = tab.pushInProgress buttonText=tab.pushButtonText action='sendPushNotification'}}
+					</div>
+				</div>
+				<div class="row">
+					<h1></h1>
+				</div>
     		</div>
   		</div>
   		<div class="panel panel-default">
@@ -502,12 +510,6 @@
       			</div>
     		</div>
   		</div>
-	</div>
-	<div class="row">
-		<div class="col-md-6"></div>
-		<div class="col-md-6">
-			{{spin-button inProgress = tab.pushInProgress buttonText=tab.pushButtonText action='sendPushNotification' class='pull-right'}}
-		</div>
 	</div>
 	<br><br>
 </script>
