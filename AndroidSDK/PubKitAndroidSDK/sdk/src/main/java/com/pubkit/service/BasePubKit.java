@@ -26,24 +26,20 @@ public final class BasePubKit implements PubKit {
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
-    private static final String PROPERTY_APPLICATION_ID = "applicationId";
-    private static final String PROPERTY_REG_ID = "registrationId";
-    private static final String PROPERTY_SOURCE_USER_ID = "sourceUserId";
-    private static final String PROPERTY_DEVICE_TYPE = "deviceType";
-    private static final String PROPERTY_DEVICE_SUB_TYPE = "deviceSubType";
+    private static final String PROPERTY_DEVICE_APP_ID = "deviceAppId";
+    private static final String PROPERTY_USER_ID = "sourceUserId";
+    private static final String PROPERTY_REGISTRATION_ID = "registrationId";
     private static final String PROPERTY_APP_VERSION = "appVersion";
-
     private static final String TAG = "PUBKIT";
     private static final String ANONYMOUS_USER = "anonymous";
 
     private GoogleCloudMessaging gcmClient;
-    private String registrationId;
     private String pubKitAppId;
     private String pubKitApiKey;
     private String pubKitAppSecret;
-    private Context context;
     private String senderId;
-    private String gcmApiKey;
+    private String userId;
+    private Context context;
     private PubKitListener pubKitListener;
 
     private static BasePubKit INSTANCE;
@@ -71,24 +67,27 @@ public final class BasePubKit implements PubKit {
     }
 
     @Override
-    public String setupClient(Context context, String userId, String senderId, String gcmApiKey) {
+    public String setupGcmPush(Context context, String userId, String senderId) {
         this.context = context;
+
         // Check device for Play Services APK. If check succeeds, proceed with GCM registration.
         if (checkPlayServices()) {
-            gcmClient = GoogleCloudMessaging.getInstance(this.context);
-            this.registrationId = getRegistrationId(context);
-            if (this.registrationId.isEmpty()) {
+            this.senderId = senderId;
+            this.userId = userId;
+            if (this.userId == null || this.userId.isEmpty()) {
+                this.userId = ANONYMOUS_USER;
+            }
+
+            String registrationId = getRegistrationId(context);
+            String sourceUserId = getUserId();
+
+            if (registrationId.isEmpty() && !userId.equalsIgnoreCase(sourceUserId)) {
                 registerInBackground();
             }
         } else {
             Log.i(TAG, "No valid Google Play Services APK found.");
         }
-        return this.registrationId;
-    }
-
-    @Override
-    public String setupAnonymousClient(Context context, String senderId, String gcmApiKey) {
-        return this.setupClient(context, ANONYMOUS_USER, senderId, gcmApiKey);
+        return null;
     }
 
     @Override
@@ -151,32 +150,55 @@ public final class BasePubKit implements PubKit {
     }
 
     private void sendRegistrationIdToBackend(String registrationId) throws JSONException {
-        this.registrationId = registrationId;
-
         JSONObject registerObject = new JSONObject();
+
         registerObject.put("applicationId", this.pubKitAppId);
         registerObject.put("registrationId", registrationId);
-        registerObject.put("sourceUserId", "anonymous");
+        registerObject.put("sourceUserId", this.userId);
         registerObject.put("deviceType", "android");
         registerObject.put("deviceSubType", getDeviceName());
 
         JSONObject responseObject = PubKitNetwork.sendPost(this.pubKitApiKey, registerObject);
+        if (responseObject != null) {
+            if (responseObject.getString("error") == null) {
+                boolean success = responseObject.getBoolean("success");
+                if (success) {
+                    String deviceAppId = responseObject.getString("deviceAppId");
+                    if (deviceAppId != null) {
+                        this.storeRegistrationId(deviceAppId, registrationId, this.userId);
+                    }
+                } else {
+                    String errorMessage = responseObject.getString("errorResponse");
+                    Log.i(TAG, errorMessage);
+                }
+            }
+        }
     }
 
     /**
      * Stores the registration ID and the app versionCode in the application's
      * {@code SharedPreferences}.
-     * @param regId registration ID
+     * @param deviceAppId the app device id
+     * @param registrationId the registration id of device
+     * @param userId the user id
      */
-    private void storeRegistrationId(String regId) {
+    private void storeRegistrationId(String deviceAppId, String registrationId, String userId) {
         final SharedPreferences prefs = getGcmPreferences();
         int appVersion = getAppVersion(context);
         Log.i(TAG, "Saving regId on app version " + appVersion);
 
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(PROPERTY_REG_ID, regId);
+        editor.putString(PROPERTY_DEVICE_APP_ID, deviceAppId);
+        editor.putString(PROPERTY_REGISTRATION_ID, registrationId);
+        editor.putString(PROPERTY_USER_ID, userId);
         editor.putInt(PROPERTY_APP_VERSION, appVersion);
+
         editor.commit();
+    }
+
+    private String getUserId() {
+        final SharedPreferences prefs = getGcmPreferences();
+        return prefs.getString(PROPERTY_USER_ID, "");
     }
 
     /**
@@ -187,10 +209,10 @@ public final class BasePubKit implements PubKit {
      */
     private String getRegistrationId(Context context) {
         final SharedPreferences prefs = getGcmPreferences();
-        String registrationId = prefs.getString(PROPERTY_REG_ID, "");
+        String registrationId = prefs.getString(PROPERTY_REGISTRATION_ID, "");
         if (registrationId.isEmpty()) {
             Log.i(TAG, "Registration not found.");
-            return "";
+            registrationId = "";
         }
         // Check if app was updated; if so, it must clear the registration ID
         // since the existing regID is not guaranteed to work with the new
@@ -199,7 +221,7 @@ public final class BasePubKit implements PubKit {
         int currentVersion = getAppVersion(context);
         if (registeredVersion != currentVersion) {
             Log.i(TAG, "App version changed.");
-            return "";
+            registrationId = "";
         }
         return registrationId;
     }

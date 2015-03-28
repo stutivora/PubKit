@@ -66,16 +66,16 @@ public final class PubKitNetwork {
 
             String responseString = response.toString();
             if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                return new JSONObject(responseString);
+                return new JSONObject("{'error':'"+responseString+"'}");
             } else {
                 try {
                     return new JSONObject(responseString);
                 } catch (JSONException e) {
-                    Log.e("NETWORK", "Error parsing data", e);
+                    Log.e("PUBKIT", "Error parsing data", e);
                 }
             }
         } catch (Exception e) {
-            Log.e("NETWORK", "Network exception:", e);
+            Log.e("PUBKIT", "Network exception:", e);
         } finally {
             if (connection != null) {
                 connection.disconnect();

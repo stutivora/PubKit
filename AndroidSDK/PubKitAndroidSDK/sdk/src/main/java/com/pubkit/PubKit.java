@@ -19,28 +19,15 @@ public interface PubKit {
     PubKit initPubKit(String applicationId, String applicationKey, String applicationSecret);
 
     /**
-     * Setup {@code PubKit} client for the given userId, senderId and gcm API KEY. For creating
-     * senderId and API KEY, follow {@link http://developer.android.com/google/gcm/gs.html}
-     * @param context the app context
-     * @param userId the userId of the client app
-     * @param senderId the sender id
-     * @param gcmApiKey the GCM API KEY
-     *
-     * @return registrationId for the device
-     */
-    String setupClient(Context context, String userId, String senderId, String gcmApiKey);
-
-    /**
      * Setup {@code PubKit} anonymous client for the given senderId and gcm API KEY. This is recommended
      * for apps that do not need to know user associated with a device registration Id. For creating
-     * senderId and API KEY, follow {@link http://developer.android.com/google/gcm/gs.html}
+     * senderId follow {@link http://developer.android.com/google/gcm/gs.html}
      * @param context the app context
-     * @param senderId the sender id
-     * @param gcmApiKey the GCM API KEY
-     *
+     * @param userId the user id of the application. Use "null" if it's not associated with any app user
+     * @param senderId the sender Id
      * @return registrationId for the device
      */
-    String setupAnonymousClient(Context context, String senderId, String gcmApiKey);
+    String setupGcmPush(Context context, String userId, String senderId);
 
     /**
      * Set the listener for receiving all the PubKit events and messages
