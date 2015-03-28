@@ -18,14 +18,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.roquito.web.request;
+package com.roquito.web.data;
 
 /**
  * Created by puran
  */
-public class UserLoginRequest {
+public class UserData {
+    private String userId;
     private String email;
     private String password;
+    private String fullName;
+    private String company;
+    private String profilePicUrl;
+    
+    public String getUserId() {
+        return userId;
+    }
+    
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+    
+    public String getEmail() {
+        return email;
+    }
+    
+    public void setEmail(String email) {
+        this.email = email;
+    }
     
     public String getPassword() {
         return password;
@@ -35,11 +55,27 @@ public class UserLoginRequest {
         this.password = password;
     }
     
-    public String getEmail() {
-        return email;
+    public String getFullName() {
+        return fullName;
     }
     
-    public void setEmail(String email) {
-        this.email = email;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+    
+    public String getCompany() {
+        return company;
+    }
+    
+    public void setCompany(String company) {
+        this.company = company;
+    }
+    
+    public String getProfilePicUrl() {
+        return profilePicUrl;
+    }
+    
+    public void setProfilePicUrl(String profilePicUrl) {
+        this.profilePicUrl = profilePicUrl;
     }
 }

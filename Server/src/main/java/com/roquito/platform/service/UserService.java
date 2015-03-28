@@ -24,6 +24,8 @@ import org.bson.types.ObjectId;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Key;
 import org.mongodb.morphia.dao.BasicDAO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +38,8 @@ import com.roquito.platform.persistence.RedisDB;
  */
 @Service
 public class UserService extends BasicDAO<User, String> {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(UserService.class);
     
     private MongoDB mongoDB;
     private RedisDB redisDB;
@@ -68,6 +72,24 @@ public class UserService extends BasicDAO<User, String> {
     
     public User findByUserId(String userId) {
         return this.findOne("userId", userId);
+    }
+    
+    public boolean saveAccessToken(String email, String accessToken) {
+        String response = redisDB.getConnection().set(accessToken, email, "NX", "EX", 3600);
+        LOG.debug("Access token set response:" + response);
+        redisDB.closeConnection();
+        
+        return "OK".equalsIgnoreCase(response);
+    }
+    
+    public boolean isAccessTokenValid(String accessToken) {
+        if (accessToken == null) {
+            return false;
+        }
+        String response = redisDB.getConnection().get(accessToken);
+        redisDB.closeConnection();
+        
+        return response != null;
     }
     
     public String getNextUserId() {

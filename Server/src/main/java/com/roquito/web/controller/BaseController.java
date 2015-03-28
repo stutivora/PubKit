@@ -35,11 +35,10 @@ import com.roquito.platform.commons.RoquitoKeyGenerator;
 import com.roquito.platform.commons.RoquitoUtils;
 import com.roquito.platform.model.Application;
 import com.roquito.platform.service.ApplicationService;
-import com.roquito.platform.service.SessionService;
 import com.roquito.platform.service.UserService;
+import com.roquito.web.data.ApplicationData;
 import com.roquito.web.exception.RoquitoAuthException;
 import com.roquito.web.exception.RoquitoServerException;
-import com.roquito.web.request.ApplicationRequest;
 
 /**
  * Created by puran
@@ -57,15 +56,13 @@ public class BaseController {
     @Autowired
     protected ApplicationService applicationService;
     @Autowired
-    protected SessionService sessionService;
-    @Autowired
     protected HttpServletRequest httpRequest;
     @Autowired
     protected HttpServletResponse httpResponse;
     
     protected void validateAccessToken() {
         String accessToken = httpRequest.getParameter(ACCESS_TOKEN_PARAM);
-        boolean tokenValid = sessionService.isAccessTokenValid(accessToken);
+        boolean tokenValid = userService.isAccessTokenValid(accessToken);
         if (!tokenValid) {
             log.debug("Request not authorized");
             throwAuthException();
@@ -112,22 +109,22 @@ public class BaseController {
         return !RoquitoUtils.hasValue(value);
     }
     
-    protected ApplicationRequest getApplicationDto(Application application, boolean includeDetail) {
-        ApplicationRequest appDto = new ApplicationRequest();
+    protected ApplicationData getApplicationData(Application application, boolean includeDetail) {
+    	ApplicationData appData = new ApplicationData();
         
-        appDto.setApplicationId(application.getApplicationId());
-        appDto.setApplicationName(application.getApplicationName());
-        appDto.setApplicationDescription(application.getApplicationDescription());
+    	appData.setApplicationId(application.getApplicationId());
+        appData.setApplicationName(application.getApplicationName());
+        appData.setApplicationDescription(application.getApplicationDescription());
         
         if (includeDetail) {
-            appDto.setApplicationKey(application.getApplicationKey());
-            appDto.setApplicationSecret(application.getApplicationSecret());
-            appDto.setWebsiteLink(application.getWebsiteLink());
-            appDto.setPricingPlan(application.getPricingPlan());
-            appDto.setConfigParams(application.getConfigParams());
+        	appData.setApplicationKey(application.getApplicationKey());
+        	appData.setApplicationSecret(application.getApplicationSecret());
+        	appData.setWebsiteLink(application.getWebsiteLink());
+        	appData.setPricingPlan(application.getPricingPlan());
+        	appData.setConfigParams(application.getConfigParams());
         }
         
-        return appDto;
+        return appData;
     }
     
     @ExceptionHandler(IllegalArgumentException.class)

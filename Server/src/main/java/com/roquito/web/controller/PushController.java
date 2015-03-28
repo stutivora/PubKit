@@ -35,6 +35,7 @@ import com.roquito.platform.notification.GcmPushNotification;
 import com.roquito.platform.service.AppDeviceService;
 import com.roquito.platform.service.QueueService;
 import com.roquito.web.exception.RoquitoServerException;
+import com.roquito.web.response.DeviceRegistrationResponse;
 
 /**
  * This is a public API for sending push notification. This API doesn't return
@@ -85,26 +86,30 @@ public class PushController extends BaseController {
     }
     
     @RequestMapping(value = "/register", method = RequestMethod.POST)
-    public String registerDevice(@RequestBody AppDevice appDevice) {
+    public DeviceRegistrationResponse registerDevice(@RequestBody AppDevice appDevice) {
         if (appDevice == null || isEmpty(appDevice.getDeviceType()) || isEmpty(appDevice.getApplicationId())) {
             LOG.debug("Null or invalid data received");
-            new RoquitoServerException("Invalid request");
+            new DeviceRegistrationResponse("Invalid request");
         }
         if (DataConstants.DEVICE_TYPE_IOS.equals(appDevice.getDeviceType()) && isEmpty(appDevice.getDeviceToken())) {
             LOG.debug("invalid device token received");
-            new RoquitoServerException("Invalid request");
+            new DeviceRegistrationResponse("Invalid request");
         }
         if (DataConstants.DEVICE_TYPE_ANDROID.equals(appDevice.getDeviceType()) && isEmpty(appDevice.getRegistrationId())) {
             LOG.debug("invalid registration id received");
-            new RoquitoServerException("Invalid request");
+            new DeviceRegistrationResponse("Invalid request");
         }
         
         String applicationId = appDevice.getApplicationId();
         validateApiRequest(applicationId);
         
-        String appDeviceId = appDeviceService.saveAppDevice(appDevice);
-        LOG.info("Registered device for push notification");
+        String deviceAppId = appDeviceService.saveAppDevice(appDevice);
+        if (deviceAppId != null) {
+        	LOG.info("Registered device for push notification");
+        	return new DeviceRegistrationResponse(deviceAppId, false, null);
+        } 
         
-        return appDeviceId;
+        LOG.error("Error registering device for push notification");
+        return null;
     }
 }

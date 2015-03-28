@@ -22,45 +22,45 @@ package com.roquito.web.response;
 
 import java.util.List;
 
-import com.roquito.web.request.ApplicationRequest;
+import com.roquito.web.data.ApplicationData;
 
 /**
  * Created by puran
  */
 public class ApplicationResponse {
-    private ApplicationRequest application;
-    private List<ApplicationRequest> applications;
+    private ApplicationData applicationData;
+    private List<ApplicationData> applicationDatas;
     private boolean error;
     private String errorMessage;
     
-    public ApplicationResponse(ApplicationRequest application) {
-        this(application, false, null);
+    public ApplicationResponse(ApplicationData applicationData) {
+        this(applicationData, false, null);
     }
     
     public ApplicationResponse(String errorMessage) {
         this(null, true, errorMessage);
     }
     
-    public ApplicationResponse(ApplicationRequest application, boolean error, String errorMessage) {
-        this.application = application;
+    public ApplicationResponse(ApplicationData applicationData, boolean error, String errorMessage) {
+        this.applicationData = applicationData;
         this.error = error;
         this.errorMessage = errorMessage;
     }
     
-    public ApplicationResponse(List<ApplicationRequest> applications) {
-        this.applications = applications;
+    public ApplicationResponse(List<ApplicationData> applicationDatas) {
+        this.applicationDatas = applicationDatas;
     }
     
-    public ApplicationRequest getApplication() {
-        return application;
+    public ApplicationData getApplication() {
+        return applicationData;
     }
     
-    public void setApplication(ApplicationRequest application) {
-        this.application = application;
+    public void setApplication(ApplicationData applicationData) {
+        this.applicationData = applicationData;
     }
     
-    public List<ApplicationRequest> getApplications() {
-        return applications;
+    public List<ApplicationData> getApplications() {
+        return applicationDatas;
     }
 
     public boolean isError() {
