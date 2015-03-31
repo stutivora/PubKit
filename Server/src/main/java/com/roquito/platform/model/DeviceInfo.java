@@ -6,7 +6,7 @@ import org.mongodb.morphia.annotations.Id;
 import org.mongodb.morphia.annotations.Indexed;
 
 @Entity
-public class AppDevice {
+public class DeviceInfo {
     @Id
     private ObjectId id;
     @Indexed(unique = true)

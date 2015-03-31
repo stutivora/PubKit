@@ -23,6 +23,7 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.pubkit.PubKit;
 import com.pubkit.PubKitListener;
 
 /**
@@ -67,7 +68,7 @@ public class PubKitGcmIntentService extends IntentService {
     // This is just one simple example of what you might choose to do with
     // a GCM message.
     private void sendNotification(String message, String messageType) {
-        BasePubKit pubKit = BasePubKit.getPubKitClient();
+        PubKitClient pubKit = PubKit.getInstance();
         if (pubKit != null) {
             PubKitListener pubKitListener = pubKit.getPubKitListener();
             if (pubKitListener != null) {

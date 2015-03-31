@@ -22,16 +22,17 @@ import java.io.IOException;
  * Base PubKit implementation
  * Created by puran on 3/22/15.
  */
-public final class BasePubKit implements PubKit {
+public final class BasePubKitClient implements PubKitClient {
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
-    private static final String PROPERTY_DEVICE_APP_ID = "deviceAppId";
+    private static final String PROPERTY_DEVICE_INFO_ID = "deviceInfoId";
     private static final String PROPERTY_USER_ID = "sourceUserId";
     private static final String PROPERTY_REGISTRATION_ID = "registrationId";
     private static final String PROPERTY_APP_VERSION = "appVersion";
     private static final String TAG = "PUBKIT";
     private static final String ANONYMOUS_USER = "anonymous";
+    private static final String DEVICE_TYPE = "android";
 
     private GoogleCloudMessaging gcmClient;
     private String pubKitAppId;
@@ -42,28 +43,14 @@ public final class BasePubKit implements PubKit {
     private Context context;
     private PubKitListener pubKitListener;
 
-    private static BasePubKit INSTANCE;
-
-    public static BasePubKit getPubKitClient() {
-        return INSTANCE;
-    }
-
-    private BasePubKit() {
+    private BasePubKitClient() {
        throw new UnsupportedOperationException();
     }
 
-    private BasePubKit(String appId, String apiKey, String appSecret) {
+    public BasePubKitClient(String appId, String apiKey, String appSecret) {
         this.pubKitAppId = appId;
         this.pubKitApiKey = apiKey;
         this.pubKitAppSecret = appSecret;
-    }
-
-    @Override
-    public PubKit initPubKit(String applicationId, String applicationKey, String applicationSecret) {
-        if (INSTANCE == null) {
-            INSTANCE = new BasePubKit(applicationId, applicationKey, applicationSecret);
-        }
-        return INSTANCE;
     }
 
     @Override
@@ -81,7 +68,7 @@ public final class BasePubKit implements PubKit {
             String registrationId = getRegistrationId(context);
             String sourceUserId = getUserId();
 
-            if (registrationId.isEmpty() && !userId.equalsIgnoreCase(sourceUserId)) {
+            if (registrationId.isEmpty() && !this.userId.equalsIgnoreCase(sourceUserId)) {
                 registerInBackground();
             }
         } else {
@@ -129,14 +116,16 @@ public final class BasePubKit implements PubKit {
                         gcmClient = GoogleCloudMessaging.getInstance(context);
                     }
                     String registrationId = gcmClient.register(senderId);
-                    msg = "Device registered, registration ID=" + registrationId;
+                    msg = "REGISTRATION ID[ " + registrationId +" ]";
 
                     // You should send the registration ID to your server over HTTP, so it
                     // can use GCM/HTTP or CCS to send messages to your app.
                     sendRegistrationIdToBackend(registrationId);
                 } catch (IOException ex) {
                     msg = "Error :" + ex.getMessage();
+                    Log.e(TAG, "I/O Error registring device", ex);
                 } catch (JSONException ex) {
+                    Log.e(TAG, "JSON error registring device", ex);
                     msg = "Error :" + ex.getMessage();
                 }
                 return msg;
@@ -144,7 +133,7 @@ public final class BasePubKit implements PubKit {
 
             @Override
             protected void onPostExecute(String msg) {
-
+                Log.i(TAG, "Device registration complete:-"+msg);
             }
         }.execute(null, null, null);
     }
@@ -152,10 +141,12 @@ public final class BasePubKit implements PubKit {
     private void sendRegistrationIdToBackend(String registrationId) throws JSONException {
         JSONObject registerObject = new JSONObject();
 
+        String deviceInfoId = getDeviceInfoId();
+        registerObject.put("deviceInfoId", deviceInfoId);
         registerObject.put("applicationId", this.pubKitAppId);
         registerObject.put("registrationId", registrationId);
         registerObject.put("sourceUserId", this.userId);
-        registerObject.put("deviceType", "android");
+        registerObject.put("deviceType", DEVICE_TYPE);
         registerObject.put("deviceSubType", getDeviceName());
 
         JSONObject responseObject = PubKitNetwork.sendPost(this.pubKitApiKey, registerObject);
@@ -163,9 +154,9 @@ public final class BasePubKit implements PubKit {
             if (responseObject.getString("error") == null) {
                 boolean success = responseObject.getBoolean("success");
                 if (success) {
-                    String deviceAppId = responseObject.getString("deviceAppId");
-                    if (deviceAppId != null) {
-                        this.storeRegistrationId(deviceAppId, registrationId, this.userId);
+                    deviceInfoId = responseObject.getString("deviceInfoId");
+                    if (deviceInfoId != null) {
+                        this.storeRegistrationId(deviceInfoId, registrationId, this.userId);
                     }
                 } else {
                     String errorMessage = responseObject.getString("errorResponse");
@@ -173,32 +164,6 @@ public final class BasePubKit implements PubKit {
                 }
             }
         }
-    }
-
-    /**
-     * Stores the registration ID and the app versionCode in the application's
-     * {@code SharedPreferences}.
-     * @param deviceAppId the app device id
-     * @param registrationId the registration id of device
-     * @param userId the user id
-     */
-    private void storeRegistrationId(String deviceAppId, String registrationId, String userId) {
-        final SharedPreferences prefs = getGcmPreferences();
-        int appVersion = getAppVersion(context);
-        Log.i(TAG, "Saving regId on app version " + appVersion);
-
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(PROPERTY_DEVICE_APP_ID, deviceAppId);
-        editor.putString(PROPERTY_REGISTRATION_ID, registrationId);
-        editor.putString(PROPERTY_USER_ID, userId);
-        editor.putInt(PROPERTY_APP_VERSION, appVersion);
-
-        editor.commit();
-    }
-
-    private String getUserId() {
-        final SharedPreferences prefs = getGcmPreferences();
-        return prefs.getString(PROPERTY_USER_ID, "");
     }
 
     /**
@@ -227,10 +192,42 @@ public final class BasePubKit implements PubKit {
     }
 
     /**
+     * Stores the registration ID and the app versionCode in the application's
+     * {@code SharedPreferences}.
+     * @param deviceInfoId the device info  id
+     * @param registrationId the registration id of device
+     * @param userId the user id
+     */
+    private void storeRegistrationId(String deviceInfoId, String registrationId, String userId) {
+        final SharedPreferences prefs = getGcmPreferences();
+        int appVersion = getAppVersion(context);
+        Log.i(TAG, "Saving regId on app version " + appVersion);
+
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(PROPERTY_DEVICE_INFO_ID, deviceInfoId);
+        editor.putString(PROPERTY_REGISTRATION_ID, registrationId);
+        editor.putString(PROPERTY_USER_ID, userId);
+        editor.putInt(PROPERTY_APP_VERSION, appVersion);
+
+        editor.commit();
+    }
+
+    private String getUserId() {
+        final SharedPreferences prefs = getGcmPreferences();
+        return prefs.getString(PROPERTY_USER_ID, "");
+    }
+
+    private String getDeviceInfoId() {
+        final SharedPreferences prefs = getGcmPreferences();
+        return prefs.getString(PROPERTY_DEVICE_INFO_ID, "");
+    }
+
+    /**
      * @return Application's {@code SharedPreferences}.
      */
     private SharedPreferences getGcmPreferences() {
-        return context.getSharedPreferences("PubKitAndroid", Context.MODE_PRIVATE);
+        String preferenceKey = "PubKitAndroid-" + this.pubKitAppId;
+        return context.getSharedPreferences(preferenceKey, Context.MODE_PRIVATE);
     }
 
     /**

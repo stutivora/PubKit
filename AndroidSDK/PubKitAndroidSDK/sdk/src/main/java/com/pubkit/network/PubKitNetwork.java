@@ -20,22 +20,20 @@ import javax.net.ssl.HttpsURLConnection;
  */
 public final class PubKitNetwork {
 
-    private static String PUBKIT_API_URL = "https://pubkit.co/push/register";
+    private static String PUBKIT_API_URL = "http://pubkit.co/push/register";
 
     public static JSONObject sendPost(String apiKey, JSONObject jsonObject) {
         URL url;
-        HttpsURLConnection connection = null;
+        HttpURLConnection connection = null;
         try {
             //Create connection
             url = new URL(PUBKIT_API_URL);
-            String encodedData = URLEncoder.encode(jsonObject.toString(), "UTF-8");
-            String postData = "data=" + encodedData;
+            String encodedData = jsonObject.toString();
+            byte[] postDataBytes = jsonObject.toString().getBytes("UTF-8");
 
-            byte[] postDataBytes = postData.toString().getBytes("UTF-8");
-
-            connection = (HttpsURLConnection) url.openConnection();
+            connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            connection.setRequestProperty("Content-Type", "application/json");
             connection.setRequestProperty("Accept", "application/json");
             connection.setRequestProperty("Content-Length", "" + String.valueOf(postDataBytes.length));
             connection.setRequestProperty("api_key", apiKey);
@@ -45,7 +43,7 @@ public final class PubKitNetwork {
 
             //Send request
             DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-            wr.writeBytes(postData);//set data
+            wr.writeBytes(encodedData);//set data
             wr.flush();
 
             //Get Response

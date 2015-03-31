@@ -35,13 +35,13 @@ import com.notnoop.apns.ApnsNotification;
 import com.notnoop.apns.ApnsService;
 import com.notnoop.apns.EnhancedApnsNotification;
 import com.notnoop.exceptions.NetworkIOException;
-import com.roquito.platform.model.AppDevice;
+import com.roquito.platform.model.DeviceInfo;
 import com.roquito.platform.model.Application;
 import com.roquito.platform.notification.gcm.GcmConnection;
 import com.roquito.platform.notification.gcm.Message;
 import com.roquito.platform.notification.gcm.MulticastResult;
 import com.roquito.platform.notification.gcm.Result;
-import com.roquito.platform.service.AppDeviceService;
+import com.roquito.platform.service.DeviceInfoService;
 import com.roquito.platform.service.ApplicationService;
 
 /**
@@ -53,14 +53,14 @@ public class PushEventHandler implements EventHandler<PushEvent> {
     
     private static final int NUM_RETRIES = 3;
     private ApplicationService applicationService;
-    private AppDeviceService appDeviceService;
+    private DeviceInfoService deviceInfoService;
     
     private Map<String, ApnsService> sandboxConnections = new HashMap<String, ApnsService>();
     private Map<String, ApnsService> prodConnections = new HashMap<String, ApnsService>();
     
-    public PushEventHandler(ApplicationService applicationService, AppDeviceService appDeviceService) {
+    public PushEventHandler(ApplicationService applicationService, DeviceInfoService deviceInfoService) {
         this.applicationService = applicationService;
-        this.appDeviceService = appDeviceService;
+        this.deviceInfoService = deviceInfoService;
     }
     
     @Override
@@ -123,10 +123,10 @@ public class PushEventHandler implements EventHandler<PushEvent> {
                 String applicationId = apnsPushNotification.getApplicationId();
                 Map<String, Date> inactiveDevices = apnsService.getInactiveDevices();
                 for (String deviceToken : inactiveDevices.keySet()) {
-                    AppDevice appDevice = appDeviceService.getAppDeviceForToken(applicationId, deviceToken);
-                    if (appDevice != null) {
-                        appDevice.setActive(false);
-                        appDeviceService.saveAppDevice(appDevice);
+                    DeviceInfo deviceInfo = deviceInfoService.getDeviceInfoForToken(applicationId, deviceToken);
+                    if (deviceInfo != null) {
+                        deviceInfo.setActive(false);
+                        deviceInfoService.saveDeviceInfo(deviceInfo);
                     }
                 }
             }

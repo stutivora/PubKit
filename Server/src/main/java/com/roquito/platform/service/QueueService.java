@@ -58,7 +58,7 @@ public class QueueService {
     private ApplicationService applicationService;
     
     @Autowired
-    private AppDeviceService appDeviceService;
+    private DeviceInfoService deviceInfoService;
     
     @Autowired
     private UserService userService;
@@ -83,7 +83,7 @@ public class QueueService {
         
         // Connect the handler
         EventHandlerGroup<PushEvent> handlerGroup = pushEventDisruptor.handleEventsWith(new PushEventHandler(
-                applicationService, appDeviceService));
+                applicationService, deviceInfoService));
         if (handlerGroup == null) {
             
         }
