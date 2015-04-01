@@ -33,8 +33,9 @@ appengine-generated/
 out/
 elasticsearch/
 workspace/
-.store
-.store.p
+*.store
+*.store.p
+*.store.t
 *.log
 application.properties
 logs/

@@ -58,6 +58,12 @@ public class RoquitoConfig {
     @Value("${mongodb.database}")
     private String mongoDatabase;
     
+    @Value("${mapdb.filepath}")
+    private String mapdbFilePath;
+    
+    @Value("${mapdb.encryptedPassword}")
+    private String mapdbPassword;
+    
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertyPlaceholderConfigurer() {
         return new PropertySourcesPlaceholderConfigurer();
@@ -101,5 +107,21 @@ public class RoquitoConfig {
     
     public String getMongoDatabase() {
         return mongoDatabase;
+    }
+
+    public String getMapdbFilePath() {
+        return mapdbFilePath;
+    }
+
+    public void setMapdbFilePath(String mapdbFilePath) {
+        this.mapdbFilePath = mapdbFilePath;
+    }
+
+    public String getMapdbPassword() {
+        return mapdbPassword;
+    }
+
+    public void setMapdbPassword(String mapdbPassword) {
+        this.mapdbPassword = mapdbPassword;
     }
 }

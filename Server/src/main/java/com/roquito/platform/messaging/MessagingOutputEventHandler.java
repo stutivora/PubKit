@@ -10,18 +10,27 @@ import org.springframework.web.socket.WebSocketSession;
 
 import com.google.gson.Gson;
 import com.lmax.disruptor.EventHandler;
-import com.roquito.platform.messaging.persistence.MapDB;
 import com.roquito.platform.messaging.protocol.ConnAck;
 import com.roquito.platform.messaging.protocol.Disconnect;
 import com.roquito.platform.messaging.protocol.Payload;
 import com.roquito.platform.messaging.protocol.SubsAck;
+import com.roquito.platform.service.MessagingService;
 
 public class MessagingOutputEventHandler implements EventHandler<MessagingEvent> {
     
     private static Logger logger = LoggerFactory.getLogger(MessagingOutputEventHandler.class);
     private Gson gson = new Gson();
-    private MapDB dbStore = MapDB.getInstance();
     
+    private MessagingService messagingService;
+    
+    public MessagingService getMessagingService() {
+        return messagingService;
+    }
+
+    public void setMessagingService(MessagingService messagingService) {
+        this.messagingService = messagingService;
+    }
+
     @Override
     public void onEvent(MessagingEvent event, long sequence, boolean endOfBatch) throws Exception {
         logger.debug("Output event received with sequence:" + sequence);
@@ -82,9 +91,9 @@ public class MessagingOutputEventHandler implements EventHandler<MessagingEvent>
     private void closeAndInvalidateSession(String clientId, WebSocketSession session) {
         logger.info("Closing and invalidating client session for {" + clientId + "}");
         
-        dbStore.removeConnection(clientId);
-        dbStore.removeSession(session);
-        dbStore.invalidateSessionToken(clientId);
+        messagingService.removeConnection(clientId);
+        messagingService.removeSession(session);
+        messagingService.invalidateSessionToken(clientId);
         
         closeSession(session);
     }

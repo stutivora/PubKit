@@ -20,6 +20,7 @@
  */
 package com.roquito;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -32,6 +33,7 @@ import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
 import com.roquito.platform.messaging.WebSocketConnectionHandler;
+import com.roquito.platform.service.QueueService;
 
 /**
  * Created by puran
@@ -42,9 +44,12 @@ import com.roquito.platform.messaging.WebSocketConnectionHandler;
 @EnableWebSocket
 public class RoquitoApplication extends SpringBootServletInitializer implements WebSocketConfigurer {
     
+    @Autowired
+    private QueueService queueService;
+    
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        WebSocketConnectionHandler connectionHandler = new WebSocketConnectionHandler();
+        WebSocketConnectionHandler connectionHandler = new WebSocketConnectionHandler(queueService);
         registry.addHandler(connectionHandler, "/messaging");
     }
     

@@ -8,7 +8,6 @@ import org.springframework.web.socket.WebSocketSession;
 
 import com.lmax.disruptor.EventHandler;
 import com.roquito.platform.commons.RoquitoKeyGenerator;
-import com.roquito.platform.messaging.persistence.MapDB;
 import com.roquito.platform.messaging.protocol.ConnAck;
 import com.roquito.platform.messaging.protocol.Connect;
 import com.roquito.platform.messaging.protocol.Disconnect;
@@ -19,6 +18,7 @@ import com.roquito.platform.messaging.protocol.SubsAck;
 import com.roquito.platform.messaging.protocol.Subscribe;
 import com.roquito.platform.model.Application;
 import com.roquito.platform.service.ApplicationService;
+import com.roquito.platform.service.MessagingService;
 import com.roquito.platform.service.QueueService;
 
 public class MessagingInputEventHandler implements EventHandler<MessagingEvent> {
@@ -26,16 +26,35 @@ public class MessagingInputEventHandler implements EventHandler<MessagingEvent> 
     private static Logger logger = LoggerFactory.getLogger(MessagingInputEventHandler.class);
     
     private final RoquitoKeyGenerator keyGenerator = new RoquitoKeyGenerator();
-    private MapDB dbStore = MapDB.getInstance();
-    
+
     private ApplicationService applicationService;
+    private MessagingService messagingService;
     private QueueService queueService;
     
-    public MessagingInputEventHandler(ApplicationService applicationService, QueueService queueService) {
+    public ApplicationService getApplicationService() {
+        return applicationService;
+    }
+
+    public void setApplicationService(ApplicationService applicationService) {
         this.applicationService = applicationService;
+    }
+
+    public MessagingService getMessagingService() {
+        return messagingService;
+    }
+
+    public void setMessagingService(MessagingService messagingService) {
+        this.messagingService = messagingService;
+    }
+
+    public QueueService getQueueService() {
+        return queueService;
+    }
+
+    public void setQueueService(QueueService queueService) {
         this.queueService = queueService;
     }
-    
+
     @Override
     public void onEvent(MessagingEvent event, long sequence, boolean endOfBatch) throws Exception {
         logger.debug("Input event received with sequence:" + sequence);
@@ -62,13 +81,13 @@ public class MessagingInputEventHandler implements EventHandler<MessagingEvent> 
                 connect.getApiVersion());
         
         // set active session
-        dbStore.addSession(session);
+        messagingService.addSession(session);
         
         // add new connection
-        dbStore.addConnection(connect.getClientId(), newConnection);
+        messagingService.addConnection(connect.getClientId(), newConnection);
         
         String accessToken = keyGenerator.getSecureSessionId();
-        boolean success = MapDB.getInstance().saveAccessToken(session.getId(), accessToken);
+        boolean success = messagingService.saveAccessToken(session.getId(), accessToken);
         if (success) {
             sendPayload(new ConnAck(session.getId(), accessToken), session);
         }
@@ -80,9 +99,9 @@ public class MessagingInputEventHandler implements EventHandler<MessagingEvent> 
             return;
         }
         String topic = subscribe.getTopic();
-        Connection connection = dbStore.getConnection(subscribe.getClientId());
+        Connection connection = messagingService.getConnection(subscribe.getClientId());
         if (connection != null) {
-            dbStore.subscribeTopic(topic, connection);
+            messagingService.subscribeTopic(topic, connection);
             SubsAck subsAck = new SubsAck(subscribe.getClientId());
             sendPayload(subsAck, session);
         } else {
@@ -99,9 +118,9 @@ public class MessagingInputEventHandler implements EventHandler<MessagingEvent> 
             logger.debug("Null or empty topic name. Cannot publish data");
             return;
         }
-        List<Connection> subscribers = dbStore.getAllSubscribers(topic);
+        List<Connection> subscribers = messagingService.getAllSubscribers(topic);
         for (Connection subscriber : subscribers) {
-            WebSocketSession subscriberSession = dbStore.getSession(subscriber.getSessionId());
+            WebSocketSession subscriberSession = messagingService.getSession(subscriber.getSessionId());
             if (subscriberSession != null) {
                 PubMessage pubMessage = new PubMessage(subscriber.getClientId(), publish.getClientId());
                 pubMessage.setData(publish.getData());
@@ -120,7 +139,7 @@ public class MessagingInputEventHandler implements EventHandler<MessagingEvent> 
     }
     
     private boolean validateAccessToken(String clientId, String accessToken, WebSocketSession session) {
-        boolean tokenValid = dbStore.isAccessTokenValid(accessToken);
+        boolean tokenValid = messagingService.isAccessTokenValid(accessToken);
         Disconnect disconnect = new Disconnect(clientId);
         if (!tokenValid) {
             disconnect.setData("Access token invalid. Closing the client connection {" + clientId + "}");

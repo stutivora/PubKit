@@ -1,4 +1,4 @@
-package com.roquito.platform.messaging.persistence;
+package com.roquito.platform.service;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -10,21 +10,25 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.PreDestroy;
+
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
 import org.mapdb.HTreeMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 
+import com.roquito.RoquitoConfig;
 import com.roquito.platform.messaging.Connection;
 import com.roquito.web.exception.RoquitoServerException;
 
-@Repository
-public final class MapDB {
-    /* Singleton Instance */
-    // private final static MapDB INSTANCE = new MapDB();
+@Service
+public class MessagingService {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(MessagingService.class);
     
     /* MAP DB reference */
     private DB internalDB;
@@ -41,13 +45,9 @@ public final class MapDB {
     /* Session map that olds current active session */
     private Map<String, WebSocketSession> sessionMap = new HashMap<>();
     
-    public static MapDB getInstance() {
-        return null;
-    }
-    
     @Autowired
-    public MapDB(@Value("${mapdb.filepath}") String filePath, @Value("${mapdb.encryptedPassword}") String password) {
-        initMapDB(filePath, password);
+    public MessagingService(RoquitoConfig config) {
+        initMapDB(config.getMapdbFilePath(), config.getMapdbPassword());
     }
     
     public void initMapDB(String mapdbFilePath, String encryptedMapdbPassword) {
@@ -56,8 +56,12 @@ public final class MapDB {
         }
         // configure and open database using builder pattern.
         // all options are available with code auto-completion.
-        internalDB = DBMaker.newFileDB(new File(mapdbFilePath)).closeOnJvmShutdown().transactionDisable()
-                .mmapFileEnableIfSupported().encryptionEnable(encryptedMapdbPassword).make();
+        internalDB = DBMaker.newFileDB(new File(mapdbFilePath))
+                            .closeOnJvmShutdown()
+                            .mmapFileEnableIfSupported()
+                            .encryptionEnable(encryptedMapdbPassword)
+                            .checksumEnable()
+                            .make();
         
         connectionStore = internalDB.getHashMap("connectionStore");
         subscriptionStore = internalDB.getHashMap("subscriptionStore");
@@ -146,5 +150,11 @@ public final class MapDB {
             results.addAll(subscriptions);
         }
         return Collections.unmodifiableList(results);
+    }
+    
+    @PreDestroy
+    public void closeDB() {
+        LOG.info("Closing map db database after shutdown");
+        internalDB.close();
     }
 }

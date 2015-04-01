@@ -71,6 +71,8 @@ public class QueueService {
     private DeviceInfoService deviceInfoService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private MessagingService messagingService;
     
     private static final EventTranslatorTwoArg<PushEvent, PushNotification, PushType> PUSH_EVENT_TRANSLATOR = new EventTranslatorTwoArg<PushEvent, PushNotification, PushType>() {
         @Override
@@ -118,14 +120,20 @@ public class QueueService {
             LOG.debug("Error creating disruptor handler group for push event handler");
         }
         
-        MessagingInputEventHandler messageInputEventHandler = new MessagingInputEventHandler(applicationService, this);
-        EventHandlerGroup<MessagingEvent> mIhandlerGroup = this.messageInputEventDisruptor.handleEventsWith(messageInputEventHandler);
+        MessagingInputEventHandler inputEventHandler = new MessagingInputEventHandler();
+        inputEventHandler.setApplicationService(applicationService);
+        inputEventHandler.setMessagingService(messagingService);
+        inputEventHandler.setQueueService(this);
+        
+        EventHandlerGroup<MessagingEvent> mIhandlerGroup = this.messageInputEventDisruptor.handleEventsWith(inputEventHandler);
         if (mIhandlerGroup == null) {
             LOG.debug("Error creating disruptor handler group for messaging input event handler");
         }
         
-        MessagingOutputEventHandler messageOutputEventHandler = new MessagingOutputEventHandler();
-        EventHandlerGroup<MessagingEvent> mOhandlerGroup = this.messageOutputEventDisruptor.handleEventsWith(messageOutputEventHandler);
+        MessagingOutputEventHandler outputEventHandler = new MessagingOutputEventHandler();
+        outputEventHandler.setMessagingService(messagingService);
+        
+        EventHandlerGroup<MessagingEvent> mOhandlerGroup = this.messageOutputEventDisruptor.handleEventsWith(outputEventHandler);
         if (mOhandlerGroup == null) {
             LOG.debug("Error creating disruptor handler group for messaging output event handler");
         }
