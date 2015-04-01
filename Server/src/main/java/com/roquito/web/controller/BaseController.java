@@ -110,18 +110,18 @@ public class BaseController {
     }
     
     protected ApplicationData getApplicationData(Application application, boolean includeDetail) {
-    	ApplicationData appData = new ApplicationData();
+        ApplicationData appData = new ApplicationData();
         
-    	appData.setApplicationId(application.getApplicationId());
+        appData.setApplicationId(application.getApplicationId());
         appData.setApplicationName(application.getApplicationName());
         appData.setApplicationDescription(application.getApplicationDescription());
         
         if (includeDetail) {
-        	appData.setApplicationKey(application.getApplicationKey());
-        	appData.setApplicationSecret(application.getApplicationSecret());
-        	appData.setWebsiteLink(application.getWebsiteLink());
-        	appData.setPricingPlan(application.getPricingPlan());
-        	appData.setConfigParams(application.getConfigParams());
+            appData.setApplicationKey(application.getApplicationKey());
+            appData.setApplicationSecret(application.getApplicationSecret());
+            appData.setWebsiteLink(application.getWebsiteLink());
+            appData.setPricingPlan(application.getPricingPlan());
+            appData.setConfigParams(application.getConfigParams());
         }
         
         return appData;

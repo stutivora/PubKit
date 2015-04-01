@@ -70,7 +70,7 @@ public class RoquitoConfig {
     public boolean isDevEnvironment() {
         return "dev".equalsIgnoreCase(environment);
     }
-
+    
     public String getRedisHost() {
         return redisHost;
     }

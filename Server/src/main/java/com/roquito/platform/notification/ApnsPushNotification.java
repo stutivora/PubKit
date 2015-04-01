@@ -72,7 +72,7 @@ public class ApnsPushNotification implements PushNotification {
     public void setNeedFeedback(boolean needFeedback) {
         this.needFeedback = needFeedback;
     }
-   
+    
     public List<String> getDeviceTokens() {
         return deviceTokens;
     }

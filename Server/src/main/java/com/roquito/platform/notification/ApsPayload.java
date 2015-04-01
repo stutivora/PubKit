@@ -21,19 +21,13 @@
 package com.roquito.platform.notification;
 
 /**
- * APS payload format defined by - 
- * https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/ApplePushService.html
+ * APS payload format defined by -
+ * https://developer.apple.com/library/ios/documentation
+ * /NetworkingInternet/Conceptual
+ * /RemoteNotificationsPG/Chapters/ApplePushService.html
  * 
- * SIMPLE PAYLOAD -
- * {
- *    "aps" : { 
- *              "alert" : "Message received from Bob", 
- *              "badge" : 3,
- *              "sound" : “chime.aiff" 
- *           },
- *    "acme1" : [ "bang",  "whiz" ],
- *    "acme2" : "bar",
- *  }
+ * SIMPLE PAYLOAD - { "aps" : { "alert" : "Message received from Bob", "badge" :
+ * 3, "sound" : “chime.aiff" }, "acme1" : [ "bang", "whiz" ], "acme2" : "bar", }
  * 
  * Created by puran
  */

@@ -72,11 +72,11 @@ public class DeviceInfo {
     public String getDeviceSubType() {
         return deviceSubType;
     }
-
+    
     public void setDeviceSubType(String deviceSubType) {
         this.deviceSubType = deviceSubType;
     }
-
+    
     public boolean isActive() {
         return active;
     }

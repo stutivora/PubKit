@@ -27,6 +27,11 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.socket.config.annotation.EnableWebSocket;
+import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
+import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
+
+import com.roquito.platform.messaging.WebSocketConnectionHandler;
 
 /**
  * Created by puran
@@ -34,13 +39,20 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @EnableAutoConfiguration(exclude = { DataSourceAutoConfiguration.class })
 @ComponentScan
-public class RoquitoApplication extends SpringBootServletInitializer {
+@EnableWebSocket
+public class RoquitoApplication extends SpringBootServletInitializer implements WebSocketConfigurer {
+    
+    @Override
+    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+        WebSocketConnectionHandler connectionHandler = new WebSocketConnectionHandler();
+        registry.addHandler(connectionHandler, "/messaging");
+    }
     
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
         return application.sources(RoquitoApplication.class);
     }
-
+    
     public static void main(String[] args) {
         SpringApplication app = new SpringApplication(RoquitoApplication.class);
         app.run(args);

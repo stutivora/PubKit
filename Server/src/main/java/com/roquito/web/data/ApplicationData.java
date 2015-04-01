@@ -35,7 +35,7 @@ public class ApplicationData {
     private String websiteLink;
     private String pricingPlan;
     private Map<String, String> configParams;
-
+    
     public String getApplicationId() {
         return applicationId;
     }
@@ -99,11 +99,11 @@ public class ApplicationData {
     public void setPricingPlan(String pricingPlan) {
         this.pricingPlan = pricingPlan;
     }
-
+    
     public Map<String, String> getConfigParams() {
         return configParams;
     }
-
+    
     public void setConfigParams(Map<String, String> configParams) {
         this.configParams = configParams;
     }

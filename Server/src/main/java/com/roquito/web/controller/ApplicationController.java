@@ -55,8 +55,7 @@ public class ApplicationController extends BaseController {
         
         validateAccessToken();
         
-        if (application == null || isEmpty(application.getUserId())
-                || isEmpty(application.getApplicationName())) {
+        if (application == null || isEmpty(application.getUserId()) || isEmpty(application.getApplicationName())) {
             LOG.debug("Missing application data for creating new application");
             return new ApplicationResponse("Missing required data");
         }
@@ -90,7 +89,7 @@ public class ApplicationController extends BaseController {
         newApplication.setPricingPlan(application.getPricingPlan());
         
         newApplication.setOwner(owner);
-        //Create with empty config
+        // Create with empty config
         newApplication.setConfigParams(new HashMap<String, String>());
         
         newApplication.setCreatedDate(new Date());
@@ -142,7 +141,7 @@ public class ApplicationController extends BaseController {
             LOG.error("Error updating application configuration");
             return new ConfigResponse(null, true, "Error saving configuration");
         }
-        return new ConfigResponse("Config saved",false, null);
+        return new ConfigResponse("Config saved", false, null);
     }
     
     @RequestMapping(value = "{applicationId}", method = RequestMethod.GET)

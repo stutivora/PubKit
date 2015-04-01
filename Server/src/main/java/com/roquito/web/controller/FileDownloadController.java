@@ -18,7 +18,7 @@ public class FileDownloadController extends BaseController {
         GridFSDBFile savedFile = applicationService.getFile(certId);
         if (savedFile != null) {
             httpResponse.setContentType("application/force-download");
-            httpResponse.addHeader("Content-Disposition", "attachment; filename='"+savedFile.getFilename()+"'");
+            httpResponse.addHeader("Content-Disposition", "attachment; filename='" + savedFile.getFilename() + "'");
             
             return new InputStreamResource(savedFile.getInputStream());
         }

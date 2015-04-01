@@ -91,7 +91,7 @@ public class ApplicationService extends BasicDAO<Application, String> {
             return Collections.emptyList();
         }
     }
-        
+    
     public String saveFile(byte[] fileData, String fileName, String contentType) {
         GridFS gridFs = new GridFS(mongoDB.getDataStore().getDB(), "roquito");
         GridFSInputFile gfsFile = gridFs.createFile(fileData);

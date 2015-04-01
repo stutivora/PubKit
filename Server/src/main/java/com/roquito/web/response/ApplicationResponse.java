@@ -62,7 +62,7 @@ public class ApplicationResponse {
     public List<ApplicationData> getApplications() {
         return applicationDatas;
     }
-
+    
     public boolean isError() {
         return error;
     }

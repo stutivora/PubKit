@@ -132,11 +132,11 @@ public class Application {
     public Map<String, String> getConfigParams() {
         return configParams;
     }
-
+    
     public void setConfigParams(Map<String, String> configParams) {
         this.configParams = configParams;
     }
-
+    
     public List<ApplicationUser> getApplicationUsers() {
         return applicationUsers;
     }

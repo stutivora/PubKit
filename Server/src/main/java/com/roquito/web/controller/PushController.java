@@ -50,7 +50,7 @@ import com.roquito.web.response.DeviceRegistrationResponse;
 public class PushController extends BaseController {
     
     private static final Logger LOG = LoggerFactory.getLogger(PushController.class);
-
+    
     @Autowired
     private QueueService pusherService;
     
@@ -88,17 +88,20 @@ public class PushController extends BaseController {
     
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public DeviceRegistrationResponse registerDevice(@RequestBody DeviceInfoData deviceInfoData) {
-    	LOG.info("Device registration request received for push notification");
-    	
-        if (deviceInfoData == null || isEmpty(deviceInfoData.getDeviceType()) || isEmpty(deviceInfoData.getApplicationId())) {
+        LOG.info("Device registration request received for push notification");
+        
+        if (deviceInfoData == null || isEmpty(deviceInfoData.getDeviceType())
+                || isEmpty(deviceInfoData.getApplicationId())) {
             LOG.debug("Null or invalid data received");
             new DeviceRegistrationResponse("Invalid request");
         }
-        if (DataConstants.DEVICE_TYPE_IOS.equals(deviceInfoData.getDeviceType()) && isEmpty(deviceInfoData.getDeviceToken())) {
+        if (DataConstants.DEVICE_TYPE_IOS.equals(deviceInfoData.getDeviceType())
+                && isEmpty(deviceInfoData.getDeviceToken())) {
             LOG.debug("invalid device token received");
             new DeviceRegistrationResponse("Invalid request");
         }
-        if (DataConstants.DEVICE_TYPE_ANDROID.equals(deviceInfoData.getDeviceType()) && isEmpty(deviceInfoData.getRegistrationId())) {
+        if (DataConstants.DEVICE_TYPE_ANDROID.equals(deviceInfoData.getDeviceType())
+                && isEmpty(deviceInfoData.getRegistrationId())) {
             LOG.debug("invalid registration id received");
             new DeviceRegistrationResponse("Invalid request");
         }
@@ -109,39 +112,40 @@ public class PushController extends BaseController {
         DeviceInfo deviceInfo = null;
         boolean newInfo = false;
         if (hasValue(deviceInfoData.getDeviceInfoId())) {
-        	deviceInfo = deviceInfoService.get(deviceInfoData.getDeviceInfoId());
+            deviceInfo = deviceInfoService.get(deviceInfoData.getDeviceInfoId());
         } else if (DataConstants.DEVICE_TYPE_IOS.equals(deviceInfoData.getDeviceType())) {
-        	deviceInfo = deviceInfoService.getDeviceInfoForToken(applicationId, deviceInfoData.getDeviceToken());
+            deviceInfo = deviceInfoService.getDeviceInfoForToken(applicationId, deviceInfoData.getDeviceToken());
         } else if (DataConstants.DEVICE_TYPE_ANDROID.equals(deviceInfoData.getDeviceType())) {
-        	deviceInfo = deviceInfoService.getDeviceInfoForRegistrationId(applicationId, deviceInfoData.getRegistrationId());
+            deviceInfo = deviceInfoService.getDeviceInfoForRegistrationId(applicationId,
+                    deviceInfoData.getRegistrationId());
         } else {
-        	deviceInfo = new DeviceInfo();
-        	newInfo = true;
-        }        
+            deviceInfo = new DeviceInfo();
+            newInfo = true;
+        }
         
         deviceInfo.setApplicationId(applicationId);
         deviceInfo.setSourceUserId(deviceInfoData.getSourceUserId());
         
         if (hasValue(deviceInfoData.getDeviceToken())) {
-        	deviceInfo.setDeviceToken(deviceInfoData.getDeviceToken());
+            deviceInfo.setDeviceToken(deviceInfoData.getDeviceToken());
         }
-    	if (hasValue(deviceInfoData.getRegistrationId())) {
-    		deviceInfo.setRegistrationId(deviceInfoData.getRegistrationId());
-    	}
-    	
-    	deviceInfo.setDeviceType(deviceInfoData.getDeviceType());
-    	deviceInfo.setDeviceSubType(deviceInfoData.getDeviceSubType());
-    	deviceInfo.setActive(true);
+        if (hasValue(deviceInfoData.getRegistrationId())) {
+            deviceInfo.setRegistrationId(deviceInfoData.getRegistrationId());
+        }
+        
+        deviceInfo.setDeviceType(deviceInfoData.getDeviceType());
+        deviceInfo.setDeviceSubType(deviceInfoData.getDeviceSubType());
+        deviceInfo.setActive(true);
         
         String deviceInfoId = deviceInfoService.saveDeviceInfo(deviceInfo);
         if (deviceInfoId != null) {
-        	if (newInfo) {
-        		LOG.info("Registered new device info for push notification");
-        	} else {
-        		LOG.info("Updated device info for push notification");
-        	}
-        	return new DeviceRegistrationResponse(deviceInfoId, false, null);
-        } 
+            if (newInfo) {
+                LOG.info("Registered new device info for push notification");
+            } else {
+                LOG.info("Updated device info for push notification");
+            }
+            return new DeviceRegistrationResponse(deviceInfoId, false, null);
+        }
         
         LOG.error("Error registering device for push notification");
         return null;

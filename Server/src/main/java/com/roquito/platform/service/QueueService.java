@@ -29,18 +29,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.socket.WebSocketSession;
 
-import com.lmax.disruptor.BlockingWaitStrategy;
+import com.lmax.disruptor.EventTranslatorTwoArg;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.EventHandlerGroup;
-import com.lmax.disruptor.dsl.ProducerType;
+import com.roquito.platform.messaging.MessagingEvent;
+import com.roquito.platform.messaging.MessagingInputEventHandler;
+import com.roquito.platform.messaging.MessagingOutputEventHandler;
+import com.roquito.platform.messaging.protocol.Payload;
 import com.roquito.platform.notification.ApnsPushNotification;
 import com.roquito.platform.notification.GcmPushNotification;
 import com.roquito.platform.notification.PushEvent;
 import com.roquito.platform.notification.PushEventFactory;
 import com.roquito.platform.notification.PushEventHandler;
-import com.roquito.platform.notification.PushEventProducer;
+import com.roquito.platform.notification.PushNotification;
+import com.roquito.platform.notification.PushType;
 
 /**
  * Created by puran
@@ -50,18 +55,42 @@ public class QueueService {
     
     private static final Logger LOG = LoggerFactory.getLogger(QueueService.class);
     
+    /* Disruptors */
     private Disruptor<PushEvent> pushEventDisruptor;
+    private Disruptor<MessagingEvent> messageInputEventDisruptor;
+    private Disruptor<MessagingEvent> messageOutputEventDisruptor;
     
-    private PushEventProducer pushEventProducer;
+    /* Ring Buffers */
+    private RingBuffer<PushEvent> pushRingBuffer;
+    private RingBuffer<MessagingEvent> messageInputRingBuffer;
+    private RingBuffer<MessagingEvent> messageOutputRingBuffer;
     
     @Autowired
     private ApplicationService applicationService;
-    
     @Autowired
     private DeviceInfoService deviceInfoService;
-    
     @Autowired
     private UserService userService;
+    
+    private static final EventTranslatorTwoArg<PushEvent, PushNotification, PushType> PUSH_EVENT_TRANSLATOR = new EventTranslatorTwoArg<PushEvent, PushNotification, PushType>() {
+        @Override
+        public void translateTo(PushEvent event, long sequence, PushNotification pushNotification, PushType pushType) {
+            event.setPushNotification(pushNotification);
+            event.setPushType(pushType);
+        }
+    };
+    
+    private static EventTranslatorTwoArg<MessagingEvent, Payload, WebSocketSession> MESSAGE_INPUT_EVENT_TRANSLATOR = null;
+    static {
+        MESSAGE_INPUT_EVENT_TRANSLATOR = new EventTranslatorTwoArg<MessagingEvent, Payload, WebSocketSession>() {
+            @Override
+            public void translateTo(MessagingEvent event, long sequence, Payload payload, WebSocketSession session) {
+                event.setPayload(payload);
+                event.setSequence(sequence);
+                event.setSession(session);
+            }
+        };
+    }
     
     @SuppressWarnings("unchecked")
     @PostConstruct
@@ -77,34 +106,62 @@ public class QueueService {
         // The factory for the event
         PushEventFactory pushEventFactory = new PushEventFactory();
         
-        // Construct the Disruptor
-        pushEventDisruptor = new Disruptor<>(pushEventFactory, bufferSize, executor, ProducerType.SINGLE,
-                new BlockingWaitStrategy());
+        // Construct the Disruptors
+        this.pushEventDisruptor = new Disruptor<>(pushEventFactory, bufferSize, executor);
+        this.messageInputEventDisruptor = new Disruptor<>(MessagingEvent.EVENT_FACTORY, bufferSize, executor);
+        this.messageOutputEventDisruptor = new Disruptor<>(MessagingEvent.EVENT_FACTORY, bufferSize, executor);
         
-        // Connect the handler
-        EventHandlerGroup<PushEvent> handlerGroup = pushEventDisruptor.handleEventsWith(new PushEventHandler(
-                applicationService, deviceInfoService));
+        // Connect the handlers
+        PushEventHandler pushEventHandler = new PushEventHandler(applicationService, deviceInfoService);
+        EventHandlerGroup<PushEvent> handlerGroup = this.pushEventDisruptor.handleEventsWith(pushEventHandler);
         if (handlerGroup == null) {
-            
+            LOG.debug("Error creating disruptor handler group for push event handler");
         }
-        // Start the Disruptor, starts all threads running
-        pushEventDisruptor.start();
         
-        // Get the ring buffer from the Disruptor to be used for publishing.
-        RingBuffer<PushEvent> ringBuffer = pushEventDisruptor.getRingBuffer();
+        MessagingInputEventHandler messageInputEventHandler = new MessagingInputEventHandler(applicationService, this);
+        EventHandlerGroup<MessagingEvent> mIhandlerGroup = this.messageInputEventDisruptor.handleEventsWith(messageInputEventHandler);
+        if (mIhandlerGroup == null) {
+            LOG.debug("Error creating disruptor handler group for messaging input event handler");
+        }
         
-        // Get the ring buffer from the Disruptor to be used for publishing.
-        pushEventProducer = new PushEventProducer(ringBuffer);
-       
-        LOG.info("Push service initialized");
+        MessagingOutputEventHandler messageOutputEventHandler = new MessagingOutputEventHandler();
+        EventHandlerGroup<MessagingEvent> mOhandlerGroup = this.messageOutputEventDisruptor.handleEventsWith(messageOutputEventHandler);
+        if (mOhandlerGroup == null) {
+            LOG.debug("Error creating disruptor handler group for messaging output event handler");
+        }
+        
+        // Start the Disruptor, starts all threads running and get input ring buffer
+        startDisruptors();
+        LOG.info("Queue service initialized");
     }
     
     public void sendGcmPushNotification(GcmPushNotification gcmNotification) {
-        pushEventProducer.publishGcmPushNotification(gcmNotification);
+        this.pushRingBuffer.publishEvent(PUSH_EVENT_TRANSLATOR, gcmNotification, PushType.GCM);
     }
     
     public void sendApnsPushNotification(ApnsPushNotification apnsNotification) {
-        pushEventProducer.publishApnsPushNotification(apnsNotification);
+        this.pushRingBuffer.publishEvent(PUSH_EVENT_TRANSLATOR, apnsNotification, PushType.APNS);
     }
-  
+    
+    public void publishInputMessageEvent(Payload payload, WebSocketSession session) {
+        this.messageInputRingBuffer.publishEvent(MESSAGE_INPUT_EVENT_TRANSLATOR, payload, session);
+    }
+    
+    public void publishOutputMessageEvent(Payload payload, WebSocketSession session) {
+        this.messageOutputRingBuffer.publishEvent(MESSAGE_INPUT_EVENT_TRANSLATOR, payload, session);
+    }
+    
+    private void startDisruptors() {
+        LOG.info("Starting disruptors...");
+        
+        this.pushEventDisruptor.start();
+        this.messageInputEventDisruptor.start();
+        this.messageOutputEventDisruptor.start();
+        
+        this.pushRingBuffer = this.pushEventDisruptor.getRingBuffer();
+        this.messageInputRingBuffer = this.messageInputEventDisruptor.getRingBuffer();
+        this.messageOutputRingBuffer = this.messageOutputEventDisruptor.getRingBuffer();
+        
+        LOG.info("Disruptors started");
+    }
 }

@@ -48,51 +48,51 @@ public class AppConfigData {
     public void setAndroidGCMKey(String androidGCMKey) {
         this.androidGCMKey = androidGCMKey;
     }
-
+    
     public String getApnsDevCertFileId() {
         return apnsDevCertFileId;
     }
-
+    
     public void setApnsDevCertFileId(String apnsDevCertFileId) {
         this.apnsDevCertFileId = apnsDevCertFileId;
     }
-
+    
     public String getApnsDevCertFileName() {
         return apnsDevCertFileName;
     }
-
+    
     public void setApnsDevCertFileName(String apnsDevCertFileName) {
         this.apnsDevCertFileName = apnsDevCertFileName;
     }
-
+    
     public String getApnsDevCertPassword() {
         return apnsDevCertPassword;
     }
-
+    
     public void setApnsDevCertPassword(String apnsDevCertPassword) {
         this.apnsDevCertPassword = apnsDevCertPassword;
     }
-
+    
     public String getApnsProdCertFileId() {
         return apnsProdCertFileId;
     }
-
+    
     public void setApnsProdCertFileId(String apnsProdCertFileId) {
         this.apnsProdCertFileId = apnsProdCertFileId;
     }
-
+    
     public String getApnsProdCertFileName() {
         return apnsProdCertFileName;
     }
-
+    
     public void setApnsProdCertFileName(String apnsProdCertFileName) {
         this.apnsProdCertFileName = apnsProdCertFileName;
     }
-
+    
     public String getApnsProdCertPassword() {
         return apnsProdCertPassword;
     }
-
+    
     public void setApnsProdCertPassword(String apnsProdCertPassword) {
         this.apnsProdCertPassword = apnsProdCertPassword;
     }

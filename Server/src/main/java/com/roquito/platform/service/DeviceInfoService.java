@@ -16,8 +16,8 @@ import com.roquito.platform.persistence.MongoDB;
 
 @Service
 public class DeviceInfoService extends BasicDAO<DeviceInfo, String> {
-	private static final Logger LOG = LoggerFactory.getLogger(DeviceInfoService.class);
-	
+    private static final Logger LOG = LoggerFactory.getLogger(DeviceInfoService.class);
+    
     private MongoDB mongoDB;
     
     @Autowired
@@ -41,14 +41,14 @@ public class DeviceInfoService extends BasicDAO<DeviceInfo, String> {
     }
     
     public DeviceInfo getDeviceInfoForRegistrationId(String applicationId, String registrationId) {
-    	Query<DeviceInfo> query = mongoDB.getDataStore().createQuery(DeviceInfo.class).field("applicationId")
+        Query<DeviceInfo> query = mongoDB.getDataStore().createQuery(DeviceInfo.class).field("applicationId")
                 .equal(applicationId).field("registrationId").equal(registrationId);
         
         QueryResults<DeviceInfo> results = this.find(query);
         if (results != null) {
             return results.get();
         } else {
-        	LOG.info("App device not found for registration id:"+registrationId);
+            LOG.info("App device not found for registration id:" + registrationId);
             return null;
         }
     }
@@ -61,7 +61,7 @@ public class DeviceInfoService extends BasicDAO<DeviceInfo, String> {
         if (results != null) {
             return results.get();
         } else {
-        	LOG.info("App device not found for device token:"+deviceToken);
+            LOG.info("App device not found for device token:" + deviceToken);
             return null;
         }
     }

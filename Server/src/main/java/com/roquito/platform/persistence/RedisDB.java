@@ -47,12 +47,8 @@ public class RedisDB {
         if (config.isDevEnvironment()) {
             jedisPool = new JedisPool(new JedisPoolConfig(), config.getRedisHost());
         } else {
-            jedisPool = new JedisPool(new JedisPoolConfig(), 
-                        config.getRedisHost(), 
-                        config.getRedisPort(), 
-                        config.getRedisTimeout(),
-                        config.getRedisPassword(), 
-                        config.getRedisDatabase());
+            jedisPool = new JedisPool(new JedisPoolConfig(), config.getRedisHost(), config.getRedisPort(),
+                    config.getRedisTimeout(), config.getRedisPassword(), config.getRedisDatabase());
         }
         if (jedisPool != null) {
             LOG.info("Connected to redis db at {" + config.getRedisHost() + "}");

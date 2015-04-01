@@ -38,8 +38,8 @@ import com.roquito.platform.persistence.RedisDB;
  */
 @Service
 public class UserService extends BasicDAO<User, String> {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(UserService.class);
+    
+    private static final Logger LOG = LoggerFactory.getLogger(UserService.class);
     
     private MongoDB mongoDB;
     private RedisDB redisDB;

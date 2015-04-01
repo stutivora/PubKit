@@ -85,8 +85,7 @@ public class PushEventHandler implements EventHandler<PushEvent> {
             return;
         }
         ApnsPushNotification apnsPushNotification = (ApnsPushNotification) pushNotification;
-        Application application = applicationService
-                .findByApplicationId(apnsPushNotification.getApplicationId());
+        Application application = applicationService.findByApplicationId(apnsPushNotification.getApplicationId());
         if (application == null) {
             LOG.debug("Couldn't find roquito application");
             return;
@@ -108,7 +107,7 @@ public class PushEventHandler implements EventHandler<PushEvent> {
         }
         
         if (testApnsConnection(apnsService)) {
-            //try to create new connection
+            // try to create new connection
             apnsService = createNewConnection(application, isProduction);
             
             if (apnsPushNotification.getDeviceTokens().size() == 0) {
