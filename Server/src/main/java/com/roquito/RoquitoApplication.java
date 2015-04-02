@@ -50,7 +50,7 @@ public class RoquitoApplication extends SpringBootServletInitializer implements 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         WebSocketConnectionHandler connectionHandler = new WebSocketConnectionHandler(queueService);
-        registry.addHandler(connectionHandler, "/messaging");
+        registry.addHandler(connectionHandler, "/pk").withSockJS();
     }
     
     @Override

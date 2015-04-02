@@ -41,7 +41,7 @@ public class IndexController extends BaseController {
         return "index";
     }
     
-    @RequestMapping("/echo")
+    @RequestMapping("/ws")
     public String echo(Map<String, Object> model) {
         return "websocket";
     }

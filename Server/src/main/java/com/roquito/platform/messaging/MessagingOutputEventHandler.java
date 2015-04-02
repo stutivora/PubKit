@@ -38,6 +38,10 @@ public class MessagingOutputEventHandler implements EventHandler<MessagingEvent>
         WebSocketSession session = event.getSession();
         
         switch (payload.getType()) {
+            case Payload.PONG:
+                //pong response, send it to the clien!
+                sendPayload(payload, session);
+                break;
             case Payload.DISCONNECT:
                 handleDisconnect((Disconnect) payload, session);
                 break;
