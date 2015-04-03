@@ -58,8 +58,7 @@ public class RedisDB {
     }
     
     public Jedis getConnection() {
-        connection = jedisPool.getResource();
-        return connection;
+        return jedisPool.getResource();
     }
     
     public void closeConnection() {
@@ -69,7 +68,9 @@ public class RedisDB {
     
     public static enum Keys {
         
-        KEY_ROQUITO_USERS_COUNT("roquito-users-count");
+        USER_COUNT("user-count"),
+        MESSAGE_COUNT("message-count"),
+        TOPIC_COUNT("topic-count");
         
         private String value;
         

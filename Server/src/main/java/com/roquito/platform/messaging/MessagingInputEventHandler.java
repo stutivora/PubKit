@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 import org.springframework.web.socket.WebSocketSession;
 
 import com.lmax.disruptor.EventHandler;
@@ -32,6 +33,7 @@ import com.roquito.platform.messaging.protocol.ConnAck;
 import com.roquito.platform.messaging.protocol.Connect;
 import com.roquito.platform.messaging.protocol.Disconnect;
 import com.roquito.platform.messaging.protocol.Payload;
+import com.roquito.platform.messaging.protocol.PubAck;
 import com.roquito.platform.messaging.protocol.PubMessage;
 import com.roquito.platform.messaging.protocol.Publish;
 import com.roquito.platform.messaging.protocol.SubsAck;
@@ -43,7 +45,7 @@ import com.roquito.platform.service.QueueService;
 
 public class MessagingInputEventHandler implements EventHandler<MessagingEvent> {
     
-    private static Logger logger = LoggerFactory.getLogger(MessagingInputEventHandler.class);
+    private static Logger LOG = LoggerFactory.getLogger(MessagingInputEventHandler.class);
     
     private final RoquitoKeyGenerator keyGenerator = new RoquitoKeyGenerator();
 
@@ -77,7 +79,7 @@ public class MessagingInputEventHandler implements EventHandler<MessagingEvent> 
 
     @Override
     public void onEvent(MessagingEvent event, long sequence, boolean endOfBatch) throws Exception {
-        logger.debug("Input event received with sequence:" + sequence);
+        LOG.debug("Input event received with sequence:" + sequence);
         Payload payload = event.getPayload();
         switch (payload.getType()) {
             case Payload.CONNECT:
@@ -88,82 +90,138 @@ public class MessagingInputEventHandler implements EventHandler<MessagingEvent> 
                 break;
             case Payload.PUBLISH:
                 handlePublish((Publish) payload, event.getSession());
+                break;
+            case Payload.DISCONNECT:
+                sendDisconnect(payload.getClientId(), event.getSession(), "");
+                break;
+            default:
+                break;
         }
     }
     
     private void handleConnect(Connect connect, WebSocketSession session) {
         boolean valid = validateApplication(connect, session);
         if (!valid) {
+            sendPayload(new ConnAck(connect.getClientId(), ConnAck.APPLICATION_INVALID), session);
             return;
         }
-        logger.info("Connecting client {" + connect.getClientId() + "}");
-        Connection newConnection = new Connection(connect.getClientId(), session.getId(), connect.getApplicationId(),
-                connect.getApiVersion());
-        
-        // set active session
-        messagingService.addSession(session);
-        
-        // add new connection
-        messagingService.addConnection(connect.getClientId(), newConnection);
-        
+        LOG.debug("Connecting client {" + connect.getClientId() + "}");
+        Connection existingConnection = messagingService.getConnection(connect.getClientId());
+        if (existingConnection != null) {
+            existingConnection.setSessionId(session.getId());
+            messagingService.addConnection(connect.getClientId(), existingConnection);
+        } else {
+            Connection newConnection = new Connection(connect.getClientId(), session.getId(), connect.getApplicationId(),
+                    connect.getApiVersion());
+            //add new connection
+            messagingService.addConnection(connect.getClientId(), newConnection);
+        }
         String accessToken = keyGenerator.getSecureSessionId();
         boolean success = messagingService.saveAccessToken(session.getId(), accessToken);
         if (success) {
-            sendPayload(new ConnAck(session.getId(), accessToken), session);
+            //set active session
+            messagingService.addSession(session);
+            LOG.debug("Connected client {" + connect.getClientId() + "}");
+            sendPayload(new ConnAck(connect.getClientId(), session.getId(), accessToken), session);
+        } else {
+            LOG.debug("Connection failed for client {" + connect.getClientId() + "}");
+            sendPayload(new ConnAck(connect.getClientId(), ConnAck.CONNECTION_FAILED), session);
         }
     }
     
     private void handleSubscribe(Subscribe subscribe, WebSocketSession session) {
-        boolean tokenValid = validateAccessToken(subscribe.getClientId(), subscribe.getSessionToken(), session);
-        if (!tokenValid) {
+        String topic = subscribe.getTopic();
+        if (topic == null || StringUtils.isEmpty(topic)) {
+            LOG.error("Client {"+ subscribe.getClientId() + "} failed to subscribe topic {"+ subscribe.getTopic() +"}. Invalid topic");
+            
+            SubsAck errorAck = new SubsAck(subscribe.getClientId(), topic, SubsAck.INVALID_TOPIC);
+            sendPayload(errorAck, session);
+            
             return;
         }
-        String topic = subscribe.getTopic();
+        boolean tokenValid = validateAccessToken(subscribe.getClientId(), subscribe.getSessionToken(), session);
+        if (!tokenValid) {
+            LOG.error("Client {"+ subscribe.getClientId() + "} failed to subscribe topic {"+ topic +"}. Invalid token");
+            SubsAck errorAck = new SubsAck(subscribe.getClientId(), topic, SubsAck.INVALID_TOKEN);
+            sendPayload(errorAck, session);
+            
+            return;
+        }
+
         Connection connection = messagingService.getConnection(subscribe.getClientId());
-        if (connection != null) {
+        if (connection != null && connection.getSessionId().equals(session.getId())) {
             messagingService.subscribeTopic(topic, connection);
-            SubsAck subsAck = new SubsAck(subscribe.getClientId());
+            LOG.debug("Client id {"+ subscribe.getClientId() + "} subscribed to topic {"+ topic +"}");
+            
+            SubsAck subsAck = new SubsAck(subscribe.getClientId(), topic);
             sendPayload(subsAck, session);
         } else {
-            logger.debug("Subscription failed. No connection found so closing connection");
-            Disconnect disconnect = new Disconnect(subscribe.getClientId());
-            disconnect.setData("Subscription failed. No connection found so closing connection");
-            sendPayload(disconnect, session);
+            LOG.error("Client {"+ subscribe.getClientId() + "} failed to subscribe topic {"+ topic +"}. No connection found so closing connection");
+            
+            SubsAck errorAck = new SubsAck(subscribe.getClientId(), topic, SubsAck.CONNECTION_ERROR);
+            sendPayload(errorAck, session);
         }
     }
     
     private void handlePublish(Publish publish, WebSocketSession session) {
         String topic = publish.getTopic();
         if (topic == null || "".equals(topic)) {
-            logger.debug("Null or empty topic name. Cannot publish data");
+            LOG.debug("Publish failed. Null or empty topic name.");
+            
+            PubAck errorAck = new PubAck(publish.getClientId(), topic, PubAck.INVALID_TOPIC);
+            sendPayload(errorAck, session);
+            
             return;
         }
         List<Connection> subscribers = messagingService.getAllSubscribers(topic);
         for (Connection subscriber : subscribers) {
+            if (subscriber.getClientId().equals(publish.getClientId())) {
+                continue;
+            }
             WebSocketSession subscriberSession = messagingService.getSession(subscriber.getSessionId());
-            if (subscriberSession != null) {
+            if (subscriberSession != null && subscriberSession.isOpen()) {
                 PubMessage pubMessage = new PubMessage(subscriber.getClientId(), publish.getClientId());
+                
                 pubMessage.setData(publish.getData());
                 pubMessage.addHeader(Payload.APP_ID, publish.getApplicationId());
                 pubMessage.setTopic(publish.getTopic());
                 
                 sendPayload(pubMessage, subscriberSession);
             } else {
-                logger.debug("Session not client with client id {" + subscriber.getClientId() + "} "
+                LOG.debug("Session not found for client with client id {" + subscriber.getClientId() + "} "
                         + "and session id {" + subscriber.getSessionId() + "}");
                 
                 // send push notification if possible for inactive subscriber
                 handleInactiveSubscriber(subscriber);
+                
+                if (subscriberSession != null && !subscriberSession.isOpen()) {
+                    sendDisconnect(subscriber.getClientId(), subscriberSession, "");
+                }
             }
         }
+        sendPayload(new PubAck(publish.getClientId(), topic), session);
+    }
+    
+    private void sendDisconnect(String clientId, WebSocketSession session, String data) {
+        LOG.info("Closing and invalidating client session for {" + clientId + "}");
+        
+        messagingService.removeConnection(clientId);
+        messagingService.removeSession(session);
+        messagingService.invalidateSessionToken(clientId);
+        
+        Disconnect disconnect = new Disconnect(clientId);
+        disconnect.setData(data);
+        sendPayload(disconnect, session);
     }
     
     private boolean validateAccessToken(String clientId, String accessToken, WebSocketSession session) {
         boolean tokenValid = messagingService.isAccessTokenValid(accessToken);
-        Disconnect disconnect = new Disconnect(clientId);
         if (!tokenValid) {
-            disconnect.setData("Access token invalid. Closing the client connection {" + clientId + "}");
+            Disconnect disconnect = new Disconnect(clientId);
+            LOG.debug("Invalid access token. Closing the client connection {" + clientId + "}");
+            disconnect.setData("Invalid access token. Closing the client connection {" + clientId + "}");
             sendPayload(disconnect, session);
+            
             return false;
         }
         return true;
@@ -171,27 +229,27 @@ public class MessagingInputEventHandler implements EventHandler<MessagingEvent> 
     
     private boolean validateApplication(Connect connect, WebSocketSession session) {
         String applicationId = connect.getApplicationId();
-        Disconnect disconnect = new Disconnect(connect.getClientId());
-        String closeMessage = null;
         
+        String closeMessage = null;
         boolean valid = true;
         if (applicationId == null) {
-            logger.debug("Null application id received, closing connection");
+            LOG.debug("Null application id received, closing connection");
             closeMessage = "Null application id received, closing connection";
             valid = false;
         }
         Application savedApplication = applicationService.findByApplicationId(applicationId);
         if (savedApplication == null) {
-            logger.debug("Application not found, closing connection");
+            LOG.debug("Application not found, closing connection");
             closeMessage = "Application not found, closing connection";
             valid = false;
         }
         if (!savedApplication.getApplicationKey().equals(connect.getApiKey())) {
-            logger.debug("Application key does not match, closing connection");
+            LOG.debug("Application key does not match, closing connection");
             closeMessage = "Application key does not match, closing connection";
             valid = false;
         }
         if (!valid) {
+            Disconnect disconnect = new Disconnect(connect.getClientId());
             disconnect.setData(closeMessage);
             sendPayload(disconnect, session);
         }
@@ -199,6 +257,7 @@ public class MessagingInputEventHandler implements EventHandler<MessagingEvent> 
     }
     
     private void handleInactiveSubscriber(Connection subscriber) {
+        
     }
     
     public void sendPayload(Payload payload, WebSocketSession session) {

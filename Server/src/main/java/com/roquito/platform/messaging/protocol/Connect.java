@@ -2,8 +2,8 @@ package com.roquito.platform.messaging.protocol;
 
 public class Connect extends Payload {
     
-    private static final String API_KEY = "API_KEY";
-    private static final String API_VERSION = "API_VERSION";
+    private static final String API_KEY = "api_key";
+    private static final String API_VERSION = "api_version";
     
     public String getApiKey() {
         return getHeaders().get(API_KEY);

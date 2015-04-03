@@ -1,0 +1,9 @@
+##Resources
+https://wimdeblauwe.wordpress.com/2014/11/04/spring-boot-application-with-exploded-directory-structure/
+
+
+CONNECT
+{"headers":{"type":"CONNECT", "application_id":"1339208702", "api_key":"el8mxkhGik", "client_id":""}, "data":""}
+
+SUBSCRIBE
+{"headers":{"type":"SUBSCRIBE", "application_id":"1339208702", "api_key":"el8mxkhGik", "client_id":"", "session_token":"3ddfsfHelY", "topic":"topicName"}, "data":""}

@@ -138,7 +138,10 @@ public class MessagingService {
             subscriptions = new HashSet<Connection>();
             subscriptionStore.put(topic, subscriptions);
         }
-        subscriptions.add(connection);
+        if (!subscriptions.contains(connection)) {
+            subscriptions.add(connection);
+        }
+        LOG.info("Number of subscribers for topic: {"+ topic + "} is:"+ subscriptions.size());
         internalDB.commit();
     }
     

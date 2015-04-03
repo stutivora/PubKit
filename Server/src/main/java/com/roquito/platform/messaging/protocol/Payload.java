@@ -60,25 +60,35 @@ public class Payload {
     public static final String PUBACK = "PUBACK";
     public static final String MESSAGE = "MESSAGE";
     
-    
     public static final String APP_ID = "application_id";
     public static final String CLIENT_ID = "client_id";
     public static final String SENDER_ID = "sender_id";
     public static final String SESSION_ID = "session_id";
     public static final String SESSION_TOKEN = "session_token";
     public static final String TYPE = "type";
+    public static final String TIMESTAMP = "timestamp";
     public static final String TOPIC = "topic";
+    public static final String STATUS = "status";
     public static final String RETRY = "retry";
     public static final String PERSIST = "persist";
+    
+    public static final String INVALID_TOKEN = "INVALID_TOKEN";
+    public static final String CONNECTION_ERROR = "CONNECTION_ERROR";
+    public static final String INVALID_TOPIC = "INVALID_TOPIC";
     
     private Map<String, String> headers;
     private String data;
     
     public Payload() {
+        this(null);
     }
     
     public Payload(String clientId) {
-        addHeader(CLIENT_ID, clientId);
+        if (clientId != null) {
+            addHeader(CLIENT_ID, clientId);   
+        }
+        addHeader(STATUS, "OK");
+        addHeader(TIMESTAMP, String.valueOf(System.currentTimeMillis()));
     }
     
     public Map<String, String> getHeaders() {

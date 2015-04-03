@@ -1,3 +1,23 @@
+/* Copyright (c) 2015 32skills Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
 package com.roquito.platform.messaging;
 
 import java.io.IOException;
@@ -10,15 +30,18 @@ import org.springframework.web.socket.WebSocketSession;
 
 import com.google.gson.Gson;
 import com.lmax.disruptor.EventHandler;
-import com.roquito.platform.messaging.protocol.ConnAck;
 import com.roquito.platform.messaging.protocol.Disconnect;
 import com.roquito.platform.messaging.protocol.Payload;
-import com.roquito.platform.messaging.protocol.SubsAck;
 import com.roquito.platform.service.MessagingService;
-
+/**
+ * Disruptor handler for messaging output data so that the data write
+ * is not blocking the processing. 
+ *  
+ * @author puran
+ */
 public class MessagingOutputEventHandler implements EventHandler<MessagingEvent> {
     
-    private static Logger logger = LoggerFactory.getLogger(MessagingOutputEventHandler.class);
+    private static Logger LOG = LoggerFactory.getLogger(MessagingOutputEventHandler.class);
     private Gson gson = new Gson();
     
     private MessagingService messagingService;
@@ -33,37 +56,37 @@ public class MessagingOutputEventHandler implements EventHandler<MessagingEvent>
 
     @Override
     public void onEvent(MessagingEvent event, long sequence, boolean endOfBatch) throws Exception {
-        logger.debug("Output event received with sequence:" + sequence);
+        LOG.debug("Output event received with sequence:" + sequence);
         Payload payload = event.getPayload();
         WebSocketSession session = event.getSession();
         
         switch (payload.getType()) {
             case Payload.PONG:
-                //pong response, send it to the clien!
+                //pong response, send it to the client!
                 sendPayload(payload, session);
                 break;
             case Payload.DISCONNECT:
                 handleDisconnect((Disconnect) payload, session);
                 break;
             case Payload.CONNACK:
-                handleConnAck((ConnAck) payload, session);
+                sendPayload(payload, session);
                 break;
             case Payload.SUBSACK:
-                handleSubsAck((SubsAck) payload, session);
+                sendPayload(payload, session);
+                break;
+            case Payload.PUBACK:
+                sendPayload(payload, session);
+                break;
+            default:
+                break;
         }
     }
-    
+
     private void handleDisconnect(Disconnect disconnect, WebSocketSession session) {
-        sendPayload(disconnect, session);
-        closeAndInvalidateSession(disconnect.getClientId(), session);
-    }
-    
-    private void handleConnAck(ConnAck conAck, WebSocketSession session) {
-        sendPayload(conAck, session);
-    }
-    
-    private void handleSubsAck(SubsAck subsAck, WebSocketSession session) {
-        sendPayload(subsAck, session);
+        if (session.isOpen()) {
+            sendPayload(disconnect, session);
+        }
+        closeSession(session);
     }
     
     private void sendPayload(Payload payload, WebSocketSession session) {
@@ -78,27 +101,20 @@ public class MessagingOutputEventHandler implements EventHandler<MessagingEvent>
         try {
             session.sendMessage(textMessage);
         } catch (IOException e) {
-            logger.error("Error sending message to the client", e);
+            LOG.error("Error sending message to the client", e);
             closeSession(session);
         }
     }
     
     private void closeSession(WebSocketSession session) {
+        if (!session.isOpen()) {
+            return;
+        }
         try {
             session.close(CloseStatus.NORMAL);
         } catch (IOException e) {
-            logger.error("Error closing the connection", e);
+            LOG.error("Error closing the connection", e);
             // Can't do anything now!
         }
-    }
-    
-    private void closeAndInvalidateSession(String clientId, WebSocketSession session) {
-        logger.info("Closing and invalidating client session for {" + clientId + "}");
-        
-        messagingService.removeConnection(clientId);
-        messagingService.removeSession(session);
-        messagingService.invalidateSessionToken(clientId);
-        
-        closeSession(session);
     }
 }
