@@ -20,8 +20,10 @@
  */
 package com.roquito.web.controller;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -35,8 +37,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.roquito.platform.model.Application;
 import com.roquito.platform.model.DataConstants;
 import com.roquito.platform.model.User;
+import com.roquito.platform.notification.ApnsPushNotification;
+import com.roquito.platform.notification.BroadcastNotification;
+import com.roquito.platform.notification.GcmPushNotification;
 import com.roquito.web.data.AppConfigData;
 import com.roquito.web.data.ApplicationData;
+import com.roquito.web.data.PushData;
 import com.roquito.web.exception.RoquitoServerException;
 import com.roquito.web.response.ApplicationResponse;
 import com.roquito.web.response.ConfigResponse;
@@ -155,5 +161,53 @@ public class ApplicationController extends BaseController {
         } else {
             return new ApplicationResponse("ApplicationData not found");
         }
+    }
+    
+    @RequestMapping(value = "/push", method = RequestMethod.POST)
+    public ConfigResponse sendPush(@RequestBody PushData pushData) {
+        LOG.info("Received push notification request from web console");
+        validateAccessToken();
+        if (pushData.isBroadcast()) {
+            BroadcastNotification broadcastNotification = new BroadcastNotification();
+            broadcastNotification.setApplicationId(pushData.getApplicationId());
+            broadcastNotification.setData(pushData.getData());
+            broadcastNotification.setDeviceType(pushData.getPushType());
+            
+            queueService.sendBroadcastPushNotification(broadcastNotification);
+        } else {
+            if (DataConstants.DEVICE_TYPE_ANDROID.equals(pushData.getPushType())) {
+                GcmPushNotification gcmNotification = getGcmNotification(pushData);
+                
+                queueService.sendGcmPushNotification(gcmNotification);
+            } 
+            if (DataConstants.DEVICE_TYPE_IOS.equals(pushData.getPushType())) {
+                ApnsPushNotification apnsNotification = getApnsNotification(pushData);
+                queueService.sendApnsPushNotification(apnsNotification);
+            }
+        }
+        return new ConfigResponse("Push message added to the queue", false, null);
+    }
+    
+    private ApnsPushNotification getApnsNotification(PushData pushData) {
+        return null;
+    }
+    
+    private GcmPushNotification getGcmNotification(PushData pushData) {
+        GcmPushNotification gcm = new GcmPushNotification();
+        gcm.setApplicationId(pushData.getApplicationId());
+        gcm.setApplicationVersion("1.0");
+        
+        List<String> registrationIds = new ArrayList<String>();
+        registrationIds.add(pushData.getDeviceId());
+        gcm.setRegistrationIds(registrationIds);
+        
+        Map<String, String> data = new HashMap<>();
+        data.put("data", pushData.getData());
+        gcm.setData(data);
+        
+        gcm.setMulticast(pushData.isBroadcast());
+        gcm.setRetry(pushData.getDeviceId() != null);
+        
+        return gcm;
     }
 }

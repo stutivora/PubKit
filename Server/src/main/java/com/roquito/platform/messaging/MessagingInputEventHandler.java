@@ -32,12 +32,15 @@ import com.roquito.platform.commons.RoquitoKeyGenerator;
 import com.roquito.platform.messaging.protocol.ConnAck;
 import com.roquito.platform.messaging.protocol.Connect;
 import com.roquito.platform.messaging.protocol.Disconnect;
+import com.roquito.platform.messaging.protocol.BasePayload;
 import com.roquito.platform.messaging.protocol.Payload;
 import com.roquito.platform.messaging.protocol.PubAck;
 import com.roquito.platform.messaging.protocol.PubMessage;
 import com.roquito.platform.messaging.protocol.Publish;
 import com.roquito.platform.messaging.protocol.SubsAck;
 import com.roquito.platform.messaging.protocol.Subscribe;
+import com.roquito.platform.messaging.protocol.UnSubsAck;
+import com.roquito.platform.messaging.protocol.UnSubscribe;
 import com.roquito.platform.model.Application;
 import com.roquito.platform.service.ApplicationService;
 import com.roquito.platform.service.MessagingService;
@@ -82,16 +85,19 @@ public class MessagingInputEventHandler implements EventHandler<MessagingEvent> 
         LOG.debug("Input event received with sequence:" + sequence);
         Payload payload = event.getPayload();
         switch (payload.getType()) {
-            case Payload.CONNECT:
-                handleConnect((Connect) payload, event.getSession());
+            case BasePayload.CONNECT:
+                handleConnect(new Connect(payload), event.getSession());
                 break;
-            case Payload.SUBSCRIBE:
-                handleSubscribe((Subscribe) payload, event.getSession());
+            case BasePayload.SUBSCRIBE:
+                handleSubscribe(new Subscribe(payload), event.getSession());
                 break;
-            case Payload.PUBLISH:
-                handlePublish((Publish) payload, event.getSession());
+            case BasePayload.UNSUBSCRIBE:
+                handleUnSubscribe(new UnSubscribe(payload), event.getSession());
                 break;
-            case Payload.DISCONNECT:
+            case BasePayload.PUBLISH:
+                handlePublish(new Publish(payload), event.getSession());
+                break;
+            case BasePayload.DISCONNECT:
                 sendDisconnect(payload.getClientId(), event.getSession(), "");
                 break;
             default:
@@ -163,6 +169,40 @@ public class MessagingInputEventHandler implements EventHandler<MessagingEvent> 
         }
     }
     
+    private void handleUnSubscribe(UnSubscribe unsubscribe, WebSocketSession session) {
+        String topic = unsubscribe.getTopic();
+        if (topic == null || StringUtils.isEmpty(topic)) {
+            LOG.error("Client {"+ unsubscribe.getClientId() + "} failed to unsubscribe topic {"+ unsubscribe.getTopic() +"}. Invalid topic");
+            
+            UnSubsAck errorAck = new UnSubsAck(unsubscribe.getClientId(), topic, SubsAck.INVALID_TOPIC);
+            sendPayload(errorAck, session);
+            
+            return;
+        }
+        boolean tokenValid = validateAccessToken(unsubscribe.getClientId(), unsubscribe.getSessionToken(), session);
+        if (!tokenValid) {
+            LOG.error("Client {"+ unsubscribe.getClientId() + "} failed to unsubscribe topic {"+ topic +"}. Invalid token");
+            UnSubsAck errorAck = new UnSubsAck(unsubscribe.getClientId(), topic, SubsAck.INVALID_TOKEN);
+            sendPayload(errorAck, session);
+            
+            return;
+        }
+
+        Connection connection = messagingService.getConnection(unsubscribe.getClientId());
+        if (connection != null && connection.getSessionId().equals(session.getId())) {
+            messagingService.subscribeTopic(topic, connection);
+            LOG.debug("Client id {"+ unsubscribe.getClientId() + "} unsubscribed to topic {"+ topic +"}");
+            
+            UnSubsAck unSubsAck = new UnSubsAck(unsubscribe.getClientId(), topic);
+            sendPayload(unSubsAck, session);
+        } else {
+            LOG.error("Client {"+ unsubscribe.getClientId() + "} failed to unsubscribe topic {"+ topic +"}. No connection found so closing connection");
+            
+            UnSubsAck errorAck = new UnSubsAck(unsubscribe.getClientId(), topic, SubsAck.CONNECTION_ERROR);
+            sendPayload(errorAck, session);
+        }
+    }
+    
     private void handlePublish(Publish publish, WebSocketSession session) {
         String topic = publish.getTopic();
         if (topic == null || "".equals(topic)) {
@@ -183,7 +223,7 @@ public class MessagingInputEventHandler implements EventHandler<MessagingEvent> 
                 PubMessage pubMessage = new PubMessage(subscriber.getClientId(), publish.getClientId());
                 
                 pubMessage.setData(publish.getData());
-                pubMessage.addHeader(Payload.APP_ID, publish.getApplicationId());
+                pubMessage.addHeader(BasePayload.APP_ID, publish.getApplicationId());
                 pubMessage.setTopic(publish.getTopic());
                 
                 sendPayload(pubMessage, subscriberSession);
@@ -260,7 +300,7 @@ public class MessagingInputEventHandler implements EventHandler<MessagingEvent> 
         
     }
     
-    public void sendPayload(Payload payload, WebSocketSession session) {
-        this.queueService.publishOutputMessageEvent(payload, session);
+    public void sendPayload(BasePayload basePayload, WebSocketSession session) {
+        this.queueService.publishOutputMessageEvent(basePayload, session);
     }
 }

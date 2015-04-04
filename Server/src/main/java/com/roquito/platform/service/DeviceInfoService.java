@@ -1,5 +1,8 @@
 package com.roquito.platform.service;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Key;
@@ -63,6 +66,19 @@ public class DeviceInfoService extends BasicDAO<DeviceInfo, String> {
         } else {
             LOG.info("App device not found for device token:" + deviceToken);
             return null;
+        }
+    }
+    
+    public List<DeviceInfo> getDevices(String applicationId, String deviceType, int offset, int limit) {
+        Query<DeviceInfo> query = mongoDB.getDataStore().createQuery(DeviceInfo.class).field("applicationId")
+                .equal(applicationId).field("deviceType").equal(deviceType).limit(limit).offset(500);
+        
+        QueryResults<DeviceInfo> results = this.find(query);
+        if (results != null) {
+            return results.asList();
+        } else {
+            LOG.info("No devices for application:"+applicationId);
+            return Collections.emptyList();
         }
     }
 }

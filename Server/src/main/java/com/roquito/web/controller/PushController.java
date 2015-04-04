@@ -46,7 +46,7 @@ import com.roquito.web.response.DeviceRegistrationResponse;
  * Created by puran
  */
 @RestController
-@RequestMapping("/push")
+@RequestMapping("/api/push")
 public class PushController extends BaseController {
     
     private static final Logger LOG = LoggerFactory.getLogger(PushController.class);
@@ -85,7 +85,7 @@ public class PushController extends BaseController {
         
         return "OK";
     }
-    
+
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public DeviceRegistrationResponse registerDevice(@RequestBody DeviceInfoData deviceInfoData) {
         LOG.info("Device registration request received for push notification");

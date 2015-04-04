@@ -1,6 +1,6 @@
 package com.roquito.platform.messaging.protocol;
 
-public class ConnAck extends Payload {
+public class ConnAck extends BasePayload {
     
     public static final String APPLICATION_INVALID = "APPLICATION_INVALID";
     public static final String CONNECTION_FAILED = "CONNECTION_FAILED";

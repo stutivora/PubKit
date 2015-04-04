@@ -20,7 +20,11 @@
  */
 package com.roquito.platform.messaging.protocol;
 
-public class Subscribe extends Payload {
+public class Subscribe extends BasePayload {
+    
+    public Subscribe(Payload payload) {
+        super(payload);
+    }
     
     public String getTopic() {
         return getHeader(TOPIC);

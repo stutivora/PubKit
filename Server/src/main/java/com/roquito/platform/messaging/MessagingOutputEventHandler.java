@@ -31,6 +31,7 @@ import org.springframework.web.socket.WebSocketSession;
 import com.google.gson.Gson;
 import com.lmax.disruptor.EventHandler;
 import com.roquito.platform.messaging.protocol.Disconnect;
+import com.roquito.platform.messaging.protocol.BasePayload;
 import com.roquito.platform.messaging.protocol.Payload;
 import com.roquito.platform.service.MessagingService;
 /**
@@ -61,20 +62,26 @@ public class MessagingOutputEventHandler implements EventHandler<MessagingEvent>
         WebSocketSession session = event.getSession();
         
         switch (payload.getType()) {
-            case Payload.PONG:
+            case BasePayload.PONG:
                 //pong response, send it to the client!
                 sendPayload(payload, session);
                 break;
-            case Payload.DISCONNECT:
+            case BasePayload.DISCONNECT:
                 handleDisconnect((Disconnect) payload, session);
                 break;
-            case Payload.CONNACK:
+            case BasePayload.CONNACK:
                 sendPayload(payload, session);
                 break;
-            case Payload.SUBSACK:
+            case BasePayload.SUBSACK:
                 sendPayload(payload, session);
                 break;
-            case Payload.PUBACK:
+            case BasePayload.UNSUBSACK:
+                sendPayload(payload, session);
+                break;
+            case BasePayload.PUBACK:
+                sendPayload(payload, session);
+                break;
+            case BasePayload.MESSAGE:
                 sendPayload(payload, session);
                 break;
             default:

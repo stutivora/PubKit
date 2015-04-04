@@ -1,6 +1,6 @@
 package com.roquito.platform.messaging.protocol;
 
-public class PubMessage extends Payload {
+public class PubMessage extends BasePayload {
     
     public PubMessage(String clientId, String senderId) {
         super(clientId);

@@ -1,6 +1,6 @@
 package com.roquito.platform.messaging.protocol;
 
-public class PubAck extends Payload {
+public class PubAck extends BasePayload {
     
     public PubAck(String clientId, String topic) {
         super(clientId);

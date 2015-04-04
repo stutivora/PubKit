@@ -29,7 +29,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import com.google.gson.Gson;
-import com.roquito.platform.messaging.protocol.Payload;
+import com.roquito.platform.messaging.protocol.BasePayload;
 import com.roquito.platform.service.QueueService;
 
 public class WebSocketConnectionHandler extends TextWebSocketHandler {
@@ -57,17 +57,14 @@ public class WebSocketConnectionHandler extends TextWebSocketHandler {
         String messagePayload = message.getPayload();
         if (PING.equals(messagePayload)) {
             LOG.debug("Received ping, Sending pong response");
-            Payload pongPayload = new Payload();
-            pongPayload.addHeader(Payload.TYPE, Payload.PONG);
-            pongPayload.setData(PONG);
-            
-            this.queueService.publishOutputMessageEvent(pongPayload, session);
+            TextMessage textMessage = new TextMessage(PONG);
+            session.sendMessage(textMessage);
         } else {
             LOG.debug("Received message payload");
-            Payload payload = gson.fromJson(messagePayload, Payload.class);
-            if (payload != null) {
+            BasePayload basePayload = gson.fromJson(messagePayload, BasePayload.class);
+            if (basePayload != null) {
                 // publish to disruptor queue
-                this.queueService.publishInputMessageEvent(payload, session);
+                this.queueService.publishInputMessageEvent(basePayload, session);
             } else {
                 LOG.debug("Null message received from client");
             }   

@@ -1,6 +1,6 @@
 package com.roquito.platform.messaging.protocol;
 
-public class SubsAck extends Payload {
+public class SubsAck extends BasePayload {
     
     public SubsAck(String clientId, String topic) {
         super(clientId);

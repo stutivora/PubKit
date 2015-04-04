@@ -24,5 +24,6 @@ package com.roquito.platform.notification;
  * Created by puran
  */
 public enum PushType {
-    APNS, GCM
+    APNS, 
+    GCM
 }

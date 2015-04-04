@@ -20,23 +20,13 @@
  */
 package com.roquito.platform.messaging.protocol;
 
-public class Publish extends BasePayload {
+public class UnSubscribe extends BasePayload {
     
-    public Publish(Payload payload) {
+    public UnSubscribe(Payload payload) {
         super(payload);
     }
     
     public String getTopic() {
         return getHeader(TOPIC);
-    }
-    
-    public boolean isRetry() {
-        String retryValue = getHeader(RETRY);
-        return Boolean.getBoolean(retryValue);
-    }
-    
-    public boolean isPersist() {
-        String persistValue = getHeader(PERSIST);
-        return Boolean.getBoolean(persistValue);
     }
 }

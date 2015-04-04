@@ -24,16 +24,25 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by puran
+ * Gcm notification object containing parameters defined by GCM API reference guide
+ * {@link https://developer.android.com/google/gcm/server-ref.html}
+ * 
+ * Created by puran 
  */
-
 public class GcmPushNotification implements PushNotification {
+    /* PubKit application id */
     private String applicationId;
+    /* PubKit application version */
     private String applicationVersion;
+    /* It must contain at least 1 and at most 1000 registration IDs.*/
     private List<String> registrationIds;
+    /* Optional, This parameters identifies a group of messages */
     private String collapseKey;
+    /* Optional, default is false. */
     private boolean delayWhileIdle;
+    /* The default value is 4 weeks. */
     private int timeToLive;
+    /* Key value pair of push data for the app, eg: {"score":"3x1"} */
     private Map<String, String> data;
     private boolean retry;
     private boolean multicast;

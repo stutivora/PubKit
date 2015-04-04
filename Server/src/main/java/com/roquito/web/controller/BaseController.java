@@ -35,6 +35,7 @@ import com.roquito.platform.commons.RoquitoKeyGenerator;
 import com.roquito.platform.commons.RoquitoUtils;
 import com.roquito.platform.model.Application;
 import com.roquito.platform.service.ApplicationService;
+import com.roquito.platform.service.QueueService;
 import com.roquito.platform.service.UserService;
 import com.roquito.web.data.ApplicationData;
 import com.roquito.web.exception.RoquitoAuthException;
@@ -55,6 +56,8 @@ public class BaseController {
     protected UserService userService;
     @Autowired
     protected ApplicationService applicationService;
+    @Autowired
+    protected QueueService queueService;
     @Autowired
     protected HttpServletRequest httpRequest;
     @Autowired

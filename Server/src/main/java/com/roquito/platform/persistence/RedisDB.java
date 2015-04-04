@@ -58,7 +58,8 @@ public class RedisDB {
     }
     
     public Jedis getConnection() {
-        return jedisPool.getResource();
+        connection = jedisPool.getResource();
+        return connection;
     }
     
     public void closeConnection() {

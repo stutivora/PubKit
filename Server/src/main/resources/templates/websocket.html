@@ -31,15 +31,16 @@ limitations under the License.
 
 #console-container {
 	float: left;
+	margin-top:10px;
 	margin-left: 15px;
-	width: 400px;
+	width: 600px;
 }
 
 #console {
 	border: 1px solid #CCCCCC;
 	border-right-color: #999999;
 	border-bottom-color: #999999;
-	height: 170px;
+	height: 300px;
 	overflow-y: scroll;
 	padding: 5px;
 	width: 100%;
@@ -116,14 +117,14 @@ limitations under the License.
 	<div>
 		<div id="connect-container">
 			<div>
-				<input id="target" type="text" size="40" style="width: 350px" value="/pk" />
+				<input id="target" type="text" size="44px" style="width: 350px" value="/pk" />
 			</div>
 			<div>
 				<button id="connect" onclick="connect();">Connect</button>
 				<button id="disconnect" disabled="disabled" onclick="disconnect();">Disconnect</button>
 			</div>
 			<div>
-				<textarea id="message" style="width: 350px">Here is a message!</textarea>
+				<textarea id="message" style="width: 350px; height:200px;">Here is a message!</textarea>
 			</div>
 			<div>
 				<button id="echo" onclick="echo();" disabled="disabled">Echo

@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 
+import com.lmax.disruptor.EventTranslatorOneArg;
 import com.lmax.disruptor.EventTranslatorTwoArg;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
@@ -38,14 +39,18 @@ import com.lmax.disruptor.dsl.EventHandlerGroup;
 import com.roquito.platform.messaging.MessagingEvent;
 import com.roquito.platform.messaging.MessagingInputEventHandler;
 import com.roquito.platform.messaging.MessagingOutputEventHandler;
+import com.roquito.platform.messaging.protocol.BasePayload;
 import com.roquito.platform.messaging.protocol.Payload;
 import com.roquito.platform.notification.ApnsPushNotification;
+import com.roquito.platform.notification.BroadcastEvent;
+import com.roquito.platform.notification.BroadcastEventHandler;
+import com.roquito.platform.notification.BroadcastNotification;
 import com.roquito.platform.notification.GcmPushNotification;
-import com.roquito.platform.notification.PushEvent;
 import com.roquito.platform.notification.PushEventFactory;
 import com.roquito.platform.notification.PushEventHandler;
 import com.roquito.platform.notification.PushNotification;
 import com.roquito.platform.notification.PushType;
+import com.roquito.platform.notification.PushEvent;
 
 /**
  * Created by puran
@@ -56,11 +61,13 @@ public class QueueService {
     private static final Logger LOG = LoggerFactory.getLogger(QueueService.class);
     
     /* Disruptors */
+    private Disruptor<BroadcastEvent> broadcastEventDisruptor;
     private Disruptor<PushEvent> pushEventDisruptor;
     private Disruptor<MessagingEvent> messageInputEventDisruptor;
     private Disruptor<MessagingEvent> messageOutputEventDisruptor;
     
     /* Ring Buffers */
+    private RingBuffer<BroadcastEvent> broadcastRingBuffer;
     private RingBuffer<PushEvent> pushRingBuffer;
     private RingBuffer<MessagingEvent> messageInputRingBuffer;
     private RingBuffer<MessagingEvent> messageOutputRingBuffer;
@@ -73,6 +80,13 @@ public class QueueService {
     private UserService userService;
     @Autowired
     private MessagingService messagingService;
+    
+    private static final EventTranslatorOneArg<BroadcastEvent, BroadcastNotification> BROADCAST_EVENT_TRANSLATOR = new EventTranslatorOneArg<BroadcastEvent, BroadcastNotification>() {
+        @Override
+        public void translateTo(BroadcastEvent event, long sequence, BroadcastNotification broadcastNotification) {
+            event.setBroadcastNotification(broadcastNotification);
+        }
+    };
     
     private static final EventTranslatorTwoArg<PushEvent, PushNotification, PushType> PUSH_EVENT_TRANSLATOR = new EventTranslatorTwoArg<PushEvent, PushNotification, PushType>() {
         @Override
@@ -110,6 +124,7 @@ public class QueueService {
         
         // Construct the Disruptors
         this.pushEventDisruptor = new Disruptor<>(pushEventFactory, bufferSize, executor);
+        this.broadcastEventDisruptor = new Disruptor<>(BroadcastEvent.EVENT_FACTORY, bufferSize, executor);
         this.messageInputEventDisruptor = new Disruptor<>(MessagingEvent.EVENT_FACTORY, bufferSize, executor);
         this.messageOutputEventDisruptor = new Disruptor<>(MessagingEvent.EVENT_FACTORY, bufferSize, executor);
         
@@ -118,6 +133,12 @@ public class QueueService {
         EventHandlerGroup<PushEvent> handlerGroup = this.pushEventDisruptor.handleEventsWith(pushEventHandler);
         if (handlerGroup == null) {
             LOG.debug("Error creating disruptor handler group for push event handler");
+        }
+        
+        BroadcastEventHandler broadcastHandler = new BroadcastEventHandler(deviceInfoService, this);
+        EventHandlerGroup<BroadcastEvent> bcHandlerGroup = this.broadcastEventDisruptor.handleEventsWith(broadcastHandler);
+        if (bcHandlerGroup == null) {
+            LOG.debug("Error creating disruptor handler group for broadcast event handler");
         }
         
         MessagingInputEventHandler inputEventHandler = new MessagingInputEventHandler();
@@ -151,8 +172,12 @@ public class QueueService {
         this.pushRingBuffer.publishEvent(PUSH_EVENT_TRANSLATOR, apnsNotification, PushType.APNS);
     }
     
-    public void publishInputMessageEvent(Payload payload, WebSocketSession session) {
-        this.messageInputRingBuffer.publishEvent(MESSAGE_INPUT_EVENT_TRANSLATOR, payload, session);
+    public void sendBroadcastPushNotification(BroadcastNotification broadcastNotification) {
+        this.broadcastRingBuffer.publishEvent(BROADCAST_EVENT_TRANSLATOR, broadcastNotification);
+    }
+    
+    public void publishInputMessageEvent(BasePayload basePayload, WebSocketSession session) {
+        this.messageInputRingBuffer.publishEvent(MESSAGE_INPUT_EVENT_TRANSLATOR, basePayload, session);
     }
     
     public void publishOutputMessageEvent(Payload payload, WebSocketSession session) {
@@ -163,10 +188,12 @@ public class QueueService {
         LOG.info("Starting disruptors...");
         
         this.pushEventDisruptor.start();
+        this.broadcastEventDisruptor.start();
         this.messageInputEventDisruptor.start();
         this.messageOutputEventDisruptor.start();
         
         this.pushRingBuffer = this.pushEventDisruptor.getRingBuffer();
+        this.broadcastRingBuffer = this.broadcastEventDisruptor.getRingBuffer();
         this.messageInputRingBuffer = this.messageInputEventDisruptor.getRingBuffer();
         this.messageOutputRingBuffer = this.messageOutputEventDisruptor.getRingBuffer();
         
