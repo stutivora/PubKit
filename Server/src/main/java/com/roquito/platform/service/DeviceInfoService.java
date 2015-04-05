@@ -69,6 +69,19 @@ public class DeviceInfoService extends BasicDAO<DeviceInfo, String> {
         }
     }
     
+    public List<DeviceInfo> getDeviceInfoForUserId(String applicationId, String userId, String deviceType) {
+        Query<DeviceInfo> query = mongoDB.getDataStore().createQuery(DeviceInfo.class).field("applicationId")
+                .equal(applicationId).field("sourceUserId").equal(userId).field("deviceType").equal(deviceType);
+        
+        QueryResults<DeviceInfo> results = this.find(query);
+        if (results != null) {
+            return results.asList();
+        } else {
+            LOG.info("App device not found for source user id {" + userId + "}");
+            return null;
+        }
+    }
+    
     public List<DeviceInfo> getDevices(String applicationId, String deviceType, int offset, int limit) {
         Query<DeviceInfo> query = mongoDB.getDataStore().createQuery(DeviceInfo.class).field("applicationId")
                 .equal(applicationId).field("deviceType").equal(deviceType).limit(limit).offset(500);

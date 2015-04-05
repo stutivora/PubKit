@@ -18,43 +18,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.roquito.web.response;
+package com.roquito.platform.notification;
 
 /**
- * Created by puran
+ * Advanced push notification object, it takes the raw apns payload from source 
+ * as JSON formatted string object. This allows client to have complete control 
+ * over the payload.
+ * 
+ * @author puran
  */
-public class ConfigResponse {
-    private String message;
-    private boolean error;
-    private String errorResponse;
+public class AdvancedApnsPushNotification extends SimpleApnsPushNotification {
+    private String rawPayload;
     
-    public ConfigResponse(String message, boolean error, String errorResponse) {
-        this.message = message;
-        this.error = error;
-        this.errorResponse = errorResponse;
+    public AdvancedApnsPushNotification(String rawPayload) {
+        this.rawPayload = rawPayload;
     }
     
-    public String getMessage() {
-        return message;
+    public String getRawPayload() {
+        return rawPayload;
     }
     
-    public void setMessage(String message) {
-        this.message = message;
-    }
-    
-    public boolean isError() {
-        return error;
-    }
-    
-    public void setError(boolean error) {
-        this.error = error;
-    }
-    
-    public String getErrorResponse() {
-        return errorResponse;
-    }
-    
-    public void setErrorResponse(String errorResponse) {
-        this.errorResponse = errorResponse;
+    public void setRawPayload(String rawPayload) {
+        this.rawPayload = rawPayload;
     }
 }

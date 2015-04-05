@@ -20,6 +20,11 @@
  */
 package com.roquito.web.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,14 +33,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.roquito.platform.model.DeviceInfo;
 import com.roquito.platform.model.DataConstants;
-import com.roquito.platform.notification.ApnsPushNotification;
-import com.roquito.platform.notification.GcmPushNotification;
+import com.roquito.platform.model.DeviceInfo;
+import com.roquito.platform.notification.BroadcastNotification;
+import com.roquito.platform.notification.SimpleApnsPushNotification;
+import com.roquito.platform.notification.SimpleGcmPushNotification;
 import com.roquito.platform.service.DeviceInfoService;
 import com.roquito.platform.service.QueueService;
 import com.roquito.web.data.DeviceInfoData;
+import com.roquito.web.data.SimpleGcmPushData;
 import com.roquito.web.exception.RoquitoServerException;
+import com.roquito.web.response.ApiResponse;
 import com.roquito.web.response.DeviceRegistrationResponse;
 
 /**
@@ -58,7 +66,7 @@ public class PushController extends BaseController {
     private DeviceInfoService deviceInfoService;
     
     @RequestMapping(value = "/gcm", method = RequestMethod.POST)
-    public String create(@RequestBody GcmPushNotification gcmNotification) {
+    public String create(@RequestBody SimpleGcmPushNotification gcmNotification) {
         if (gcmNotification == null) {
             LOG.debug("Null gcm notification data received");
             new RoquitoServerException("Invalid request");
@@ -72,7 +80,7 @@ public class PushController extends BaseController {
     }
     
     @RequestMapping(value = "/apns", method = RequestMethod.POST)
-    public String create(@RequestBody ApnsPushNotification apnsNotification) {
+    public String create(@RequestBody SimpleApnsPushNotification apnsNotification) {
         if (apnsNotification == null) {
             LOG.debug("Null apns notification data received");
             new RoquitoServerException("Invalid request");
@@ -85,7 +93,7 @@ public class PushController extends BaseController {
         
         return "OK";
     }
-
+    
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public DeviceRegistrationResponse registerDevice(@RequestBody DeviceInfoData deviceInfoData) {
         LOG.info("Device registration request received for push notification");
@@ -149,5 +157,71 @@ public class PushController extends BaseController {
         
         LOG.error("Error registering device for push notification");
         return null;
+    }
+    
+    @RequestMapping(value = "/broadcast/gcm", method = RequestMethod.POST)
+    public ApiResponse sendBroadcastGcmPush(@RequestBody SimpleGcmPushData gcmPushData) {
+        LOG.info("Received simple gcm push notification request for application {" + gcmPushData.getApplicationId()
+                + "}");
+        
+        validateApiRequest(gcmPushData.getApplicationId());
+        
+        BroadcastNotification broadcastNotification = new BroadcastNotification();
+        broadcastNotification.setApplicationId(gcmPushData.getApplicationId());
+        broadcastNotification.setData(gcmPushData.getData());
+        broadcastNotification.setDeviceType(DataConstants.DEVICE_TYPE_ANDROID);
+        
+        queueService.sendBroadcastPushNotification(broadcastNotification);
+        
+        LOG.warn("Gcm broadcast push notification added to the queue for application {"
+                + gcmPushData.getApplicationId() + "}");
+        
+        return new ApiResponse("Push broadcast added to the queue", false, null);
+    }
+    
+    @RequestMapping(value = "/simple/gcm", method = RequestMethod.POST)
+    public ApiResponse sendSimpleGcmPush(@RequestBody SimpleGcmPushData gcmPushData) {
+        LOG.info("Received simple gcm push notification request for application {" + gcmPushData.getApplicationId()
+                + "}");
+        validateApiRequest(gcmPushData.getApplicationId());
+        
+        if (isEmpty(gcmPushData.getSourceUserId()) && isEmpty(gcmPushData.getRegistrationId())) {
+            LOG.error("Invalid gcm push request {" + gcmPushData.getSourceUserId() + "} for application {"
+                    + gcmPushData.getApplicationId() + "}");
+            return new ApiResponse(null, true, "Invalid Request");
+        }
+        
+        List<String> registrationIds = new ArrayList<String>();
+        if (isEmpty(gcmPushData.getRegistrationId()) && hasValue(gcmPushData.getSourceUserId())) {
+            List<DeviceInfo> devices = deviceInfoService.getDeviceInfoForUserId(gcmPushData.getApplicationId(),
+                    gcmPushData.getSourceUserId(), DataConstants.DEVICE_TYPE_ANDROID);
+            if (devices == null || devices.isEmpty()) {
+                LOG.warn("Device info not found for source user info {" + gcmPushData.getSourceUserId()
+                        + "} for application {" + gcmPushData.getApplicationId() + "}");
+                return new ApiResponse("User or device not found", false, null);
+            }
+            for (DeviceInfo device : devices) {
+                if (hasValue(device.getRegistrationId())) {
+                    registrationIds.add(device.getRegistrationId());
+                }
+            }
+        } else {
+            registrationIds.add(gcmPushData.getRegistrationId());
+        }
+        
+        SimpleGcmPushNotification gcm = new SimpleGcmPushNotification();
+        gcm.setApplicationId(gcmPushData.getApplicationId());
+        gcm.setApplicationVersion("1.0");
+        gcm.setRegistrationIds(registrationIds);
+        
+        Map<String, String> data = new HashMap<>();
+        data.put("data", gcmPushData.getData());
+        gcm.setData(data);
+        
+        gcm.setMulticast(registrationIds.size() > 1);
+        queueService.sendGcmPushNotification(gcm);
+        
+        LOG.warn("Gcm push notification added to the queue for application {" + gcmPushData.getApplicationId() + "}");
+        return new ApiResponse("Push message added to the queue", false, null);
     }
 }

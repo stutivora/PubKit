@@ -18,19 +18,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.roquito.platform.notification;
-
+package com.roquito.web.data;
 /**
- * APS payload format defined by -
- * https://developer.apple.com/library/ios/documentation
- * /NetworkingInternet/Conceptual
- * /RemoteNotificationsPG/Chapters/ApplePushService.html
- * 
- * SIMPLE PAYLOAD - { "aps" : { "alert" : "Message received from Bob", "badge" :
- * 3, "sound" : “chime.aiff" }, "acme1" : [ "bang", "whiz" ], "acme2" : "bar", }
- * 
- * Created by puran
+ * Simple gcm push data object to a specific device. If <tt>registrationId</tt>
+ * is provided push is sent to a single device. If <tt>sourceUserId</tt> is provided
+ * push is sent to all the gcm devices owned by a user which is registered in the 
+ * system.
+ *   
+ * @author puran
  */
-public class ApsPayload {
+public class SimpleGcmPushData extends SimplePushData {
     
+    private String sourceUserId;
+    private String registrationId;
+   
+    public String getRegistrationId() {
+        return registrationId;
+    }
+    
+    public void setRegistrationId(String registrationId) {
+        this.registrationId = registrationId;
+    }
+    
+    public String getSourceUserId() {
+        return sourceUserId;
+    }
+
+    public void setSourceUserId(String sourceUserId) {
+        this.sourceUserId = sourceUserId;
+    }
 }

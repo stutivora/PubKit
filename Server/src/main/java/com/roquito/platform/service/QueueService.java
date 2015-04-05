@@ -41,11 +41,11 @@ import com.roquito.platform.messaging.MessagingInputEventHandler;
 import com.roquito.platform.messaging.MessagingOutputEventHandler;
 import com.roquito.platform.messaging.protocol.BasePayload;
 import com.roquito.platform.messaging.protocol.Payload;
-import com.roquito.platform.notification.ApnsPushNotification;
+import com.roquito.platform.notification.SimpleApnsPushNotification;
 import com.roquito.platform.notification.BroadcastEvent;
 import com.roquito.platform.notification.BroadcastEventHandler;
 import com.roquito.platform.notification.BroadcastNotification;
-import com.roquito.platform.notification.GcmPushNotification;
+import com.roquito.platform.notification.SimpleGcmPushNotification;
 import com.roquito.platform.notification.PushEventFactory;
 import com.roquito.platform.notification.PushEventHandler;
 import com.roquito.platform.notification.PushNotification;
@@ -164,11 +164,11 @@ public class QueueService {
         LOG.info("Queue service initialized");
     }
     
-    public void sendGcmPushNotification(GcmPushNotification gcmNotification) {
+    public void sendGcmPushNotification(SimpleGcmPushNotification gcmNotification) {
         this.pushRingBuffer.publishEvent(PUSH_EVENT_TRANSLATOR, gcmNotification, PushType.GCM);
     }
     
-    public void sendApnsPushNotification(ApnsPushNotification apnsNotification) {
+    public void sendApnsPushNotification(SimpleApnsPushNotification apnsNotification) {
         this.pushRingBuffer.publishEvent(PUSH_EVENT_TRANSLATOR, apnsNotification, PushType.APNS);
     }
     

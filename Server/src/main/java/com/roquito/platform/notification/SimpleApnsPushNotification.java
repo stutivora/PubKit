@@ -25,13 +25,16 @@ import java.util.List;
 /**
  * Created by puran
  */
-public class ApnsPushNotification implements PushNotification {
+public class SimpleApnsPushNotification implements PushNotification {
     private String applicationId;
     private String applicationVersion;
-    private String payload;
+    private String alert;
+    private int badge;
+    private String sound;
+    private int contentAvailable;
+    private List<String> deviceTokens;
     private boolean productionMode;
     private boolean needFeedback;
-    private List<String> deviceTokens;
     
     public String getApplicationId() {
         return applicationId;
@@ -49,12 +52,44 @@ public class ApnsPushNotification implements PushNotification {
         this.applicationVersion = applicationVersion;
     }
     
-    public String getPayload() {
-        return payload;
+    public String getAlert() {
+        return alert;
     }
     
-    public void setPayload(String payload) {
-        this.payload = payload;
+    public void setAlert(String alert) {
+        this.alert = alert;
+    }
+    
+    public int getBadge() {
+        return badge;
+    }
+    
+    public void setBadge(int badge) {
+        this.badge = badge;
+    }
+    
+    public String getSound() {
+        return sound;
+    }
+    
+    public void setSound(String sound) {
+        this.sound = sound;
+    }
+    
+    public int getContentAvailable() {
+        return contentAvailable;
+    }
+    
+    public void setContentAvailable(int contentAvailable) {
+        this.contentAvailable = contentAvailable;
+    }
+    
+    public List<String> getDeviceTokens() {
+        return deviceTokens;
+    }
+    
+    public void setDeviceTokens(List<String> deviceTokens) {
+        this.deviceTokens = deviceTokens;
     }
     
     public boolean isProductionMode() {
@@ -72,13 +107,4 @@ public class ApnsPushNotification implements PushNotification {
     public void setNeedFeedback(boolean needFeedback) {
         this.needFeedback = needFeedback;
     }
-    
-    public List<String> getDeviceTokens() {
-        return deviceTokens;
-    }
-    
-    public void setDeviceTokens(List<String> deviceTokens) {
-        this.deviceTokens = deviceTokens;
-    }
-    
 }

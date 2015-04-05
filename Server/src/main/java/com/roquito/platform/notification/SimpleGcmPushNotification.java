@@ -29,7 +29,7 @@ import java.util.Map;
  * 
  * Created by puran 
  */
-public class GcmPushNotification implements PushNotification {
+public class SimpleGcmPushNotification implements PushNotification {
     /* PubKit application id */
     private String applicationId;
     /* PubKit application version */

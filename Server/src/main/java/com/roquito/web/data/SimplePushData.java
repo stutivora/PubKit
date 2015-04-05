@@ -21,20 +21,13 @@
 package com.roquito.web.data;
 
 /**
- * Push data object for sending push notification to a specific device. 
- * If <tt>deviceType</tt> value is <tt>android</tt> deviceId should be
- * the <tt>registrationId</tt> value of the android device. And, if 
- * <tt>deviceType</tt> value is <tt>iOS</tt> deviceId should be the 
- * <tt>deviceToken</tt> of the iOS device.
- * 
+ * Base push data object for sending push notification to a specific device
  * @author puran
  */
-public class PushData {
+public class SimplePushData {
     private String applicationId;
-    private String deviceId;
-    private boolean broadcast;
+    private String applicationVersion;
     private String data;
-    private String deviceType;
     
     public String getApplicationId() {
         return applicationId;
@@ -43,36 +36,20 @@ public class PushData {
     public void setApplicationId(String applicationId) {
         this.applicationId = applicationId;
     }
+    
+    public String getApplicationVersion() {
+        return applicationVersion;
+    }
+    
+    public void setApplicationVersion(String applicationVersion) {
+        this.applicationVersion = applicationVersion;
+    }
    
-    public String getDeviceId() {
-        return deviceId;
-    }
-    
-    public void setDeviceId(String deviceId) {
-        this.deviceId = deviceId;
-    }
-    
-    public boolean isBroadcast() {
-        return broadcast;
-    }
-
-    public void setBroadcast(boolean broadcast) {
-        this.broadcast = broadcast;
-    }
-
     public String getData() {
         return data;
     }
     
     public void setData(String data) {
         this.data = data;
-    }
-
-    public String getPushType() {
-        return deviceType;
-    }
-
-    public void setPushType(String pushType) {
-        this.deviceType = pushType;
     }
 }

@@ -45,7 +45,7 @@ import com.roquito.platform.service.DeviceInfoService;
 import com.roquito.platform.service.ApplicationService;
 
 /**
- * Created by puran
+ * Handles push notification event. Created by puran
  */
 public class PushEventHandler implements EventHandler<PushEvent> {
     
@@ -66,7 +66,6 @@ public class PushEventHandler implements EventHandler<PushEvent> {
     @Override
     public void onEvent(PushEvent event, long sequence, boolean endOfBatch) {
         System.out.println("Processed Event: " + event + " payload:" + event.getPushNotification());
-        
         switch (event.getPushType()) {
             case GCM:
                 handleGCMPush(event.getPushNotification());
@@ -84,19 +83,19 @@ public class PushEventHandler implements EventHandler<PushEvent> {
             LOG.debug("Empty or null push notification data received. Could not send notification to APNS server");
             return;
         }
-        ApnsPushNotification apnsPushNotification = (ApnsPushNotification) pushNotification;
-        Application application = applicationService.findByApplicationId(apnsPushNotification.getApplicationId());
+        SimpleApnsPushNotification simpleApnsPushNotification = (SimpleApnsPushNotification) pushNotification;
+        Application application = applicationService.findByApplicationId(simpleApnsPushNotification.getApplicationId());
         if (application == null) {
             LOG.debug("Couldn't find roquito application");
             return;
         }
         
         ApnsService apnsService = null;
-        boolean isProduction = apnsPushNotification.isProductionMode();
+        boolean isProduction = simpleApnsPushNotification.isProductionMode();
         if (isProduction) {
-            apnsService = this.prodConnections.get(apnsPushNotification.getApplicationId());
+            apnsService = this.prodConnections.get(simpleApnsPushNotification.getApplicationId());
         } else {
-            apnsService = this.sandboxConnections.get(apnsPushNotification.getApplicationId());
+            apnsService = this.sandboxConnections.get(simpleApnsPushNotification.getApplicationId());
         }
         if (apnsService == null) {
             apnsService = createNewConnection(application, isProduction);
@@ -110,16 +109,16 @@ public class PushEventHandler implements EventHandler<PushEvent> {
             // try to create new connection
             apnsService = createNewConnection(application, isProduction);
             
-            if (apnsPushNotification.getDeviceTokens().size() == 0) {
+            if (simpleApnsPushNotification.getDeviceTokens().size() == 0) {
                 LOG.debug("Error sending push, no device tokens");
-            } else if (apnsPushNotification.getDeviceTokens().size() == 1) {
-                sendSingleApnsPush(apnsService, apnsPushNotification);
+            } else if (simpleApnsPushNotification.getDeviceTokens().size() == 1) {
+                sendSingleApnsPush(apnsService, simpleApnsPushNotification);
             } else {
-                sendMultipleApnsPush(apnsService, apnsPushNotification);
+                sendMultipleApnsPush(apnsService, simpleApnsPushNotification);
             }
             
-            if (apnsPushNotification.isNeedFeedback()) {
-                String applicationId = apnsPushNotification.getApplicationId();
+            if (simpleApnsPushNotification.isNeedFeedback()) {
+                String applicationId = simpleApnsPushNotification.getApplicationId();
                 Map<String, Date> inactiveDevices = apnsService.getInactiveDevices();
                 for (String deviceToken : inactiveDevices.keySet()) {
                     DeviceInfo deviceInfo = deviceInfoService.getDeviceInfoForToken(applicationId, deviceToken);
@@ -158,17 +157,17 @@ public class PushEventHandler implements EventHandler<PushEvent> {
         return false;
     }
     
-    private void sendSingleApnsPush(ApnsService apnsService, ApnsPushNotification pushNotification) {
+    private void sendSingleApnsPush(ApnsService apnsService, SimpleApnsPushNotification pushNotification) {
         String deviceToken = pushNotification.getDeviceTokens().get(0);
         try {
             if (pushNotification.isNeedFeedback()) {
                 int now = (int) (new Date().getTime() / 1000);
                 EnhancedApnsNotification notification = new EnhancedApnsNotification(
                         EnhancedApnsNotification.INCREMENT_ID(), now + 60 * 60, deviceToken,
-                        pushNotification.getPayload());
+                        pushNotification.getAlert());
                 apnsService.push(notification);
             } else {
-                ApnsNotification resultNotification = apnsService.push(deviceToken, pushNotification.getPayload());
+                ApnsNotification resultNotification = apnsService.push(deviceToken, pushNotification.getAlert());
                 LOG.info("Push notification sent to device with device token: " + resultNotification.getDeviceToken());
             }
         } catch (NetworkIOException networkException) {
@@ -176,12 +175,12 @@ public class PushEventHandler implements EventHandler<PushEvent> {
         }
     }
     
-    private void sendMultipleApnsPush(ApnsService apnsService, ApnsPushNotification pushNotification) {
+    private void sendMultipleApnsPush(ApnsService apnsService, SimpleApnsPushNotification pushNotification) {
         try {
             if (pushNotification.isNeedFeedback()) {
                 int expiry = (int) (new Date().getTime() / 1000) + 60 + 60;
                 Collection<? extends EnhancedApnsNotification> results = apnsService.push(
-                        pushNotification.getDeviceTokens(), pushNotification.getPayload(), new Date(expiry));
+                        pushNotification.getDeviceTokens(), pushNotification.getAlert(), new Date(expiry));
                 if (results == null) {
                     LOG.error("Error sending bulk apple push notification, null results returned");
                 } else {
@@ -189,7 +188,7 @@ public class PushEventHandler implements EventHandler<PushEvent> {
                 }
             } else {
                 Collection<? extends ApnsNotification> results = apnsService.push(pushNotification.getDeviceTokens(),
-                        pushNotification.getPayload());
+                        pushNotification.getAlert());
                 if (results == null) {
                     LOG.error("Error sending bulk apple push notification, null results returned");
                 } else {
@@ -206,7 +205,7 @@ public class PushEventHandler implements EventHandler<PushEvent> {
             LOG.debug("Empty or null push notification data received. Could not send notification to GCM server");
             return;
         }
-        GcmPushNotification gcmNotification = (GcmPushNotification) pushNotification;
+        SimpleGcmPushNotification gcmNotification = (SimpleGcmPushNotification) pushNotification;
         Application roquitoApplication = applicationService.findByApplicationId(gcmNotification.getApplicationId());
         if (roquitoApplication == null) {
             LOG.debug("Couldn't find roquito application");
@@ -227,7 +226,7 @@ public class PushEventHandler implements EventHandler<PushEvent> {
                 } else {
                     multicastResult = gcmConnection.sendNoRetry(gcmMessage, gcmNotification.getRegistrationIds());
                 }
-                handleMulticastResult(multicastResult);
+                handleMulticastResult(gcmNotification.getApplicationId(), multicastResult);
             } else {
                 Result result = null;
                 if (gcmNotification.isRetry()) {
@@ -235,41 +234,45 @@ public class PushEventHandler implements EventHandler<PushEvent> {
                 } else {
                     result = gcmConnection.sendNoRetry(gcmMessage, gcmNotification.getRegistrationIds().get(0));
                 }
-                handleGCMResult(result);
+                handleGCMResult(gcmNotification.getApplicationId(), gcmNotification.getRegistrationIds().get(0), result);
             }
         } catch (Exception es) {
             LOG.error("Error sending push notification to GCM server", es);
         }
     }
     
-    private void handleMulticastResult(MulticastResult multicastResult) {
+    private void handleMulticastResult(String applicationId, MulticastResult multicastResult) {
         if (multicastResult == null) {
-            LOG.error("Error sending multicast messages to GCM server. Null response received");
+            LOG.error("Error sending multicast messages to GCM server for application id {" + applicationId
+                    + "}. Null response");
             return;
         }
-        for (Result result : multicastResult.getResults()) {
-            handleGCMResult(result);
-        }
+        LOG.info("Sent multicast messages to GCM server for application id {" + applicationId
+                + "}. Total messages sent {"+ multicastResult.getTotal() +"}. Total failed messages "+multicastResult.getFailure());
     }
     
-    private void handleGCMResult(Result result) {
+    private void handleGCMResult(String applicationId, String registrationId, Result result) {
         if (result == null) {
-            LOG.error("Error sending message to GCM server. Null response received");
+            LOG.error("Error sending message to GCM server for application id {" + applicationId + "}. Null response");
             return;
         }
         if (result.getMessageId() == null) {
             String errorCode = result.getErrorCodeName();
-            LOG.error("Error sending message to GCM server. Error code:" + errorCode);
+            LOG.error("Error sending message to GCM server. Error code {" + errorCode + "} registrationId {"
+                    + registrationId + "} for application id {" + applicationId + "}");
         } else {
             String canonicalRegId = result.getCanonicalRegistrationId();
             if (canonicalRegId != null) {
-                // TODO: update server data store with new regId.
+                DeviceInfo deviceInfo = deviceInfoService.getDeviceInfoForRegistrationId(applicationId, registrationId);
+                deviceInfo.setRegistrationId(result.getCanonicalRegistrationId());
+                
+                deviceInfoService.saveDeviceInfo(deviceInfo);
+                LOG.info("Updated registration id {" + registrationId + "}. with {"+result.getCanonicalRegistrationId()+"} for application id {" + applicationId + "}");
             }
-            LOG.info("GCM message sent with message id:" + result.getMessageId());
         }
     }
     
-    private Message constructGcmMessage(GcmPushNotification gcmNotification) {
+    private Message constructGcmMessage(SimpleGcmPushNotification gcmNotification) {
         Message.Builder messageBuilder = new Message.Builder();
         
         Map<String, String> pushData = gcmNotification.getData();

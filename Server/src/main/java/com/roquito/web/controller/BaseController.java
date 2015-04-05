@@ -45,7 +45,7 @@ import com.roquito.web.exception.RoquitoServerException;
  * Created by puran
  */
 public class BaseController {
-    private static final Logger log = LoggerFactory.getLogger(BaseController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BaseController.class);
     
     private static final String ACCESS_TOKEN_PARAM = "access_token";
     private static final String API_KEY_PARAM = "api_key";
@@ -62,34 +62,34 @@ public class BaseController {
     protected HttpServletRequest httpRequest;
     @Autowired
     protected HttpServletResponse httpResponse;
+
+    protected void validateApiRequest(String applicationId) {
+        String accessToken = httpRequest.getParameter(ACCESS_TOKEN_PARAM);
+        if (accessToken != null) {
+            validateAccessToken();
+        } else {
+            if (applicationId == null) {
+                throwAuthException();
+            }
+            String apiKey = httpRequest.getHeader(API_KEY_PARAM);
+            Application application = applicationService.findByApplicationId(applicationId);
+            if (application == null) {
+                throwAuthException();
+            }
+            if (application.getApplicationKey().equals(apiKey)) {
+                LOG.debug("Request not authorized");
+                throwAuthException();
+            }
+        }
+    }
     
     protected void validateAccessToken() {
         String accessToken = httpRequest.getParameter(ACCESS_TOKEN_PARAM);
         boolean tokenValid = userService.isAccessTokenValid(accessToken);
         if (!tokenValid) {
-            log.debug("Request not authorized");
+            LOG.debug("Request not authorized");
             throwAuthException();
         }
-    }
-    
-    protected boolean validateApiRequest(String applicationId) {
-        boolean validRequest = true;
-        if (applicationId == null) {
-            throwAuthException();
-        }
-        String apiKey = httpRequest.getHeader(API_KEY_PARAM);
-        Application application = applicationService.findByApplicationId(applicationId);
-        if (application == null) {
-            throwAuthException();
-        }
-        if (application.getApplicationKey().equals(apiKey)) {
-            validRequest = true;
-        }
-        if (!validRequest) {
-            log.debug("Request not authorized");
-            throwAuthException();
-        }
-        return validRequest;
     }
     
     protected void throwAuthException() {
@@ -100,7 +100,7 @@ public class BaseController {
         try {
             httpServletResponse.sendError(code, message);
         } catch (IOException e) {
-            log.error("Error sending error response", e);
+            LOG.error("Error sending error response", e);
         }
     }
     
