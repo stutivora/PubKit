@@ -119,12 +119,18 @@ public class MessagingService {
     }
     
     public void addSession(WebSocketSession session) {
+        if (session == null) {
+            return;
+        }
         if (!sessionMap.containsKey(session.getId())) {
             sessionMap.put(session.getId(), session);
         }
     }
     
     public void removeSession(WebSocketSession session) {
+        if (session == null) {
+            return;
+        }
         if (sessionMap.containsKey(session.getId())) {
             sessionMap.remove(session.getId());
         }

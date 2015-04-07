@@ -234,7 +234,7 @@ public class MessagingInputEventHandler implements EventHandler<MessagingEvent> 
                 // send push notification if possible for inactive subscriber
                 handleInactiveSubscriber(subscriber);
                 
-                if (subscriberSession != null && !subscriberSession.isOpen()) {
+                if (subscriberSession != null) {
                     sendDisconnect(subscriber.getClientId(), subscriberSession, "");
                 }
             }
