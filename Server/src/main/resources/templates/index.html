@@ -4,17 +4,19 @@
 <meta charset="utf-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-<title>mKit.IO - Messaging platform for mobile developers</title>
+<title>PubKit - Messaging platform for mobile developers</title>
 <link rel="stylesheet" href="css/normalize.css" />
-<link href='https://fonts.googleapis.com/css?family=Arvo' rel='stylesheet' type='text/css'>
-<link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,300,100,700' rel='stylesheet' type='text/css'>	
+<link href='http://fonts.googleapis.com/css?family=Arvo' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Roboto+Slab:400,300,100,700' rel='stylesheet' type='text/css'>	
 <link rel="icon" type="image/png" href="images/favicon.ico">
 
 <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" />
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+<link href='http://fonts.googleapis.com/css?family=Cabin' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" href="css/style.css" />
+<link rel="stylesheet" href="css/prism.css" />
 
 <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -29,11 +31,9 @@
 <script type="text/x-handlebars">
 	<div id="successAlert" class="hidden alert alert-success success-text" role="alert">Save Success</div>
 	<nav class="top-nav nav">
-		{{render "navbar"}}
+  		{{render "navbar"}}
 	</nav>
-	
-		{{outlet}}
-	
+	{{outlet}}
 	<footer>
         <div class="container">
 			<div class="row">
@@ -58,64 +58,159 @@
 </script>
 
 <script type="text/x-handlebars" id="navbar">
-<div class="nav-container">
-    		<div class="navbar-header">
-      			<a class="navbar-brand" href="#">
-        			<p class="logo">mKit.IO</p>
-      			</a>
-    		</div>
-			{{shit}}
-			<ul class="nav navbar-nav navbar-right">
- 				{{#if hasToken}}
-					<li><p class="logout-text">Hello There,</p></li>
-  					<li>{{#link-to 'logout' class="logout-link"}}Sign Out{{/link-to}}</li>
-				{{else}}
-  					<li>{{#link-to 'login'}}Login{{/link-to}}</li>
-					<li>{{#link-to 'signup'}}Sign Up{{/link-to}}</li>
-				{{/if}}	
-			</ul>
-  		</div>
+<header>
+	<div class="nav-container">
+	    		<div class="navbar-header">
+	      			<a class="navbar-brand" href="#">
+	        			<p class="logo">Pubkit</p>
+	      			</a>
+	    		</div>
+				{{shit}}
+				<ul class="nav navbar-nav navbar-right">
+	 				{{#if hasToken}}
+						<li><p class="logout-text">Hello There,</p></li>
+	  					<li>{{#link-to 'logout' class="logout-link"}}Sign Out{{/link-to}}</li>
+					{{else}}
+	  					<li>{{#link-to 'login'}}Login{{/link-to}}</li>
+						<li>{{#link-to 'signup'}}Sign Up{{/link-to}}</li>
+					{{/if}}	
+				</ul>
+	 </div>
+</header>
 </script>
   		
 <script type="text/x-handlebars" id="index">
 <div class="banner">
-	<div class="row">
-		<div class="col-lg-12">				
-			<h1>Welcome to mKit</h1>
-			<h2>Messaging platform for your mobile apps</h2><br><br>
-			<a class="btn btn-primary btn-lg" href="/#/signup" role="button" id="signup-header-cta">Get Started</a>
+		
+	<h1>Welcome to Pubkit</h1>
+	<span><h2>Pubkit is a simple and easy to use messaging and push notification<br>
+platform for you mobile apps.</h2></span><br><br>
+	<a class="btn btn-primary btn-lg" href="/#/signup" role="button" id="signup-header-cta">Get Started</a>
+	<div class="logos container">
+		<p>Use PubKit cloud or download our PubKit micro-service to deploy on your own infrastructure.</p>
+        <ul>
+          <li>
+            <img alt="github" src="images/github-logo.png">
+          </li>
+          <li>
+            <img alt="cloudapp" src="images/cloud-app-logo.png">
+          </li>
+          <li>
+            <img alt="mailchimp" src="images/mailchimp-logo.png">
+          </li>
+          <li>
+            <img class="itv-logo" alt="itv" src="images/itv-logo.png">
+          </li>
+          <li>
+            <img alt="codeship" src="images/codeship-logo.png">
+          </li>
+          <li>
+            <img class="ft-logo" alt="ft" src="images/ft-logo.png">
+          </li>
+          <li>
+            <img class="quizup-logo" alt="quizup" src="images/quizzup-logo.png">
+          </li>
+        </ul>
+      </div>
+</div>
+<div class="pubkit-section">
+	<div class="container">
+		<h2>Why Pubkit?</h2>
+		<em></em>
+		<p></p>
+	</div>
+</div>
+<div class="icons">
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-4">
+				<img src="images/like.png"></a>
+			</div>
+			<div class="col-lg-4">
+				<img src="images/scalable.png"></a>
+			</div>
+			<div class="col-lg-4">
+				<img src="images/layer.png"></a>
+			</div>
 		</div>
-	</div>	
+		<div class="row">
+			<div class="col-lg-4">
+				<h3>Simple & easy</h3>
+				<p>PubKit is super simple to get started. Register your app from our web console. Donwload our mobile SDKs and you are set with just a few lines of code.</p>
+			</div>
+			<div class="col-lg-4">
+				<h3>Consistent</h3>
+				<p>Lorem Ips koum is simply dtext of the printing and typesettttting indusum inustry's standard ever since an unknon galley.</p>
+			</div>
+			<div class="col-lg-4">
+				<h3>Scalable</h3>
+				<p>Lorem Ips koum is simply dtext of the printing and typesettttting indusum inustry's standard ever since the  an simply printing galley.</p>
+			</div>
+		</div>
+	</div>
 </div>
 <div class="sdk-section">
 	<div class="container">
 		<div class="row">
 			<div class="col-lg-12">
-				<h2>Download our mobile SDKs</h2>
+				<h2>Download our SDK's</h2>
+				<em></em>
 			</div>
 		</div>
 		<div class="row">
-			<div class="col-lg-4">
-				<a href="#"><img src="images/apple.png"></a>
+			<div class="col-lg-2">&nbsp;</div>
+			<div class="col-lg-8">
+				<ul class="nav nav-tabs">
+		            <li class="active"><a href="#android" class="android" data-toggle="tab">ANDROID</a></li>
+		            <li class=""><a href="#ios" class="ios" data-toggle="tab">iOS</a></li>
+		            <li class=""><a href="#javascript" class="javascript" data-toggle="tab">JS</a></li>
+		          </ul>
+				<div class="tab-content">
+					<div class="tab-pane active" id="android">
+					<pre class=" language-java">              
+						<code class=" language-java">
+Channel channel <span class="token operator">=</span> Pubkit<span class="token punctuation">.</span><span class="token function">subscribe<span class="token punctuation">(</span></span><span class="token string">"my-channel"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+channel<span class="token punctuation">.</span><span class="token function">bind<span class="token punctuation">(</span></span><span class="token string">"my-event"</span><span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">SubscriptionEventListener</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  @Override
+  <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">onEvent<span class="token punctuation">(</span></span>String channel<span class="token punctuation">,</span> String event<span class="token punctuation">,</span> String data<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    System<span class="token punctuation">.</span>put<span class="token punctuation">.</span><span class="token function">println<span class="token punctuation">(</span></span><span class="token string">"Received event with data: "</span> <span class="token operator">+</span> data<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            </code>
+          </pre>
+        </div>
+					<div class="tab-pane" id="ios">
+						<pre class=" language-clike">            
+							<code class=" language-clike">
+PTPubkitChannel<span class="token operator">*</span>channel <span class="token operator">=</span> <span class="token punctuation">[</span>client subscribeToChannelNamed<span class="token punctuation">:</span>@<span class="token string">"my-channel"</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token punctuation">[</span>channel bindToEventNamed<span class="token punctuation">:</span>@<span class="token string">"my-event"</span> handleWithBlock<span class="token punctuation">:</span><span class="token operator">^</span><span class="token punctuation">(</span>PTPubkitEvent <span class="token operator">*</span>channelEvent<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  NSString <span class="token operator">*</span>message <span class="token operator">=</span> <span class="token punctuation">[</span>channelEvent<span class="token punctuation">.</span>data objectForKey<span class="token punctuation">:</span>@<span class="token string">"text"</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+  <span class="token function">NSLog<span class="token punctuation">(</span></span>@<span class="token string">"message received: %@"</span><span class="token punctuation">,</span> message<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+            </code>
+          </pre>
+        </div>
+					<div class="tab-pane" id="javascript">
+						<pre class=" language-javascript">               
+							<code class=" language-javascript">
+<span class="token keyword">var</span>channel<span class="token operator">=</span> Pubkit<span class="token punctuation">.</span><span class="token function">subscribe<span class="token punctuation">(</span></span><span class="token string">'my-channel'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+channel<span class="token punctuation">.</span><span class="token function">bind<span class="token punctuation">(</span></span><span class="token string">'my-event'</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token function">alert<span class="token punctuation">(</span></span><span class="token string">'Received my-event with message: '</span> <span class="token operator">+</span> data<span class="token punctuation">.</span>message<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+              </code>
+            </pre>
+          </div>	
+				</div>
 			</div>
-			<div class="col-lg-4">
-				<a href="#"><img src="images/android.png"></a>
-			</div>
-			<div class="col-lg-4">
-				<a href="#"><img src="images/javascript.png"></a>
-			</div>
+			<div class="col-lg-2">&nbsp;</div>
 		</div>
-		<div class="row">
-			<div class="col-lg-4">
-				<h4>iOS</h4>
-			</div>
-			<div class="col-lg-4">
-				<h4>Android</h4>
-			</div>
-			<div class="col-lg-4">
-				<h4>Javascript</h4>
-			</div>
-		</div>
+	</div>
+</div>
+<div class="get-started">
+	<div class="container">
+		<h2>Get Started Now</h2>
+		<p>Pubkit is a Simple and easy tot use messaging platform.</p>
+		<a class="btn btn-primary btn-lg" href="/#/signup" role="button" id="signup-header-cta">Get Started</a>
 	</div>
 </div>		
 </script>
@@ -547,10 +642,26 @@
 		src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 	<script src="js/libs/handlebars-v2.0.0.js"></script>
 	<script src="js/libs/ember-1.9.1.js"></script>
+	<script src="js/libs/accordian.js"></script>
+	<script src="js/libs/prism.js"></script>
 	<script src="js/app.js"></script>
 	<script src="js/components/components.js"></script>
 	<script src="js/routes/routes.js"></script>
 	<script src="js/models/models.js"></script>
 	<script src="js/controllers/controllers.js"></script>
+	<script type="text/javascript">
+		var main = function() {
+  $('.article').click(function() {
+    $('.article').removeClass('current');//previous selected tab lai remove garcha 
+    $('.description').hide();// hide the description of the previous selected tab
+
+    $(this).addClass('current'); //click garda select hune tab..
+    $(this).children('.description').show();// click garda select hune tab ko description..
+  });
+
+  }
+
+$(document).ready(main);
+	</script>
 </body>
 </html>
