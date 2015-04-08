@@ -60,7 +60,7 @@ p {
 	padding: 15px 35px 15px 35px;
 	text-decoration: none;
 	border: 0px;
-	margin-top: 15px;
+	margin-top: 25px;
 	margin-bottom: 25px;
 	letter-spacing: 1px;
 	text-shadow: none;
@@ -191,6 +191,9 @@ header {
 	background: none;
 	color: #fff;
 	
+}
+.signup-page {
+	margin-top:80px;
 }
 .banner {
 	margin-top: 0px;
@@ -518,7 +521,6 @@ footer{
 	height: 60px; 
 	background-color: #484745;
 	text-align: center;
-	margin:0px auto;
 	background-color: #f2f5f8;
 }
 
