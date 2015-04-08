@@ -194,7 +194,7 @@ header {
 }
 .banner {
 	margin-top: 0px;
-	padding: 200px;
+	padding: 220px;
 	background-size: cover;
 	background: url('../images/banner.png');
 	background-color: #fff;
@@ -218,7 +218,7 @@ header {
 }
 .pubkit-section{
 	color: #262626;
-	padding-top: 100px;
+	padding-top: 10px;
 	text-align: center;
 	font-family: 'Cabin', sans-serif;
 }
@@ -242,7 +242,7 @@ em {
 .icons{
 	margin: 0 auto;
 	text-align: center;
-	padding-top: 120px;
+	padding-top: 5px;
 	margin-bottom: 120px;
 }
 .icons h3{
@@ -255,9 +255,9 @@ em {
 	background: url('../images/sdk.jpg') ;
 	color: #fff;
 	text-align: center;
-	padding-top: 45px;
+	padding-top: 10px;
 	letter-spacing: 1px;
-	padding-bottom: 35px;
+	padding-bottom: 10px;
 }
 .sdk-section h2{
 	margin-bottom: 25px;
@@ -292,13 +292,15 @@ em {
   margin-right: auto;
   left: 0;
   right: 0;
-  bottom:70px;
+  bottom:100px;
 }
 .logos p {
-	color:#fff;
+	color:#ddd;
 	font-family: 'Roboto Slab', serif;
 	font-weight: 300;
+	font-size:15px;
 }
+
 .logos ul {
   text-align: center;
   padding: 0 0 10px 0;
@@ -306,6 +308,10 @@ em {
 }
 .logos ul li {
   display: inline;
+}
+.logos ul li span {
+	font-size:22px;
+	margin-left:50px;
 }
 .logos img {
   margin: 10px 14px;
