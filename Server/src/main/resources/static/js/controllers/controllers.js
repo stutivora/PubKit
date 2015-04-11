@@ -1,4 +1,7 @@
 App.ApplicationController = Ember.Controller.extend({
+	init: function() {
+	    this.set('hasToken', App.Session.isLoggedIn());
+	}
 });
 
 App.NavbarController = Ember.ArrayController.extend({

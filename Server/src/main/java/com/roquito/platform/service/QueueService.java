@@ -36,11 +36,11 @@ import com.lmax.disruptor.EventTranslatorTwoArg;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.EventHandlerGroup;
-import com.roquito.platform.messaging.MessagingEvent;
-import com.roquito.platform.messaging.MessagingInputEventHandler;
-import com.roquito.platform.messaging.MessagingOutputEventHandler;
-import com.roquito.platform.messaging.protocol.BasePayload;
-import com.roquito.platform.messaging.protocol.Payload;
+import com.roquito.platform.messaging.protocol.pkmp.proto.PKMPBasePayload;
+import com.roquito.platform.messaging.protocol.pkmp.proto.PKMPPayload;
+import com.roquito.platform.messaging.protocol.pkmp.PKMPEvent;
+import com.roquito.platform.messaging.protocol.pkmp.PKMPInBoundEventHandler;
+import com.roquito.platform.messaging.protocol.pkmp.PKMPOutBoundEventHandler;
 import com.roquito.platform.notification.SimpleApnsPushNotification;
 import com.roquito.platform.notification.BroadcastEvent;
 import com.roquito.platform.notification.BroadcastEventHandler;
@@ -63,14 +63,14 @@ public class QueueService {
     /* Disruptors */
     private Disruptor<BroadcastEvent> broadcastEventDisruptor;
     private Disruptor<PushEvent> pushEventDisruptor;
-    private Disruptor<MessagingEvent> messageInputEventDisruptor;
-    private Disruptor<MessagingEvent> messageOutputEventDisruptor;
+    private Disruptor<PKMPEvent> messageInputEventDisruptor;
+    private Disruptor<PKMPEvent> messageOutputEventDisruptor;
     
     /* Ring Buffers */
     private RingBuffer<BroadcastEvent> broadcastRingBuffer;
     private RingBuffer<PushEvent> pushRingBuffer;
-    private RingBuffer<MessagingEvent> messageInputRingBuffer;
-    private RingBuffer<MessagingEvent> messageOutputRingBuffer;
+    private RingBuffer<PKMPEvent> messageInputRingBuffer;
+    private RingBuffer<PKMPEvent> messageOutputRingBuffer;
     
     @Autowired
     private ApplicationService applicationService;
@@ -80,6 +80,8 @@ public class QueueService {
     private UserService userService;
     @Autowired
     private MessagingService messagingService;
+    @Autowired
+    private StatsService statsService;
     
     private static final EventTranslatorOneArg<BroadcastEvent, BroadcastNotification> BROADCAST_EVENT_TRANSLATOR = new EventTranslatorOneArg<BroadcastEvent, BroadcastNotification>() {
         @Override
@@ -96,12 +98,12 @@ public class QueueService {
         }
     };
     
-    private static EventTranslatorTwoArg<MessagingEvent, Payload, WebSocketSession> MESSAGE_INPUT_EVENT_TRANSLATOR = null;
+    private static EventTranslatorTwoArg<PKMPEvent, PKMPPayload, WebSocketSession> MESSAGE_INPUT_EVENT_TRANSLATOR = null;
     static {
-        MESSAGE_INPUT_EVENT_TRANSLATOR = new EventTranslatorTwoArg<MessagingEvent, Payload, WebSocketSession>() {
+        MESSAGE_INPUT_EVENT_TRANSLATOR = new EventTranslatorTwoArg<PKMPEvent, PKMPPayload, WebSocketSession>() {
             @Override
-            public void translateTo(MessagingEvent event, long sequence, Payload payload, WebSocketSession session) {
-                event.setPayload(payload);
+            public void translateTo(PKMPEvent event, long sequence, PKMPPayload pKMPPayload, WebSocketSession session) {
+                event.setPayload(pKMPPayload);
                 event.setSequence(sequence);
                 event.setSession(session);
             }
@@ -125,10 +127,10 @@ public class QueueService {
         // Construct the Disruptors
         this.pushEventDisruptor = new Disruptor<>(pushEventFactory, bufferSize, executor);
         this.broadcastEventDisruptor = new Disruptor<>(BroadcastEvent.EVENT_FACTORY, bufferSize, executor);
-        this.messageInputEventDisruptor = new Disruptor<>(MessagingEvent.EVENT_FACTORY, bufferSize, executor);
-        this.messageOutputEventDisruptor = new Disruptor<>(MessagingEvent.EVENT_FACTORY, bufferSize, executor);
+        this.messageInputEventDisruptor = new Disruptor<>(PKMPEvent.EVENT_FACTORY, bufferSize, executor);
+        this.messageOutputEventDisruptor = new Disruptor<>(PKMPEvent.EVENT_FACTORY, bufferSize, executor);
         
-        // Connect the handlers
+        // PKMPConnect the handlers
         PushEventHandler pushEventHandler = new PushEventHandler(applicationService, deviceInfoService);
         EventHandlerGroup<PushEvent> handlerGroup = this.pushEventDisruptor.handleEventsWith(pushEventHandler);
         if (handlerGroup == null) {
@@ -141,20 +143,22 @@ public class QueueService {
             LOG.debug("Error creating disruptor handler group for broadcast event handler");
         }
         
-        MessagingInputEventHandler inputEventHandler = new MessagingInputEventHandler();
+        PKMPInBoundEventHandler inputEventHandler = new PKMPInBoundEventHandler();
         inputEventHandler.setApplicationService(applicationService);
         inputEventHandler.setMessagingService(messagingService);
+        inputEventHandler.setDeviceInfoService(deviceInfoService);
+        inputEventHandler.setStatsService(statsService);
         inputEventHandler.setQueueService(this);
         
-        EventHandlerGroup<MessagingEvent> mIhandlerGroup = this.messageInputEventDisruptor.handleEventsWith(inputEventHandler);
+        EventHandlerGroup<PKMPEvent> mIhandlerGroup = this.messageInputEventDisruptor.handleEventsWith(inputEventHandler);
         if (mIhandlerGroup == null) {
             LOG.debug("Error creating disruptor handler group for messaging input event handler");
         }
         
-        MessagingOutputEventHandler outputEventHandler = new MessagingOutputEventHandler();
+        PKMPOutBoundEventHandler outputEventHandler = new PKMPOutBoundEventHandler();
         outputEventHandler.setMessagingService(messagingService);
         
-        EventHandlerGroup<MessagingEvent> mOhandlerGroup = this.messageOutputEventDisruptor.handleEventsWith(outputEventHandler);
+        EventHandlerGroup<PKMPEvent> mOhandlerGroup = this.messageOutputEventDisruptor.handleEventsWith(outputEventHandler);
         if (mOhandlerGroup == null) {
             LOG.debug("Error creating disruptor handler group for messaging output event handler");
         }
@@ -176,12 +180,12 @@ public class QueueService {
         this.broadcastRingBuffer.publishEvent(BROADCAST_EVENT_TRANSLATOR, broadcastNotification);
     }
     
-    public void publishInputMessageEvent(BasePayload basePayload, WebSocketSession session) {
-        this.messageInputRingBuffer.publishEvent(MESSAGE_INPUT_EVENT_TRANSLATOR, basePayload, session);
+    public void publishInputMessageEvent(PKMPBasePayload pKMPBasePayload, WebSocketSession session) {
+        this.messageInputRingBuffer.publishEvent(MESSAGE_INPUT_EVENT_TRANSLATOR, pKMPBasePayload, session);
     }
     
-    public void publishOutputMessageEvent(Payload payload, WebSocketSession session) {
-        this.messageOutputRingBuffer.publishEvent(MESSAGE_INPUT_EVENT_TRANSLATOR, payload, session);
+    public void publishOutputMessageEvent(PKMPPayload pKMPPayload, WebSocketSession session) {
+        this.messageOutputRingBuffer.publishEvent(MESSAGE_INPUT_EVENT_TRANSLATOR, pKMPPayload, session);
     }
     
     private void startDisruptors() {

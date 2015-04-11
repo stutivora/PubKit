@@ -20,6 +20,23 @@ App.LoginRequiredRoute = Ember.Route.extend({
 	}
 });
 
+var ApplicationRoute = Ember.Route.extend({
+	actions: {
+		loading: function() {
+	      var _app = this.controllerFor('application');
+	      _app.get('loading').trigger(true);
+	      this.router.one('didTransition', function() {
+	        _app.get('loading').trigger(false);
+	      });
+	    }
+	}
+});
+
+App.IndexRoute = App.CheckAuthRoute.extend({
+	setupController : function(controller) {
+	}
+});
+
 App.SignupRoute = App.CheckAuthRoute.extend({
 	model: function(){
 		return App.User.create()

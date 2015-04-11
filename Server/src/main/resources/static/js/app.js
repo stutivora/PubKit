@@ -124,23 +124,6 @@ App.NetworkService = Ember.Object.extend({
 	}
 }).create();
 
-var ApplicationRoute = Ember.Route.extend({
-	  actions: {
-	    loading: function() {
-	      var _app = this.controllerFor('application');
-	      _app.get('loading').trigger(true);
-	      this.router.one('didTransition', function() {
-	        _app.get('loading').trigger(false);
-	      });
-	    }
-	  }
-	});
-
-App.IndexRoute = Ember.Route.extend({
-	setupController : function(controller) {
-	}
-});
-
 Ember.Handlebars.registerHelper('renderSettingsTab', function(context, tab, options) {
 	tab = options.data.view.getStream(tab).value();
 	

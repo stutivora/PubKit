@@ -31,7 +31,7 @@
 <script type="text/x-handlebars">
 	<div id="successAlert" class="hidden alert alert-success success-text" role="alert">Save Success</div>
 	<nav class="top-nav nav">
-  		{{render "navbar"}}
+		{{render "navbar"}}
 	</nav>
 	{{outlet}}
 	<footer>
@@ -60,29 +60,32 @@
 <script type="text/x-handlebars" id="navbar">
 <header>
 	<div class="nav-container">
-	    		<div class="navbar-header">
-	      			<a class="navbar-brand" href="#">
-	        			<p class="logo">Pubkit</p>
-	      			</a>
-	    		</div>
-				{{shit}}
-				<ul class="nav navbar-nav navbar-right">
-					<li>{{#link-to ''}}Documentation{{/link-to}}</li>	
-	 				{{#if hasToken}}
-						<li><p class="logout-text">Hello There,</p></li>
-	  					<li>{{#link-to 'logout' class="logout-link"}}Sign Out{{/link-to}}</li>
-					{{else}}
-	  					<li>{{#link-to 'login'}}Login{{/link-to}}</li>
-						<li>{{#link-to 'signup'}}Sign Up{{/link-to}}</li>
-					{{/if}}	
-				</ul>
+		{{#if hasToken}}
+			<div class="navbar-header">
+				<p class="dark-logo"><a class="navbar-brand" href="#">PubKit</a></p>
+			</div>
+			<ul class="nav navbar-dark-links navbar-nav navbar-right">
+				<li>{{#link-to ''}}Documentation{{/link-to}}</li>
+				<li><p class="logout-text">Hello There,</p></li>
+				<li>{{#link-to 'logout' class="logout-link"}}Sign Out{{/link-to}}</li>	
+			</ul>
+		{{else}}
+			<div class="navbar-header">
+				<p class="light-logo"><a class="navbar-brand" href="#">PubKit</a><span>beta</span></p>
+			</div>
+			<ul class="nav navbar-light-links navbar-nav navbar-right">
+				<li>{{#link-to ''}}Documentation{{/link-to}}</li>
+				<li>{{#link-to 'login'}}Login{{/link-to}}</li>
+				<li>{{#link-to 'signup'}}Sign Up{{/link-to}}</li>
+			</ul>
+		{{/if}}
 	 </div>
 </header>
 </script>
   		
 <script type="text/x-handlebars" id="index">
 <div class="banner">
-	<h1>Welcome to Pubkit</h1>
+	<h1>Welcome to PubKit</h1>
 	<span><h2>Messaging and push notification platform for you mobile apps.</h2></span>
 	<a class="btn btn-primary btn-lg" href="/#/signup" role="button" id="signup-header-cta">Get Started</a>
 	<div class="logos container">
@@ -105,7 +108,7 @@
 </div>
 <div class="pubkit-section">
 	<div class="container">
-		<h2>Why Pubkit?</h2>
+		<h2>Why PubKit?</h2>
 		<em></em>
 		<p></p>
 	</div>
@@ -150,7 +153,7 @@
 		<div class="row">
 			<div class="col-lg-2">&nbsp;</div>
 			<div class="col-lg-8">
-				<ul class="nav nav-tabs">
+				<ul class="nav sdk-nav-tabs">
 		            <li class="active"><a href="#android" class="android" data-toggle="tab">ANDROID</a></li>
 		            <li class=""><a href="#ios" class="ios" data-toggle="tab">iOS</a></li>
 		            <li class=""><a href="#javascript" class="javascript" data-toggle="tab">JS</a></li>
@@ -206,92 +209,97 @@ channel<span class="token punctuation">.</span><span class="token function">bind
 </script>
 
 <script type="text/x-handlebars" id="login">
+<div class="signup-banner"></div>
 <div class="wrap">
-<div class="container signup-page">
-	<div class="row">
-  		<div class="col-md-4"></div>
-  		<div class="col-md-4 roquito-form">
-			<h2>Log In</h2>
-			{{#if errorMessage}}
-	        	<div class="alert alert-danger">{{errorMessage}}</div>
-	    	{{/if}}
-			<form>
-				<div class="form-group">
-					{{input valueBinding="login.email" class="form-control" id="email" placeholder="Email"}}
-				</div>
-				<div class="form-group">
-					{{input valueBinding="login.password" class="form-control" type="password" id="password" placeholder="Password"}}
-				</div>
-				<div class="form-group pull-right">
-					{{spin-button inProgress = inProgress buttonText=buttonText action='login'}}
-					<button {{action 'cancel'}} class="btn btn-cancel">Cancel</button>
-					
-				</div>
-			</form>
-		</div>
-  		<div class="col-md-4"></div>
-	</div>
-	<div class="row">
-		<div class="col-md-4"></div>
-		<div class="col-md-8">
-			<div class="form-group">
-				<p class="lead">Don't have an account? {{#link-to 'signup'}}Create Account{{/link-to}}</p>
+	<div class="container signup-page">
+		<div class="row">
+			<div class="col-md-4"></div>
+			<div class="col-md-4 roquito-form">
+				<h2>Log In</h2>
+				{{#if errorMessage}}
+				<div class="alert alert-danger">{{errorMessage}}</div>
+				{{/if}}
+				<form>
+					<div class="form-group">
+						{{input valueBinding="login.email" class="form-control" id="email" placeholder="Email"}}
+					</div>
+					<div class="form-group">
+						{{input valueBinding="login.password" class="form-control" type="password" id="password" placeholder="Password"}}
+					</div>
+					<div class="form-group pull-right">
+						{{spin-button inProgress = inProgress buttonText=buttonText action='login'}}
+						<button {{action 'cancel'}} class="btn btn-cancel">Cancel</button>
+					</div>
+				</form>
 			</div>
+			<div class="col-md-4"></div>
 		</div>
-		<div class="col-md-2"></div>
+		<div class="row">
+			<div class="col-md-4"></div>
+			<div class="col-md-8">
+				<div class="form-group">
+					<p class="lead">Don't have an account? {{#link-to 'signup'}}Create Account{{/link-to}}</p>
+				</div>
+			</div>
+			<div class="col-md-2"></div>
+		</div>
 	</div>
-</div>
 </div>
 </script>
 
 <script type="text/x-handlebars" id="signup">
+<div class="signup-banner"></div>
 <div class="wrap">
 	<div class="container signup-page">
 		<div class="row">
-	  		<div class="col-md-4"></div>
-	  		<div class="col-md-4 roquito-form">
-			   	<h2>Sign Up</h2>
+			<div class="col-md-4"></div>
+			<div class="col-md-4 roquito-form">
+				<h2>Sign Up</h2>
 				<p class="lead">Already got an account? {{#link-to 'login'}}Login here{{/link-to}}</p>
 				{{#if errorMessage}}
-		        	<div class="alert alert-danger">{{errorMessage}}</div>
-		    	{{/if}}
+				<div class="alert alert-danger">{{errorMessage}}</div>
+				{{/if}}
 				<form {{action "createAccount" on="submit"}}>
-		  			<div class="form-group">
-						{{input valueBinding="user.email" class="form-control" id="email" placeholder="Email"}}
-		  			</div>
-					<div class="form-group">
-						{{input valueBinding="user.fullName" class="form-control" id="fullName" placeholder="Full Name"}}
-		  			</div>
-					<div class="form-group">
-		    			{{input valueBinding="user.company" class="form-control" id="company" placeholder="Company"}}
-		  			</div>
-					<div class="form-group">
-		    			{{input valueBinding="user.password" type="password" class="form-control" id="password" placeholder="Password"}}
-		  			</div>
-					<div class="form-group">
-		    			{{input valueBinding="user.confirmPassword" type="password" class="form-control" id="confirmPassword" placeholder="Confirm Password"}}
-		  			</div>
-					<div class="form-group pull-right">
-						{{spin-button inProgress = inProgress buttonText=buttonText action='createAccount'}}
-						<button {{action 'cancel'}} class="btn btn-cancel">Cancel</button>
-					</div>
+				<div class="form-group">
+					{{input valueBinding="user.email" class="form-control" id="email" placeholder="Email"}}
+				</div>
+				<div class="form-group">
+					{{input valueBinding="user.fullName" class="form-control" id="fullName" placeholder="Full Name"}}
+				</div>
+				<div class="form-group">
+					{{input valueBinding="user.company" class="form-control" id="company" placeholder="Company"}}
+				</div>
+				<div class="form-group">
+					{{input valueBinding="user.password" type="password" class="form-control" id="password" placeholder="Password"}}
+				</div>
+				<div class="form-group">
+					{{input valueBinding="user.confirmPassword" type="password" class="form-control" id="confirmPassword" placeholder="Confirm Password"}}
+				</div>
+				<div class="form-group pull-right">
+					{{spin-button inProgress = inProgress buttonText=buttonText action='createAccount'}}
+					<button {{action 'cancel'}} class="btn btn-cancel">Cancel</button>
+				</div>
 				</form>		
 			</div>
-	  		<div class="col-md-4"></div>
+			<div class="col-md-4"></div>
 		</div>
 	</div>
 </div>
 </script>
 
 <script type="text/x-handlebars" id="user">
-	<div class="container">
-		{{outlet}}
-	</div>
+<div class="console-banner"></div>
+<div class="container">
+	{{outlet}}
+</div>
+<div class="row">
+	<br><br>
+</div>
 </script>
 
 <script type="text/x-handlebars" id="user/index">
+<div class="clearfix"><br></div>
 <div class="wrap">
-	<div class="clearfix"><br></div>
 	<div class="row">
 		<div class="col-md-8"><h2>My Applications</h2></div>
 		<div class="col-md-4 new-app-link">
@@ -358,22 +366,21 @@ channel<span class="token punctuation">.</span><span class="token function">bind
 </script>
 
 <script type="text/x-handlebars" id="user/app">
+<div class="wrap">
 	<h2>{{userApp.application.applicationName}}</h2>
+	<div class="pull-right"><button {{action 'cancel'}} class="btn btn-cancel">Delete Application</button></div>
+
 	<p class="app-desc-text">{{userApp.application.applicationDescription}}</p>
 	<p class="">Website - <a target="_blank" href="{{unbound userApp.application.websiteLink}}">{{userApp.application.websiteLink}}</a></p>
-	<div class="row pull-right">
-		<div class="col-md-1"></div>
-  		<div class="col-md-1"><button {{action 'cancel'}} class="btn btn-cancel">Delete Application</button></div>
-	</div>
 	<br>
 	{{userApp.application.apnsDevCertFile}}
-	<ul class="nav nav-tabs">
+	<ul class="nav nav-tabs console-tabs">
 		{{#each tab in userApp.tabs}}
     		<li role="presentation" {{bind-attr class="tab.active:active"}}><a href="#" {{action "tabAction" tab.name}}>{{tab.name}}</a></li>
   		{{/each}}
 	</ul>
 	{{#each tab in userApp.tabs}}
-		<div class="tab-content">
+		<div {{bind-attr class="tab-content tab.active:active"}}>
 			<div class="container" id="{{unbound tab.name}}">
 				{{#if tab.active}}
 					{{#equals "Settings" tab}}
@@ -386,6 +393,7 @@ channel<span class="token punctuation">.</span><span class="token function">bind
 			</div>
 		</div>
 	{{/each}}
+</div>
 </script>
 
 <script type="text/x-handlebars" id="Settings">
@@ -486,7 +494,6 @@ channel<span class="token punctuation">.</span><span class="token function">bind
 			{{spin-button inProgress = tab.updateInProgress buttonText=tab.updateButtonText action='updateAppConfig' class='update-settings-btn pull-right'}}
 		</div>
 	</div>
-	<br><br>
 </script>
 
 <script type="text/x-handlebars" id="Push">
@@ -596,7 +603,6 @@ channel<span class="token punctuation">.</span><span class="token function">bind
     		</div>
   		</div>
 	</div>
-	<br><br>
 </script>
 
 

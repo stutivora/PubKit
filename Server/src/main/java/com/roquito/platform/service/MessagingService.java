@@ -42,7 +42,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 
 import com.roquito.RoquitoConfig;
-import com.roquito.platform.messaging.Connection;
+import com.roquito.platform.messaging.protocol.pkmp.PKMPConnection;
 import com.roquito.web.exception.RoquitoServerException;
 
 @Service
@@ -54,10 +54,10 @@ public class MessagingService {
     private DB internalDB;
     
     /* Maps the clientId to connection object */
-    private HTreeMap<String, Connection> connectionStore = null;
+    private HTreeMap<String, PKMPConnection> connectionStore = null;
     
     /* Subscription store */
-    private HTreeMap<String, Set<Connection>> subscriptionStore = null;
+    private HTreeMap<String, Set<PKMPConnection>> subscriptionStore = null;
     
     /* Access token store */
     private HTreeMap<String, String> tokenStore = null;
@@ -136,11 +136,11 @@ public class MessagingService {
         }
     }
     
-    public void addConnection(String clientId, Connection connection) {
+    public void addConnection(String clientId, PKMPConnection pKMPConnection) {
         if (connectionStore.containsKey(clientId)) {
             connectionStore.remove(clientId);
         }
-        connectionStore.put(clientId, connection);
+        connectionStore.put(clientId, pKMPConnection);
         internalDB.commit();
     }
     
@@ -154,28 +154,28 @@ public class MessagingService {
         return false;
     }
     
-    public Connection getConnection(String clientId) {
+    public PKMPConnection getConnection(String clientId) {
         return connectionStore.get(clientId);
     }
     
-    public void subscribeTopic(String topic, Connection connection) {
-        Set<Connection> subscriptions = subscriptionStore.get(topic);
+    public void subscribeTopic(String topic, PKMPConnection pKMPConnection) {
+        Set<PKMPConnection> subscriptions = subscriptionStore.get(topic);
         if (subscriptions == null) {
-            subscriptions = new HashSet<Connection>();
+            subscriptions = new HashSet<PKMPConnection>();
             subscriptionStore.put(topic, subscriptions);
         }
-        if (!subscriptions.contains(connection)) {
-            subscriptions.add(connection);
+        if (!subscriptions.contains(pKMPConnection)) {
+            subscriptions.add(pKMPConnection);
         }
         LOG.info("Number of subscribers for topic: {"+ topic + "} is:"+ subscriptions.size());
         internalDB.commit();
     }
     
-    public void unsubscribeTopic(String topic, Connection connection) {
-        Set<Connection> subscriptions = subscriptionStore.get(topic);
+    public void unsubscribeTopic(String topic, PKMPConnection pKMPConnection) {
+        Set<PKMPConnection> subscriptions = subscriptionStore.get(topic);
         if (subscriptions != null) {
-            for (Connection subscription : subscriptions) {
-                if (connection.getClientId().equals(subscription.getClientId())) {
+            for (PKMPConnection subscription : subscriptions) {
+                if (pKMPConnection.getClientId().equals(subscription.getClientId())) {
                     subscriptions.remove(subscription);
                 }
             }
@@ -184,10 +184,10 @@ public class MessagingService {
         internalDB.commit();
     }
     
-    public List<Connection> getAllSubscribers(String topic) {
-        List<Connection> results = new ArrayList<>();
+    public List<PKMPConnection> getAllSubscribers(String topic) {
+        List<PKMPConnection> results = new ArrayList<>();
         
-        Set<Connection> subscriptions = subscriptionStore.get(topic);
+        Set<PKMPConnection> subscriptions = subscriptionStore.get(topic);
         if (subscriptions != null && subscriptions.size() > 0) {
             results.addAll(subscriptions);
         }

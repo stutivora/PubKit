@@ -31,8 +31,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
+import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 
-import com.roquito.platform.messaging.WebSocketConnectionHandler;
+import com.roquito.platform.messaging.MQTTConnectionHandler;
+import com.roquito.platform.messaging.PKMPConnectionHandler;
 import com.roquito.platform.service.QueueService;
 
 /**
@@ -49,8 +51,16 @@ public class RoquitoApplication extends SpringBootServletInitializer implements 
     
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        WebSocketConnectionHandler connectionHandler = new WebSocketConnectionHandler(queueService);
-        registry.addHandler(connectionHandler, "/pk").withSockJS();
+        PKMPConnectionHandler pkmpHandler = new PKMPConnectionHandler(queueService);
+        registry.addHandler(pkmpHandler, "/pkmp");
+        registry.addHandler(pkmpHandler, "/pkmp-sj").withSockJS();
+        
+        MQTTConnectionHandler mqttHandler = new MQTTConnectionHandler();
+        
+        DefaultHandshakeHandler handShakeHandler = new DefaultHandshakeHandler();
+        handShakeHandler.setSupportedProtocols("mqttv3.1, mqttv3.1.1");
+        
+        registry.addHandler(mqttHandler, "/mqtt").setHandshakeHandler(handShakeHandler);
     }
     
     @Override

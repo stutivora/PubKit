@@ -15,12 +15,12 @@ public class StatsService {
         redisDB.closeConnection();
     }
     
-    public void incrtMessageCount() {
+    public void incrMessageCount() {
         redisDB.getConnection().incr(RedisDB.Keys.MESSAGE_COUNT.value());
         redisDB.closeConnection();
     }
     
-    public void incrtTopicCount() {
+    public void incrTopicCount() {
         redisDB.getConnection().incr(RedisDB.Keys.TOPIC_COUNT.value());
         redisDB.closeConnection();
     }
