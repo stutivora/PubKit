@@ -11,4 +11,8 @@ public class PKMPPubMessage extends PKMPBasePayload {
     public void setTopic(String topic) {
         addHeader(TOPIC, topic);
     }
+    
+    public void setMessageId(String messageId) {
+        addHeader(MESSAGE_ID, messageId);
+    }
 }

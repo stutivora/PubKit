@@ -39,4 +39,8 @@ public class PKMPPublish extends PKMPBasePayload {
         String persistValue = getHeader(PERSIST);
         return Boolean.getBoolean(persistValue);
     }
+    
+    public String getMessageId() {
+        return getHeader(MESSAGE_ID);
+    }
 }

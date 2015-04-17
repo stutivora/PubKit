@@ -123,69 +123,69 @@ public class PKMPInBoundEventHandler implements EventHandler<PKMPEvent> {
         }
     }
     
-    private void handleConnect(PKMPConnect pKMPConnect, WebSocketSession session) {
-        boolean valid = validateApplication(pKMPConnect, session);
+    private void handleConnect(PKMPConnect connect, WebSocketSession session) {
+        boolean valid = validateApplication(connect, session);
         if (!valid) {
-            sendPayload(new PKMPConnAck(pKMPConnect.getClientId(), PKMPConnAck.APPLICATION_INVALID), session);
+            sendPayload(new PKMPConnAck(connect.getClientId(), PKMPConnAck.APPLICATION_INVALID), session);
             return;
         }
-        LOG.debug("Connecting client {" + pKMPConnect.getClientId() + "}");
-        PKMPConnection existingConnection = messagingService.getConnection(pKMPConnect.getClientId());
+        LOG.debug("Connecting client {" + connect.getClientId() + "}");
+        PKMPConnection existingConnection = messagingService.getConnection(connect.getClientId());
         if (existingConnection != null) {
             existingConnection.setSessionId(session.getId());
-            messagingService.addConnection(pKMPConnect.getClientId(), existingConnection);
+            messagingService.addConnection(connect.getClientId(), existingConnection);
         } else {
-            PKMPConnection newConnection = new PKMPConnection(pKMPConnect.getClientId(), pKMPConnect.getSourceUserId(),
-                    session.getId(), pKMPConnect.getApplicationId(), pKMPConnect.getApiVersion());
+            PKMPConnection newConnection = new PKMPConnection(connect.getClientId(), connect.getSourceUserId(),
+                    session.getId(), connect.getApplicationId(), connect.getApiVersion());
             // add new connection
-            messagingService.addConnection(pKMPConnect.getClientId(), newConnection);
+            messagingService.addConnection(connect.getClientId(), newConnection);
         }
         String accessToken = keyGenerator.getSecureSessionId();
         boolean success = messagingService.saveAccessToken(session.getId(), accessToken);
         if (success) {
             // set active session
             messagingService.addSession(session);
-            LOG.debug("Connected client {" + pKMPConnect.getClientId() + "}");
-            sendPayload(new PKMPConnAck(pKMPConnect.getClientId(), session.getId(), accessToken), session);
+            LOG.debug("Connected client {" + connect.getClientId() + "}");
+            sendPayload(new PKMPConnAck(connect.getClientId(), session.getId(), accessToken), session);
         } else {
-            LOG.debug("PKMPConnection failed for client {" + pKMPConnect.getClientId() + "}");
-            sendPayload(new PKMPConnAck(pKMPConnect.getClientId(), PKMPConnAck.CONNECTION_FAILED), session);
+            LOG.debug("PKMPConnection failed for client {" + connect.getClientId() + "}");
+            sendPayload(new PKMPConnAck(connect.getClientId(), PKMPConnAck.CONNECTION_FAILED), session);
         }
     }
     
-    private void handleSubscribe(PKMPSubscribe pKMPSubscribe, WebSocketSession session) {
-        String topic = pKMPSubscribe.getTopic();
+    private void handleSubscribe(PKMPSubscribe subscribe, WebSocketSession session) {
+        String topic = subscribe.getTopic();
         if (topic == null || StringUtils.isEmpty(topic)) {
-            LOG.error("Client {" + pKMPSubscribe.getClientId() + "} failed to subscribe topic {" + pKMPSubscribe.getTopic()
+            LOG.error("Client {" + subscribe.getClientId() + "} failed to subscribe topic {" + subscribe.getTopic()
                     + "}. Invalid topic");
             
-            PKMPSubsAck errorAck = new PKMPSubsAck(pKMPSubscribe.getClientId(), topic, PKMPSubsAck.INVALID_TOPIC);
+            PKMPSubsAck errorAck = new PKMPSubsAck(subscribe.getClientId(), topic, PKMPSubsAck.INVALID_TOPIC);
             sendPayload(errorAck, session);
             
             return;
         }
-        boolean tokenValid = validateAccessToken(pKMPSubscribe.getClientId(), pKMPSubscribe.getSessionToken(), session);
+        boolean tokenValid = validateAccessToken(subscribe.getClientId(), subscribe.getSessionToken(), session);
         if (!tokenValid) {
-            LOG.error("Client {" + pKMPSubscribe.getClientId() + "} failed to subscribe topic {" + topic
+            LOG.error("Client {" + subscribe.getClientId() + "} failed to subscribe topic {" + topic
                     + "}. Invalid token");
-            PKMPSubsAck errorAck = new PKMPSubsAck(pKMPSubscribe.getClientId(), topic, PKMPSubsAck.INVALID_TOKEN);
+            PKMPSubsAck errorAck = new PKMPSubsAck(subscribe.getClientId(), topic, PKMPSubsAck.INVALID_TOKEN);
             sendPayload(errorAck, session);
             
             return;
         }
         
-        PKMPConnection pKMPConnection = messagingService.getConnection(pKMPSubscribe.getClientId());
+        PKMPConnection pKMPConnection = messagingService.getConnection(subscribe.getClientId());
         if (pKMPConnection != null && pKMPConnection.getSessionId().equals(session.getId())) {
             messagingService.subscribeTopic(topic, pKMPConnection);
-            LOG.debug("Client id {" + pKMPSubscribe.getClientId() + "} subscribed to topic {" + topic + "}");
+            LOG.debug("Client id {" + subscribe.getClientId() + "} subscribed to topic {" + topic + "}");
             
-            PKMPSubsAck pKMPSubsAck = new PKMPSubsAck(pKMPSubscribe.getClientId(), topic);
+            PKMPSubsAck pKMPSubsAck = new PKMPSubsAck(subscribe.getClientId(), topic);
             sendPayload(pKMPSubsAck, session);
         } else {
-            LOG.error("Client {" + pKMPSubscribe.getClientId() + "} failed to subscribe topic {" + topic
+            LOG.error("Client {" + subscribe.getClientId() + "} failed to subscribe topic {" + topic
                     + "}. No connection found so closing connection");
             
-            PKMPSubsAck errorAck = new PKMPSubsAck(pKMPSubscribe.getClientId(), topic, PKMPSubsAck.CONNECTION_ERROR);
+            PKMPSubsAck errorAck = new PKMPSubsAck(subscribe.getClientId(), topic, PKMPSubsAck.CONNECTION_ERROR);
             sendPayload(errorAck, session);
         }
     }
@@ -227,36 +227,45 @@ public class PKMPInBoundEventHandler implements EventHandler<PKMPEvent> {
         }
     }
     
-    private void handlePublish(PKMPPublish pKMPPublish, WebSocketSession session) {
-        String topic = pKMPPublish.getTopic();
+    private void handlePublish(PKMPPublish publish, WebSocketSession session) {
+        String topic = publish.getTopic();
         if (topic == null || "".equals(topic)) {
             LOG.debug("PKMPPublish failed. Null or empty topic name.");
             
-            PKMPPubAck errorAck = new PKMPPubAck(pKMPPublish.getClientId(), topic, PKMPPubAck.INVALID_TOPIC);
+            PKMPPubAck errorAck = new PKMPPubAck(publish.getClientId(), topic, PKMPPubAck.INVALID_TOPIC);
             sendPayload(errorAck, session);
             
             return;
         }
+        boolean tokenValid = validateAccessToken(publish.getClientId(), publish.getSessionToken(), session);
+        if (!tokenValid) {
+            LOG.error("Client {" + publish.getClientId() + "} failed to publish on topic {" + topic
+                    + "}. Invalid token");
+            PKMPPubAck errorAck = new PKMPPubAck(publish.getClientId(), topic, PKMPSubsAck.INVALID_TOKEN);
+            sendPayload(errorAck, session);
+            
+            return;
+        }
+        
         List<PKMPConnection> subscribers = messagingService.getAllSubscribers(topic);
         for (PKMPConnection subscriber : subscribers) {
-            if (subscriber.getClientId().equals(pKMPPublish.getClientId())) {
+            if (subscriber.getClientId().equals(publish.getClientId())) {
                 continue;
             }
             WebSocketSession subscriberSession = messagingService.getSession(subscriber.getSessionId());
             if (subscriberSession != null && subscriberSession.isOpen()) {
-                PKMPPubMessage pKMPPubMessage = new PKMPPubMessage(subscriber.getClientId(), pKMPPublish.getClientId());
-                
-                pKMPPubMessage.setData(pKMPPublish.getData());
-                pKMPPubMessage.addHeader(PKMPBasePayload.APP_ID, pKMPPublish.getApplicationId());
-                pKMPPubMessage.setTopic(pKMPPublish.getTopic());
-                
+                PKMPPubMessage pKMPPubMessage = new PKMPPubMessage(subscriber.getClientId(), publish.getClientId());
+                pKMPPubMessage.setTopic(publish.getTopic());
+                pKMPPubMessage.setMessageId(publish.getMessageId());
+                pKMPPubMessage.setData(publish.getData());
+
                 sendPayload(pKMPPubMessage, subscriberSession);
             } else {
                 LOG.debug("Session not found for client with client id {" + subscriber.getClientId() + "} "
                         + "and session id {" + subscriber.getSessionId() + "}");
                 
                 // send push notification if possible for inactive subscriber
-                handleInactiveSubscriber(subscriber, pKMPPublish.getData());
+                handleInactiveSubscriber(subscriber, publish.getMessageId());
                 
                 if (subscriberSession != null) {
                     sendDisconnect(subscriber.getClientId(), subscriberSession, "");
@@ -264,7 +273,7 @@ public class PKMPInBoundEventHandler implements EventHandler<PKMPEvent> {
             }
             statsService.incrMessageCount();
         }
-        sendPayload(new PKMPPubAck(pKMPPublish.getClientId(), topic), session);
+        sendPayload(new PKMPPubAck(publish.getClientId(), topic), session);
     }
     
     private void sendDisconnect(String clientId, WebSocketSession session, String data) {
@@ -332,7 +341,7 @@ public class PKMPInBoundEventHandler implements EventHandler<PKMPEvent> {
     private void handleInactiveSubscriber(PKMPConnection subscriber, String data) {
         long startTime = System.currentTimeMillis() / 1000;
         
-        List<DeviceInfo> devices = deviceInfoService.getDeviceInfoForUserId(subscriber.getAppId(), subscriber.getClientId(), null);
+        List<DeviceInfo> devices = deviceInfoService.getDeviceInfoForUserId(subscriber.getAppId(), subscriber.getSourceUserId(), null);
         if (devices != null && !devices.isEmpty()) {
             List<String> registrationIds = new ArrayList<String>();
             for (DeviceInfo device : devices) {
