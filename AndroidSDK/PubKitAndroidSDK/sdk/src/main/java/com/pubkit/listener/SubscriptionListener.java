@@ -13,5 +13,7 @@ public interface SubscriptionListener {
 
     void onMessage(String topic, Message message);
 
-    void onSubscribe(String topic);
+    void onMessageDelivered(String topic, String messageId);
+
+    void onUnSubscribe(String topic);
 }

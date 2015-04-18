@@ -11,9 +11,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
-
-import javax.net.ssl.HttpsURLConnection;
 
 /**
  * Created by puran on 3/22/15.
@@ -64,7 +61,7 @@ public final class PubKitNetwork {
 
             String responseString = response.toString();
             if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                return new JSONObject("{'error':'"+responseString+"'}");
+                return new JSONObject("{'error':'" + responseString + "'}");
             } else {
                 try {
                     return new JSONObject(responseString);

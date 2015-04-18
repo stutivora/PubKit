@@ -3,7 +3,7 @@ package com.pubkit.config;
 /**
  * Class that holds the credential info to connect to PubKit backend. Credentials can be obtained
  * from {@link http://pubkit.co} by registering an app.
- *
+ * <p/>
  * Created by puran on 4/10/15.
  */
 public final class PubKitCredentials {

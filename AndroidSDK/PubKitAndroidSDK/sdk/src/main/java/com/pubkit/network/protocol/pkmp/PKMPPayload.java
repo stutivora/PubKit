@@ -3,28 +3,29 @@ package com.pubkit.network.protocol.pkmp;
 /**
  * Created by puran on 4/14/15.
  */
+
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Defines the base payload class that represents the PubKit's websocket
  * data format.
- *
+ * <p/>
  * Sample CONNECT payload
  * <p>
- *  {
- *      "headers":{
- *                  "type":"PUBLISH",
- *                  "client_id":"el8mxkhGik",
- *                  "application_id":"1339208702",
- *                  "session_token":"39k30202nwskdkd0222"
- *                },
- *      "data":""
- *  }
+ * {
+ * "headers":{
+ * "type":"PUBLISH",
+ * "client_id":"el8mxkhGik",
+ * "application_id":"1339208702",
+ * "session_token":"39k30202nwskdkd0222"
+ * },
+ * "data":""
+ * }
  * </p>
- *
+ * <p/>
  * <tt>headers</tt> contains protocol data and other required information in key/value pair.
- *
+ * <p/>
  * <tt>data</tt> can be plain text or string value of JSON data. Client applications can use
  * this value to trasnfer application data.
  *

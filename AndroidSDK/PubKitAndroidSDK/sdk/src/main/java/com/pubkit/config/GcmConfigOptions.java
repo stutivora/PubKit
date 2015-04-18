@@ -3,7 +3,7 @@ package com.pubkit.config;
 /**
  * Class to hold all the configuration for GCM messaing in order to receive push notification.
  * For creating senderId and GCM API_KEY follow {@link http://developer.android.com/google/gcm/gs.html}
- *
+ * <p/>
  * Created by puran on 4/10/15.
  */
 public final class GcmConfigOptions {

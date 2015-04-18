@@ -7,21 +7,23 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.koushikdutta.async.http.AsyncHttpClient;
 import com.pubkit.config.PubKitCredentials;
 import com.pubkit.listener.PubKitListener;
 import com.pubkit.listener.SubscriptionListener;
 import com.pubkit.model.PKUser;
 import com.pubkit.network.PubKitNetwork;
+import com.pubkit.network.protocol.pkmp.Message;
 import com.pubkit.network.protocol.pkmp.PKMPConnection;
-
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.Random;
+
 import io.realm.Realm;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
@@ -37,7 +39,7 @@ public final class PubKit {
     private static final String ANONYMOUS_USER = "anonymous";
     private static final String DEVICE_TYPE = "android";
 
-    private static final String ALLOWED_CLIENT_ID_CHARACTERS ="0123456789qwertyuiopasdfghjklzxcvbnm";
+    private static final String ALLOWED_CLIENT_ID_CHARACTERS = "0123456789qwertyuiopasdfghjklzxcvbnm";
 
     private static PubKit INSTANCE = null;
 
@@ -50,13 +52,6 @@ public final class PubKit {
     /* PK user object */
     private PKUser pkUser;
 
-    public static PubKit getInstance(Context context) {
-        if (INSTANCE == null) {
-            INSTANCE = new PubKit(context);
-        }
-        return INSTANCE;
-    }
-
     private PubKit() {
         throw new PubKitException("Not allowed, use getInstance(Context context) to get PubKit instance");
         //not allowed
@@ -64,6 +59,33 @@ public final class PubKit {
 
     private PubKit(Context context) {
         this.context = context;
+    }
+
+    public static PubKit getInstance(Context context) {
+        if (INSTANCE == null) {
+            INSTANCE = new PubKit(context);
+        }
+        return INSTANCE;
+    }
+
+    /**
+     * @return Application's version code from the {@code PackageManager}.
+     */
+    private static int getAppVersion(Context context) {
+        try {
+            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+            return packageInfo.versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            throw new RuntimeException("Could not get package name: " + e);
+        }
+    }
+
+    private static String generateClientId() {
+        final Random random = new Random();
+        final StringBuilder sb = new StringBuilder(12);
+        for (int i = 0; i < 12; ++i)
+            sb.append(ALLOWED_CLIENT_ID_CHARACTERS.charAt(random.nextInt(ALLOWED_CLIENT_ID_CHARACTERS.length())));
+        return sb.toString();
     }
 
     /**
@@ -109,12 +131,10 @@ public final class PubKit {
         }
     }
 
-    public String setupGcmPush(String userId, String gcmSenderId) {
+    public void setupGcmPush(String gcmSenderId) {
+        String userId = ANONYMOUS_USER;
         // Check device for Play Services APK. If check succeeds, proceed with GCM registration.
         if (checkPlayServices()) {
-            if (userId == null || userId.isEmpty()) {
-                userId = ANONYMOUS_USER;
-            }
             String registrationId = pkUser.getRegistrationId();
             if (registrationId.isEmpty()) {
                 Log.i(TAG, "Registration not found.");
@@ -136,20 +156,65 @@ public final class PubKit {
         } else {
             Log.i(TAG, "No valid Google Play Services APK found.");
         }
-        return null;
     }
 
-    public void connect(String protocol, PubKitListener pubKitListener) {
-        //TODO: Handle protcol options
-        this.pkmpConnection = new PKMPConnection(this.context, pubKitListener, pkUser);
-        AsyncHttpClient.getDefaultInstance().websocket("ws://pubkit.co/pkmp", "pkmp", pkmpConnection);
+    public String getGcmRegistrationId() {
+        if (pkUser != null) {
+            return pkUser.getRegistrationId();
+        } else {
+            return null;
+        }
+    }
+
+    public boolean isAppUserLinkedToDevice() {
+        return (this.pkUser != null && !ANONYMOUS_USER.equalsIgnoreCase(pkUser.getSourceUserId()));
+    }
+
+    public void linkDeviceToAppUser(String userId) {
+        registerInBackground(pkUser.getGcmSenderId(), userId);
+    }
+
+    public boolean isConnected() {
+        if (this.pkmpConnection == null) {
+            return false;
+        }
+        return this.pkmpConnection.isConnected();
+    }
+
+    public void connect(PubKitListener pubKitListener) {
+        if (this.pkmpConnection == null) {
+            this.pkmpConnection = new PKMPConnection(this.context, pubKitListener, pkUser);
+        }
+        this.pkmpConnection.connect();
     }
 
     public void subscribe(String topic, SubscriptionListener subscriptionListener) {
+        checkConnection();
         this.pkmpConnection.subscribe(topic, subscriptionListener);
     }
 
-    public boolean checkPlayServices() {
+    public void unSubscribe(String topic) {
+        checkConnection();
+        this.pkmpConnection.unSubscribe(topic);
+    }
+
+    public void publish(String topic, Message message) {
+        checkConnection();
+        this.pkmpConnection.publish(topic, message);
+    }
+
+    public void disconnect() {
+        checkConnection();
+        this.pkmpConnection.disconnect();
+    }
+
+    private void checkConnection() {
+        if (this.pkmpConnection == null) {
+            throw new PubKitException("Subscription failed. Please connect first");
+        }
+    }
+
+    private boolean checkPlayServices() {
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(context);
         if (resultCode != ConnectionResult.SUCCESS) {
             if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
@@ -181,7 +246,7 @@ public final class PubKit {
                             gcmClient = GoogleCloudMessaging.getInstance(context);
                         }
                         String registrationId = gcmClient.register(gcmSenderId, userId);
-                        msg = "REGISTRATION ID[ " + registrationId +" ]";
+                        msg = "REGISTRATION ID[ " + registrationId + " ]";
 
                         // You should send the registration ID to your server over HTTP, so it
                         // can use GCM/HTTP or CCS to send messages to your app.
@@ -199,7 +264,7 @@ public final class PubKit {
 
             @Override
             protected void onPostExecute(String msg) {
-                Log.i(TAG, "Device registration complete:-"+msg);
+                Log.i(TAG, "Device registration complete:-" + msg);
             }
         }.execute(null, null, null);
     }
@@ -242,18 +307,8 @@ public final class PubKit {
     }
 
     /**
-     * @return Application's version code from the {@code PackageManager}.
+     * Returns the consumer friendly device name
      */
-    private static int getAppVersion(Context context) {
-        try {
-            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-            return packageInfo.versionCode;
-        } catch (PackageManager.NameNotFoundException e) {
-            throw new RuntimeException("Could not get package name: " + e);
-        }
-    }
-
-    /** Returns the consumer friendly device name */
     private String getDeviceName() {
         final String manufacturer = Build.MANUFACTURER;
         final String model = Build.MODEL;
@@ -284,13 +339,5 @@ public final class PubKit {
             phrase += c;
         }
         return phrase;
-    }
-
-    private static String generateClientId()  {
-        final Random random=new Random();
-        final StringBuilder sb=new StringBuilder(12);
-        for(int i = 0; i < 12; ++i)
-            sb.append(ALLOWED_CLIENT_ID_CHARACTERS.charAt(random.nextInt(ALLOWED_CLIENT_ID_CHARACTERS.length())));
-        return sb.toString();
     }
 }

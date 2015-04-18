@@ -3,13 +3,13 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.roquito</groupId>
-	<artifactId>roquito</artifactId>
+	<groupId>com.pubkit</groupId>
+	<artifactId>pubkit</artifactId>
 	<version>1.0</version>
 	<packaging>jar</packaging>
 
-	<name>Roquito</name>
-	<description>Application platform for mobile developers</description>
+	<name>PubKit</name>
+	<description>Messaging and push notification platform for mobile apps</description>
 
 	<dependencyManagement>
 		<dependencies>
@@ -57,11 +57,6 @@
 				<version>${java-apns.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.mongodb.morphia</groupId>
-				<artifactId>morphia</artifactId>
-				<version>${morphia.version}</version>
-			</dependency>
-			<dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-common</artifactId>
             <version>${netty.version}</version>
@@ -88,7 +83,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<start-class>com.roquito.platform.RoquitoApplication</start-class>
+		<start-class>com.pubkit.PubKitApplication</start-class>
 		<java.version>1.7</java.version>
 		<spring.boot.version>1.2.2.BUILD-SNAPSHOT</spring.boot.version>
 		<mongodb.version>2.12.4</mongodb.version>
@@ -101,7 +96,6 @@
 		<mockito.version>1.8.4</mockito.version>
 		<json-simple.version>1.1.1</json-simple.version>
 		<jedis.version>2.6.2</jedis.version>
-		<morphia.version>0.109</morphia.version>
 		<disruptor.version>3.3.0</disruptor.version>
 		<mapdb.version>1.0.7</mapdb.version>
 		<janino.version>2.6.1</janino.version>
@@ -144,9 +138,9 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.mongodb.morphia</groupId>
-			<artifactId>morphia</artifactId>
-		</dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+        </dependency>
 		<dependency>
 			<groupId>redis.clients</groupId>
 			<artifactId>jedis</artifactId>
@@ -220,7 +214,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<version>${spring.boot.version}</version>
 				<configuration>
-					<mainClass>com.roquito.RoquitoApplication</mainClass>
+					<mainClass>com.pubkit.PubKitApplication</mainClass>
 					<layout>ZIP</layout>
 					<!-- ENABLE THIS FOR DEBUG <jvmArguments>-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005</jvmArguments> -->
 				</configuration>

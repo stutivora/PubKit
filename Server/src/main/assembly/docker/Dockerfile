@@ -1,7 +1,7 @@
 ##
-# Roquito
+# PubKit
 #
-# This creates an java derived base image that installs a recent version of roquito along with dependencies
+# This creates an java derived base image that installs a recent version of PubKit along with dependencies
 # such as redis and mongodb
 #
 ##
@@ -13,5 +13,5 @@ ADD ${project.artifactId}-${project.version}.jar /data/${project.artifactId}-${p
 
 EXPOSE 8080
 
-# Start Roquito App
-CMD java -jar ${project.artifactId}-${project.version}.jar $*
+# Start PubKit App
+CMD java -jar ${project.artifactId}-${project.version}.jar --spring.config.location=$PUBKIT_HOME/config/application.properties $*
