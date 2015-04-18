@@ -10,12 +10,12 @@ PubKit is a lightweight, easy to setup and easy to use generic messaging and pus
 * SDKs for iOS and Android
 
 #Credits:
-Moquette - <a href="https://github.com/andsel/moquette">https://github.com/andsel/moquette</a>
+- Moquette - <a href="https://github.com/andsel/moquette">https://github.com/andsel/moquette</a>
 for coder and decoder implementation of MQTT messages.
 <br/>
-JavaApns - <a href="https://github.com/notnoop/java-apns">https://github.com/notnoop/java-apns</a> for APNS
+- JavaApns - <a href="https://github.com/notnoop/java-apns">https://github.com/notnoop/java-apns</a> for APNS
 <br>
-MapDB - MapDB for in memory message storage.
+- MapDB - MapDB for in memory message storage.
 
 #Quick Start
 Requires Java 1.6+ and Maven 3+
