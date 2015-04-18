@@ -16,8 +16,8 @@ Moquette <a href="https://github.com/andsel/moquette">https://github.com/andsel/
 for coder and decoder implementation of MQTT messages.
 <br/>
 Java-Apns <a href="https://github.com/notnoop/java-apns">https://github.com/notnoop/java-apns</a> for APNS
+<br>
 Quick Start
------------
 Requires Java1.6+ and Maven 3+
 
 ```
@@ -27,7 +27,6 @@ mvn clean package
 mvn spring-boot:run
 ```
 #Roadmap
-----
 * MQTT Support
 * Plugin support
 * Metrics and Dashboard
