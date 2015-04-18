@@ -1,6 +1,5 @@
 # PubKit
-Lightweight application platform for mobile developers
-PubKit is a lightweight, easy to setup and easy to use generic messaging and push notification platform for mobile apps.
+PubKit is a lightweight, easy to setup and easy to use generic messaging and push notification platform for mobile apps. 
 
 #Features
 * Lightweight and easy setup
@@ -18,7 +17,7 @@ for coder and decoder implementation of MQTT messages.
 Java-Apns <a href="https://github.com/notnoop/java-apns">https://github.com/notnoop/java-apns</a> for APNS
 <br>
 Quick Start
-Requires Java1.6+ and Maven 3+
+Requires Java 1.6+ and Maven 3+
 
 ```
 git clone https://github.com/narup/PubKit.git
