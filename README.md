@@ -1,7 +1,7 @@
 # PubKit
 Lightweight application platform for mobile developers
 
-PubKit is a lightweight, easy to setup and easy to use generic messaging and push notification platform for mobile app developers. It will allow app developers to quickly bootstrap their mobile apps without worrying about server setup or worrying about setting up multiple services with different cloud providers such as messaging, push and email notification etc. 
+PubKit is a lightweight, easy to setup and easy to use generic messaging and push notification platform for mobile apps.
 
 #Features
 * Lightweight and easy setup
@@ -12,4 +12,3 @@ PubKit is a lightweight, easy to setup and easy to use generic messaging and pus
 * SDKs for iOS and Android platform to get started
 * Social integration
 
-#Setup Instruction
