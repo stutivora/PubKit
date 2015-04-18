@@ -1,20 +1,21 @@
 # PubKit
-PubKit is a lightweight, easy to setup and easy to use generic messaging and push notification platform for mobile apps. 
+PubKit is a lightweight, easy to setup and easy to use generic messaging and push notification platform for mobile apps. See PubKit in action at <a href="https://pubkit.co">http://pubkit.co</a>. For messaging it supports MQTT and PubKit's custom lightweight protocol PKMP. 
 
 #Features
 * Lightweight and easy setup
 * Configure multiple apps
 * Messaging API for real-time messaging needs
 * Push notification (GCM and APNS) 
-* Admin console for tracking messages and stats
-* SDKs for iOS and Android platform to get started
-* Social integration
+* Admin console for tracking users, messages and other stats
+* SDKs for iOS and Android
 
 #Credits:
-Moquette <a href="https://github.com/andsel/moquette">https://github.com/andsel/moquette</a>
+Moquette - <a href="https://github.com/andsel/moquette">https://github.com/andsel/moquette</a>
 for coder and decoder implementation of MQTT messages.
 <br/>
-Java-Apns <a href="https://github.com/notnoop/java-apns">https://github.com/notnoop/java-apns</a> for APNS
+JavaApns - <a href="https://github.com/notnoop/java-apns">https://github.com/notnoop/java-apns</a> for APNS
+<br>
+MapDB - MapDB for in memory message storage.
 
 #Quick Start
 Requires Java 1.6+ and Maven 3+
