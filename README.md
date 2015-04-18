@@ -29,4 +29,5 @@ mvn spring-boot:run
 * MQTT Support
 * Plugin support
 * Metrics and Dashboard
-* Admin
+* iOS and Android SDK with samples
+* JavaScript SDK
