@@ -22,7 +22,7 @@ cd $DIR
 
 echo "Starting docker build for image PubKit at"
 echo $DIR
-docker build -t roquito .
+docker build -t PubKit .
 
 echo "Running docker build for image PubKit"
 docker run -d -p 8080:8080

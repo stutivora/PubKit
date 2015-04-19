@@ -6,8 +6,12 @@
 #
 ##
 FROM dockerfile/java:oracle-java7
-
 MAINTAINER narup Puran Singh <puran@32skills.com>
+
+#Redis
+RUN         apt-get update && apt-get install -y redis-server
+EXPOSE      6379
+ENTRYPOINT  ["/usr/bin/redis-server"]
 
 ADD ${project.artifactId}-${project.version}.jar /data/${project.artifactId}-${project.version}.jar
 
