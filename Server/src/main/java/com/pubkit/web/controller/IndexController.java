@@ -32,22 +32,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 @Controller
 public class IndexController extends BaseController {
-
-	private static final Logger LOG = LoggerFactory.getLogger(IndexController.class);
-
-	@RequestMapping("/")
-	public String index(Map<String, Object> model) {
-		LOG.debug("Returning index page");
-		return "index";
-	}
-
-	@RequestMapping("/ws")
-	public String echo(Map<String, Object> model) {
-		return "websocket";
-	}
-
-	@RequestMapping("/api")
-	public String api(Map<String, Object> model) {
-		return "api";
-	}
+    
+    private static final Logger LOG = LoggerFactory.getLogger(IndexController.class);
+    
+    @RequestMapping("/")
+    public String index(Map<String, Object> model) {
+        LOG.debug("Returning index page");
+        return "index";
+    }
+    
+    @RequestMapping("/ws")
+    public String echo(Map<String, Object> model) {
+        return "websocket";
+    }
+    
+    @RequestMapping("/api")
+    public String api(Map<String, Object> model) {
+        return "api";
+    }
 }

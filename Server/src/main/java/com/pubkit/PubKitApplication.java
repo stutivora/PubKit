@@ -46,34 +46,34 @@ import com.pubkit.platform.service.QueueService;
 @EnableWebSocket
 @Import(SwaggerConfig.class)
 public class PubKitApplication extends SpringBootServletInitializer implements WebSocketConfigurer {
-
-	@Autowired
-	private QueueService queueService;
-
-	@Override
-	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-		PKMPConnectionHandler pkmpHandler = new PKMPConnectionHandler(queueService);
-
-		DefaultHandshakeHandler pkmpHandShakeHandler = new DefaultHandshakeHandler();
-		pkmpHandShakeHandler.setSupportedProtocols("pkmp");
-
-		registry.addHandler(pkmpHandler, "/pkmp");
-		registry.addHandler(pkmpHandler, "/pkmp-sj").setHandshakeHandler(pkmpHandShakeHandler).withSockJS();
-
-		MQTTConnectionHandler mqttHandler = new MQTTConnectionHandler();
-
-		DefaultHandshakeHandler handShakeHandler = new DefaultHandshakeHandler();
-		handShakeHandler.setSupportedProtocols("mqttv3.1, mqttv3.1.1");
-		registry.addHandler(mqttHandler, "/mqtt").setHandshakeHandler(handShakeHandler);
-	}
-
-	@Override
-	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-		return application.sources(PubKitApplication.class);
-	}
-
-	public static void main(String[] args) {
-		SpringApplication app = new SpringApplication(PubKitApplication.class);
-		app.run(args);
-	}
+    
+    @Autowired
+    private QueueService queueService;
+    
+    @Override
+    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+        PKMPConnectionHandler pkmpHandler = new PKMPConnectionHandler(queueService);
+        
+        DefaultHandshakeHandler pkmpHandShakeHandler = new DefaultHandshakeHandler();
+        pkmpHandShakeHandler.setSupportedProtocols("pkmp");
+        
+        registry.addHandler(pkmpHandler, "/pkmp");
+        registry.addHandler(pkmpHandler, "/pkmp-sj").setHandshakeHandler(pkmpHandShakeHandler).withSockJS();
+        
+        MQTTConnectionHandler mqttHandler = new MQTTConnectionHandler();
+        
+        DefaultHandshakeHandler handShakeHandler = new DefaultHandshakeHandler();
+        handShakeHandler.setSupportedProtocols("mqttv3.1, mqttv3.1.1");
+        registry.addHandler(mqttHandler, "/mqtt").setHandshakeHandler(handShakeHandler);
+    }
+    
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(PubKitApplication.class);
+    }
+    
+    public static void main(String[] args) {
+        SpringApplication app = new SpringApplication(PubKitApplication.class);
+        app.run(args);
+    }
 }
