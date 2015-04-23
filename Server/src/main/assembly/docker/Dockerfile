@@ -6,16 +6,15 @@
 #
 ##
 FROM dockerfile/java:oracle-java7
-MAINTAINER narup Puran Singh <puran@32skills.com>
+MAINTAINER narup Puran Singh <mailtopuran@gmail.com>
 
-#Redis
-RUN         apt-get update && apt-get install -y redis-server
-EXPOSE      6379
-ENTRYPOINT  ["/usr/bin/redis-server"]
+WORKDIR /data
 
-ADD ${project.artifactId}-${project.version}.jar /data/${project.artifactId}-${project.version}.jar
+COPY ${project.artifactId}-${project.version}.jar /data/
+COPY config /data/
 
-EXPOSE 8080
+## Expose port 80, if using SSL change this to 443
+EXPOSE 80
 
 # Start PubKit App
-CMD java -jar ${project.artifactId}-${project.version}.jar --spring.config.location=$PUBKIT_HOME/config/application.properties $*
+CMD java -jar ${project.artifactId}-${project.version}.jar $*

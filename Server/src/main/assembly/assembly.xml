@@ -23,13 +23,14 @@
         </fileSet>
         <fileSet>
             <directory>${project.basedir}/src/main/assembly/docker</directory>
-            <outputDirectory>/</outputDirectory>
+            <outputDirectory>docker</outputDirectory>
             <filtered>true</filtered>
             <fileMode>0755</fileMode>
             <includes>
-                <include>docker_run.sh</include>
-                <include>Dockerfile</include>
-            </includes>
+            	<include>mongo*/*</include>
+            	<include>redis*/*</include>
+            	<include>*</include>
+        	</includes>
         </fileSet>
         <fileSet>
             <directory>${project.basedir}/src/main/assembly</directory>
@@ -37,7 +38,7 @@
             <filtered>true</filtered>
             <fileMode>0755</fileMode>
             <includes>
-                <include>start_server.sh</include>
+                <include>start-server.sh</include>
             </includes>
         </fileSet>
         <fileSet>
