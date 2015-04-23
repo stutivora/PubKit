@@ -27,6 +27,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
@@ -43,6 +44,7 @@ import com.pubkit.platform.service.QueueService;
 @ComponentScan
 @EnableAutoConfiguration
 @EnableWebSocket
+@Import(SwaggerConfig.class)
 public class PubKitApplication extends SpringBootServletInitializer implements WebSocketConfigurer {
     
     @Autowired
