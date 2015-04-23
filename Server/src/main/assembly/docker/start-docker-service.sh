@@ -9,25 +9,16 @@ echo "|_|    \__,_|_.__/|_|\_\_|\__| "
 echo "								 "
 echo "==============================="
 
-if [ "$PUBKIT_HOME" = "" ]
-then
-   echo "PUBKIT_HOME not set. Please set the PUBKIT_HOME value to your PubKit directory."
-else
-   echo "PUBKIT_HOME:".$PUBKIT_HOME
-fi
-export JAVA_HOME=$(/usr/libexec/java_home -v 1.7)
+echo "Starting docker build for image PubKit"
 
-DIR=$(cd `dirname $0` && pwd)
-cd $DIR
-
-echo "Starting docker build for image PubKit at"
-echo $DIR
+cp ../${project.artifactId}-${project.version}.jar .
+cp -R ../config .
 
 ## Buid PubKit docker image
 docker build -t pubkit/server .
 
 echo "Running docker build for image PubKit"
 
-docker run --name pubkit -d -p 80:80 pubkit/server
+docker run --name pubkit -d -p 8080:8080 pubkit/server
 
 echo "Started PubKit Server..."
