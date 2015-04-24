@@ -33,6 +33,8 @@ public interface UserService {
     
     User findByUserId(String userId);
     
+    String getUserAccessToken(String email);
+    
     boolean saveAccessToken(String email, String accessToken);
     
     boolean isAccessTokenValid(String accessToken);

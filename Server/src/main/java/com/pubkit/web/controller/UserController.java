@@ -102,13 +102,18 @@ public class UserController extends BaseController {
         } else {
             boolean matches = RoquitoUtils.comparePasswords(userLoginData.getPassword(), user.getPassword());
             if (matches) {
-                String accessToken = keyGenerator.getSecureSessionId();
-                boolean success = userService.saveAccessToken(userLoginData.getEmail(), accessToken);
-                if (success) {
-                    return new LoginResponse(user.getUserId(), user.getFullName(), accessToken);
+                String existingToken = userService.getUserAccessToken(userLoginData.getEmail());
+                if (existingToken != null && userService.isAccessTokenValid(existingToken)) {
+                    return new LoginResponse(user.getUserId(), user.getFullName(), existingToken);
                 } else {
-                    LOG.error("Error saving access token");
-                    throw new RoquitoServerException("Unknown error. Try again later.");
+                    String accessToken = keyGenerator.getSecureSessionId();
+                    boolean success = userService.saveAccessToken(userLoginData.getEmail(), accessToken);
+                    if (success) {
+                        return new LoginResponse(user.getUserId(), user.getFullName(), accessToken);
+                    } else {
+                        LOG.error("Error saving access token");
+                        throw new RoquitoServerException("Unknown error. Try again later.");
+                    }
                 }
             } else {
                 return new LoginResponse("Username and password doesn't match");

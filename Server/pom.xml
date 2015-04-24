@@ -86,7 +86,6 @@
 		<start-class>com.pubkit.PubKitApplication</start-class>
 		<java.version>1.7</java.version>
 		<spring.boot.version>1.2.2.BUILD-SNAPSHOT</spring.boot.version>
-		<mongodb.version>2.12.4</mongodb.version>
 		<gson.version>2.3.1</gson.version>
 		<spring.boot.version>1.2.3.BUILD-SNAPSHOT</spring.boot.version>
 		<slf4j-api.version>1.7.8</slf4j-api.version>
@@ -137,10 +136,6 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-mongodb</artifactId>
-        </dependency>
 		<dependency>
 			<groupId>redis.clients</groupId>
 			<artifactId>jedis</artifactId>

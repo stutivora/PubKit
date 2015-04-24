@@ -31,13 +31,9 @@ import org.springframework.stereotype.Component;
 public class PubKitConfig {
     
     private String environment;
-    private String redisHost;
-    private int redisPort;
-    private int redisTimeout;
-    private int redisDatabase;
-    private String redisPassword;
     private String mapdbFilePath;
     private String mapdbPassword;
+    private int accessTokenExpirationTime;
     
     public String getEnvironment() {
         return environment;
@@ -50,47 +46,7 @@ public class PubKitConfig {
     public boolean isDevEnvironment() {
         return "dev".equalsIgnoreCase(environment);
     }
-    
-    public String getRedisHost() {
-        return redisHost;
-    }
-    
-    public void setRedisHost(String redisHost) {
-        this.redisHost = redisHost;
-    }
-    
-    public int getRedisPort() {
-        return redisPort;
-    }
-    
-    public void setRedisPort(int redisPort) {
-        this.redisPort = redisPort;
-    }
-    
-    public int getRedisTimeout() {
-        return redisTimeout;
-    }
-    
-    public void setRedisTimeout(int redisTimeout) {
-        this.redisTimeout = redisTimeout;
-    }
-    
-    public int getRedisDatabase() {
-        return redisDatabase;
-    }
-    
-    public void setRedisDatabase(int redisDatabase) {
-        this.redisDatabase = redisDatabase;
-    }
-    
-    public String getRedisPassword() {
-        return redisPassword;
-    }
-    
-    public void setRedisPassword(String redisPassword) {
-        this.redisPassword = redisPassword;
-    }
-    
+
     public String getMapdbFilePath() {
         return mapdbFilePath;
     }
@@ -105,5 +61,13 @@ public class PubKitConfig {
     
     public void setMapdbPassword(String mapdbPassword) {
         this.mapdbPassword = mapdbPassword;
+    }
+
+    public int getAccessTokenExpirationTime() {
+        return accessTokenExpirationTime;
+    }
+
+    public void setAccessTokenExpirationTime(int accessTokenExpirationTime) {
+        this.accessTokenExpirationTime = accessTokenExpirationTime;
     }
 }
