@@ -94,7 +94,6 @@
 		<netty.version>4.0.24.Final</netty.version>
 		<mockito.version>1.8.4</mockito.version>
 		<json-simple.version>1.1.1</json-simple.version>
-		<jedis.version>2.6.2</jedis.version>
 		<disruptor.version>3.3.0</disruptor.version>
 		<mapdb.version>1.0.7</mapdb.version>
 		<janino.version>2.6.1</janino.version>
@@ -135,12 +134,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>redis.clients</groupId>
-			<artifactId>jedis</artifactId>
-			<type>jar</type>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.lmax</groupId>
