@@ -183,7 +183,8 @@ header {
 }
 .banner {
 	margin-top: 0px;
-	padding: 220px;
+	padding-top: 200px;
+	padding-bottom:10px;
 	background-size: cover;
 	background: url('../images/banner.png');
 	background-color: #fff;
@@ -197,6 +198,14 @@ header {
 	letter-spacing: 1px;
 	color: #fff;
 	font-weight: 600;
+}
+.banner p {
+	font-size: 30px;
+	letter-spacing: 1px;
+	color: #ddd;
+	font-weight: 600;
+	margin-top:140px;
+	font-family: 'Cabin', sans-serif;
 }
 
 .banner h2 {
@@ -266,7 +275,7 @@ em {
 .get-started{
 	text-align: center;
 	font-family: 'Cabin', sans-serif;
-	padding-top: 120px;
+	padding-top: 40px;
 	padding-bottom: 120px;
 }
 .get-started h2{
