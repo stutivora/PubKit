@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/narup/PubKit.svg?branch=master)](https://travis-ci.org/narup/PubKit)
+
 # PubKit
 PubKit is a lightweight, easy to setup and easy to use generic messaging and push notification platform for mobile apps. See PubKit in action at <a href="https://pubkit.co">http://pubkit.co</a>. For messaging it supports MQTT and PubKit's custom lightweight protocol PKMP. 
 
