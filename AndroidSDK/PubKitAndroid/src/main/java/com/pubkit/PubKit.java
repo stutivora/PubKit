@@ -18,6 +18,7 @@ import com.pubkit.model.PKUser;
 import com.pubkit.network.PubKitNetwork;
 import com.pubkit.network.protocol.pkmp.Message;
 import com.pubkit.network.protocol.pkmp.PKMPConnection;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -29,10 +30,10 @@ import io.realm.RealmQuery;
 import io.realm.RealmResults;
 
 /**
- * Base PubKit implementation
+ * PubKit implementation for push and messaging.
  * Created by puran on 3/22/15.
  */
-public final class PubKit {
+public final class PubKit implements PubKitApi {
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static final String TAG = "PubKit";
@@ -68,32 +69,7 @@ public final class PubKit {
         return INSTANCE;
     }
 
-    /**
-     * @return Application's version code from the {@code PackageManager}.
-     */
-    private static int getAppVersion(Context context) {
-        try {
-            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-            return packageInfo.versionCode;
-        } catch (PackageManager.NameNotFoundException e) {
-            throw new RuntimeException("Could not get package name: " + e);
-        }
-    }
-
-    private static String generateClientId() {
-        final Random random = new Random();
-        final StringBuilder sb = new StringBuilder(12);
-        for (int i = 0; i < 12; ++i)
-            sb.append(ALLOWED_CLIENT_ID_CHARACTERS.charAt(random.nextInt(ALLOWED_CLIENT_ID_CHARACTERS.length())));
-        return sb.toString();
-    }
-
-    /**
-     * Setup PubKit client using the given credentials. For valid app credentials visit
-     * {@link http://pubkit.co}
-     *
-     * @param credentials the credentials
-     */
+    @Override
     public void setupPubKit(PubKitCredentials credentials) {
         if (credentials == null) {
             throw new PubKitException("Credentials cannot be null");
@@ -131,6 +107,7 @@ public final class PubKit {
         }
     }
 
+    @Override
     public void setupGcmPush(String gcmSenderId) {
         String userId = ANONYMOUS_USER;
         // Check device for Play Services APK. If check succeeds, proceed with GCM registration.
@@ -158,6 +135,7 @@ public final class PubKit {
         }
     }
 
+    @Override
     public String getGcmRegistrationId() {
         if (pkUser != null) {
             return pkUser.getRegistrationId();
@@ -166,14 +144,17 @@ public final class PubKit {
         }
     }
 
+    @Override
     public boolean isAppUserLinkedToDevice() {
         return (this.pkUser != null && !ANONYMOUS_USER.equalsIgnoreCase(pkUser.getSourceUserId()));
     }
 
+    @Override
     public void linkDeviceToAppUser(String userId) {
         registerInBackground(pkUser.getGcmSenderId(), userId);
     }
 
+    @Override
     public boolean isConnected() {
         if (this.pkmpConnection == null) {
             return false;
@@ -181,6 +162,7 @@ public final class PubKit {
         return this.pkmpConnection.isConnected();
     }
 
+    @Override
     public void connect(PubKitListener pubKitListener) {
         if (this.pkmpConnection == null) {
             this.pkmpConnection = new PKMPConnection(this.context, pubKitListener, pkUser);
@@ -188,24 +170,48 @@ public final class PubKit {
         this.pkmpConnection.connect();
     }
 
+    @Override
     public void subscribe(String topic, SubscriptionListener subscriptionListener) {
         checkConnection();
         this.pkmpConnection.subscribe(topic, subscriptionListener);
     }
 
+    @Override
     public void unSubscribe(String topic) {
         checkConnection();
         this.pkmpConnection.unSubscribe(topic);
     }
 
+    @Override
     public void publish(String topic, Message message) {
         checkConnection();
         this.pkmpConnection.publish(topic, message);
     }
 
+    @Override
     public void disconnect() {
         checkConnection();
         this.pkmpConnection.disconnect();
+    }
+
+    /**
+     * @return Application's version code from the {@code PackageManager}.
+     */
+    private static int getAppVersion(Context context) {
+        try {
+            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+            return packageInfo.versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            throw new RuntimeException("Could not get package name: " + e);
+        }
+    }
+
+    private static String generateClientId() {
+        final Random random = new Random();
+        final StringBuilder sb = new StringBuilder(12);
+        for (int i = 0; i < 12; ++i)
+            sb.append(ALLOWED_CLIENT_ID_CHARACTERS.charAt(random.nextInt(ALLOWED_CLIENT_ID_CHARACTERS.length())));
+        return sb.toString();
     }
 
     private void checkConnection() {
