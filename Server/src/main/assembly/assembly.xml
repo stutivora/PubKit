@@ -17,7 +17,7 @@
             <directory>${project.basedir}/config</directory>
             <outputDirectory>config</outputDirectory>
             <includes>
-                <include>application.properties</include>
+                <include>application.prod.properties</include>
                 <include>logback.xml</include>
             </includes>
         </fileSet>
