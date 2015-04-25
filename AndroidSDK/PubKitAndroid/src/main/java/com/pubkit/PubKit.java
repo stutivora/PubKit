@@ -16,7 +16,7 @@ import com.pubkit.listener.PubKitListener;
 import com.pubkit.listener.SubscriptionListener;
 import com.pubkit.model.PKUser;
 import com.pubkit.network.PubKitNetwork;
-import com.pubkit.network.protocol.pkmp.Message;
+import com.pubkit.network.Message;
 import com.pubkit.network.protocol.pkmp.PKMPConnection;
 
 import org.json.JSONException;

@@ -18,23 +18,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.pubkit.listener;
+package com.pubkit.network;
 
-import com.pubkit.network.Message;
 /**
- * Listener for receiving subscription events. It's registered per topic per subscription.
- *
- * Created by puran on 4/10/15.
+ * Created by puran on 4/16/15.
  */
-public interface SubscriptionListener {
+public class Message {
+    private String messageId;
+    private String data;
 
-    void onSubscribe(String topic, String clientId);
+    public String getData() {
+        return data;
+    }
 
-    void onError(String error);
+    public void setData(String data) {
+        this.data = data;
+    }
 
-    void onMessage(String topic, Message message);
+    public String getMessageId() {
+        return messageId;
+    }
 
-    void onMessageDelivered(String topic, String messageId);
-
-    void onUnSubscribe(String topic);
+    public void setMessageId(String messageId) {
+        this.messageId = messageId;
+    }
 }

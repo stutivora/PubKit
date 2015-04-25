@@ -23,13 +23,12 @@ package com.pubkit;
 import com.pubkit.config.PubKitCredentials;
 import com.pubkit.listener.PubKitListener;
 import com.pubkit.listener.SubscriptionListener;
-import com.pubkit.network.protocol.pkmp.Message;
+import com.pubkit.network.Message;
 
 /**
- * Base interface for interacting with PubKit. It provides the APIs for publish/subscribe
- * messaging based on {@link \http://mqtt.org} MQTT and PubKit's lightweight and custom
- * protocol known as PKMP (PubKit Messaging Protocol). Also, it allows for device to register
- * for receiving GCM push notification.
+ * Base interface for PubKit SDK. It provides the APIs for publish/subscribe
+ * messaging based on {@link \http://mqtt.org} MQTT and PKMP (PubKit Messaging Protocol). Also, it
+ * allows APIs to register device and more for receiving GCM push notification.
  *
  * To use the SDK, necessary APP_ID and other credentials must be registered on PubKit backend.
  * Please refer to {@link \http://pubkit.co} for more detail.
